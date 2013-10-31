@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Phonegap Prototype 01</title>
+    </head>
+    <body>
+        <div id="book">
+            <div class="odd">
+                <img class="fullpage" src="img/cover.jpg">
+            </div>
+            <div class="even">
+                <div class="texture fullpage"></div>
+                <div id="page-container-2"></div>
+            </div>
+            <div class="odd">
+                <div class="texture fullpage"></div>
+                <div id="page-container-3"></div>
+            </div>
+            <div class="even">
+                <div class="texture fullpage"></div>
+                <div id="page-container-4"></div>
+            </div>
+            <div class="odd">
+                <div class="texture fullpage"></div>
+                <div id="page-container-5"></div>
+            </div>
+            <div class="even">
+                <div class="texture fullpage"></div>
+                <div id="page-container-6"></div>
+            </div>
+            <div class="odd">
+                <div class="texture fullpage"></div>
+                <div id="page-container-7"></div>
+            </div>
+        </div>
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript" src="js/lib/jquery-2.0.3.js"></script>
+        <script type="text/javascript" src="js/lib/turn.js"></script>
+        <script type="text/javascript" src="js/lib/kinetic-v4.7.2.js"></script>
+        <script type="text/javascript" src="js/storybook.js"></script>
+        <script type="text/javascript">
+            phonegap01.initialize();
+        </script>
+    </body>
+</html>
