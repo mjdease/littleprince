@@ -1,0 +1,54 @@
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+}
+
+body {
+    overflow:hidden;
+    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+    font-size:12px;
+    margin:0px;
+    padding:0px;
+}
+
+#book{
+    background:black;
+    position:absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+}
+
+.fullpage{
+    width:100%;
+    height:100%;
+}
+
+.texture{
+    pointer-events: none;
+    position:absolute;
+    z-index:100;
+    background:url("../img/texture-even.png") top right;
+}
+
+#page-container{
+    background: #e0ab4f;
+}
+
+.nav-button{
+    position:absolute;
+    width:150px;
+    height:60px;
+    line-height: 60px;
+    bottom:5px;
+}
+
+#btn-prev{
+    left:5px;
+}
+
+#btn-next{
+    right:5px;
+}
