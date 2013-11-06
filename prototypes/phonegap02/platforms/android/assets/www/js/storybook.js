@@ -155,20 +155,20 @@ window.phonegap02 = {};
             height:page.height
         }));
 
-        // var obstacle = world.CreateBody(new Box2D.b2BodyDef());
-        // var obsShape = new Box2D.b2CircleShape();
-        // obsShape.set_m_radius( 150 );
-        // console.log(obstacle);
-        // obsShape.set_m_p(new Box2D.b2Vec2(page.width * 0.8, page.height/-2));
-        // obstacle.CreateFixture(obsShape, 1.0);
+        var obstacle = world.CreateBody(new Box2D.b2BodyDef());
+        var obsShape = new Box2D.b2CircleShape();
+        obsShape.set_m_radius( 150 );
+        console.log(obstacle);
+        obsShape.set_m_p(new Box2D.b2Vec2(page.width * 0.8, page.height/-2));
+        obstacle.CreateFixture(obsShape, 1.0);
 
-        // gameLayer.add(new Kinetic.Circle({
-        //     x: page.width * 0.8,
-        //     y: page.height/2,
-        //     radius: 150,
-        //     offset: {x:75, y:75},
-        //     fill: Kinetic.Util.getRandomColor()
-        // }))
+        gameLayer.add(new Kinetic.Circle({
+            x: page.width * 0.8,
+            y: page.height/2,
+            radius: 150,
+            offset: {x:75, y:75},
+            fill: Kinetic.Util.getRandomColor()
+        }))
 
         createBody(page.width/2, page.height/-2);
 
