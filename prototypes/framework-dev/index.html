@@ -6,9 +6,9 @@
         <title>Framework for DS4 project</title>
     </head>
     <body>
-        <div id="storybook"></div>
-        <div id="game-stage"></div>
-        <nav id="page-nav">
+        <div id="storybook" class="maxsize"></div>
+        <div id="game-stage" class="maxsize"></div>
+        <nav id="page-nav" class="maxsize">
             <div id="btn-prev" class="btn hidden">Previous Page</div>
             <div id="btn-next" class="btn hidden">Next Page</div>
         </nav>
@@ -21,6 +21,18 @@
         <script type="text/javascript" src="js/core.js"></script>
         <script type="text/javascript">
             //init
+        </script>
+
+        <!-- Handlebars Templates -->
+        <script id="book-pages-template" type="application/x-handlebars-template">
+        {{#each pages}}
+            <div class="{{pageClasses}}">
+                {{#if hasTexture}}
+                <div class="page-texture maxsize"></div>
+                {{/if}}
+                <div id="{{pageId}}"></div>
+            </div>
+        {{/each}}
         </script>
     </body>
 </html>
