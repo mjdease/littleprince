@@ -20,9 +20,13 @@ body {
 .maxsize{
     width:100%;
     height:100%;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
 }
 
-#storybook, #game-stage, #page-nav{
+#game-stage, #page-nav{
     position:absolute;
     top:0;
     left:0;
@@ -51,9 +55,9 @@ body {
 }
 
 .odd .page-texture{
-    background:url("../assets/image/texture-odd.png") top left;
+    background:url("../assets/images/texture-odd.png") top left;
 }
 
 .even .page-texture{
-    background:url("../assets/image/texture-even.png") top right;
+    background:url("../assets/images/texture-even.png") top right;
 }
