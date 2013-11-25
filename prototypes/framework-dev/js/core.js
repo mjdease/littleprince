@@ -37,8 +37,8 @@ window.storybook = {};
         setTimeout(function(){
             stage = new K.Stage({
                 container: "game-stage",
-                width: $(window).width(),
-                height: $(window).height()
+                width: 1280,
+                height: 800
             });
             layers.staticBack = new K.Layer();
             layers.dynBack = new K.Layer();
@@ -57,13 +57,13 @@ window.storybook = {};
             stage.draw();
 
             book.turn({
-                height: $(window).height(),
-                width: $(window).width(),
+                page:2,
+                height: 800,
+                width: 1280,
                 when: {
                     turned : onNewPage
                 }
             });
-            book.turn("size", $(window).width(), $(window).height());
 
             nextBtn = $("#btn-next").on("click", function(){
                 book.turn("next");
@@ -81,8 +81,6 @@ window.storybook = {};
             });
 
             updateButtonVisibility();
-
-            onNewPage();
         }, 10);
     }
 
@@ -96,11 +94,14 @@ window.storybook = {};
     };
 
     var initPage = function(images){
-        pages[currentPage].startGame(images, stage, layers);
+        pages[currentPage].initPage(images, stage, layers);
         updateLoop.start();
     };
 
     app.registerPage = function(page){
+        if(!bookPages.length){
+            bookPages.push({pageClasses : "odd", hasTexture: false, pageId: bookPages.length});
+        }
         bookPages.push({pageClasses : "even", hasTexture: true, pageId: bookPages.length});
         bookPages.push({pageClasses : "odd", hasTexture: true, pageId: bookPages.length});
         pages.push(page);

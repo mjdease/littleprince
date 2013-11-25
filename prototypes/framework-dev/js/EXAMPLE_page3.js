@@ -1,31 +1,54 @@
-var page3 = {};
+(function(){//scoping. ignore.
 
-page3.requiredImages = [
-    {name: "test", path: "assets/images/testimg.png"}
-];
+    //define page in here
 
-page3.startGame = function(images, stage, layers){
-    page3.player = new Kinetic.Image({
-        image: images.test,
-        x:0,
-        y:-53,
-        width:370,
-        height:53,
-        filter: Kinetic.Filters.Colorize,
-        filterColorizeColor:Kinetic.Util.getRandomColor()
-    });
-    layers.dynBack.add(page3.player);
-}
+    //local variables
+    var speed = 50;
+    var bodies = [];
+    var score = 0;
 
-page3.update = function(frame, stage, layers){
-    if(page3.player && Math.random() < 0.03) {
-        page3.player.setPosition(randomInt(0,stage.getWidth()), randomInt(0,stage.getWidth()));
+    var page = new Page(true);
+
+    page.setRequiredAssets([{name: "test", path: "assets/images/testimg.png"}]);
+
+    page.initPage = function(images, stage, layers){
+        for(var i = 0; i < 10; i++){
+            var img = new Kinetic.Image({
+                image: images.test,
+                x: randomInt(31, stage.getWidth() - 31),
+                y: randomInt(35, 200),
+                width:62,
+                height:71,
+                offset: {x:31, y:35}
+            });
+            img.sb_alive = true;
+            bodies.push(img);
+            layers.dynBack.add(img);
+        }
+        page.setState(page.States.PLAYING);
+    };
+
+    page.update = function(frame, stage, layers){
+        if(page.getState() != page.States.PLAYING){
+            return;
+        }
+
+        for(var i = 0; i < bodies.length; i++){
+            var gameObject = bodies[i];
+            if(gameObject.sb_alive){
+                var newY = gameObject.getY() + (speed * frame.timeDiff / 1000);
+                if(newY >= stage.getHeight() - 36){
+                    newY = stage.getHeight() - 36;
+                    gameObject.sb_alive = false;
+                    score++;
+                    if(score == bodies.length){
+                        page.setState(page.States.PASSED);
+                    }
+                }
+                gameObject.setY(newY);
+            }
+        }
     }
-    if(page3.player && Math.random() > 0.99){
-        storybook.pageComplete();
-    }
-}
 
-
-storybook.registerPage(page3);
-storybook.startStory();
+    storybook.registerPage(page);
+})();// scoping. ignore.
