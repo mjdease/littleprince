@@ -143,6 +143,12 @@ window.storybook = {};
         }
     };
 
+    //optons - all sprite options except for animations
+    //width - frame width
+    //height - frame height
+    //animList - object where the keys are the names of the animations
+    //          and the value is ne number of frames.
+    //          eg: {idle:1, run: 14, walk: 14}
     app.defineSprite = function(options, width, height, animList){
         var anim = {}, index = 0;
         for(var name in animList){
@@ -182,6 +188,11 @@ window.storybook = {};
         }
     };
 
+    // imageList - array of objects containing name and path
+    //          eg: [{name: "test", path: "assets/images/testimg.png"},
+    //               {name: "test2", path: "assets/images/test2img.png"}]
+    // onComplete - function called when all images have been loaded, accepts
+    //              object with the loaded images as first parameter.
     var loadImages = function(imageList, onComplete){
         var numImages = imageList.length, images = {};
         var numComplete = 0;

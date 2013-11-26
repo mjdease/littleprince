@@ -19,7 +19,7 @@
             var img = new Kinetic.Image({
                 image: images.test,
                 x: randomInt(31, stage.getWidth() - 31),
-                y: randomInt(35, 200),
+                y: randomInt(35, 600),
                 width:62,
                 height:71,
                 offset: {x:31, y:35}
