@@ -3,7 +3,7 @@
     //define page in here
 
     //local variables
-    var speed = 50;
+    var speed = 150;
     var bodies = [];
     var score = 0;
 
@@ -25,6 +25,9 @@
             bodies.push(img);
             layers.dynBack.add(img);
         }
+    };
+
+    page.startPage = function(){
         page.setState(page.States.PLAYING);
     };
 

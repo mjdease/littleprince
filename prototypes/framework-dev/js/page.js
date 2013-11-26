@@ -32,6 +32,8 @@ Page.prototype.setRequiredAssets = function(images){
 //accepts assets, stage, and layers object arguments
 Page.prototype.initPage = function(){};
 
+Page.prototype.startPage = function(){};
+
 //override this.
 //accepts frame, stage, and layers object arguments
 Page.prototype.update = function(){};

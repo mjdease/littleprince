@@ -26,10 +26,19 @@ body {
     right:0;
 }
 
-#game-stage, #page-nav{
+#game-stage, #page-nav, #page-texture{
     position:absolute;
     top:0;
     left:0;
+}
+
+#game-stage{
+    background:beige;
+}
+
+#page-texture{
+    pointer-events:none;
+    z-index:100;
 }
 
 .btn{
@@ -46,18 +55,4 @@ body {
 
 #btn-next{
     right:30px;
-}
-
-.page-texture{
-    pointer-events: none;
-    position:absolute;
-    z-index:100;
-}
-
-.odd .page-texture{
-    background:url("../assets/images/texture-odd.png") top left;
-}
-
-.even .page-texture{
-    background:url("../assets/images/texture-even.png") top right;
 }

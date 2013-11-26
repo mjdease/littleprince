@@ -6,8 +6,9 @@
         <title>Framework for DS4 project</title>
     </head>
     <body>
-        <div id="storybook" class="maxsize"></div>
-        <div id="game-stage" class="maxsize"></div>
+        <div id="game-stage" class="maxsize">
+            <img id="page-texture" src="assets/images/texture-even.png"/>
+        </div>
         <nav id="page-nav" class="maxsize">
             <div id="btn-prev" class="btn">Previous Page</div>
             <div id="btn-next" class="btn">Next Page</div>
@@ -18,6 +19,7 @@
         <script type="text/javascript" src="js/lib/howler.js"></script>
         <script type="text/javascript" src="js/lib/fastclick.js"></script>
         <script type="text/javascript" src="js/lib/turn.js"></script>
+        <script type="text/javascript" src="js/lib/async.js"></script>
         <script type="text/javascript" src="js/util.js"></script>
         <script type="text/javascript" src="js/page.js"></script>
         <script type="text/javascript" src="js/core.js"></script>
@@ -28,18 +30,6 @@
 
         <script type="text/javascript">
             storybook.startStory();
-        </script>
-
-        <!-- Handlebars Templates -->
-        <script id="book-pages-template" type="application/x-handlebars-template">
-        {{#each pages}}
-            <div class="{{pageClasses}}">
-                {{#if hasTexture}}
-                <div class="page-texture maxsize"></div>
-                {{/if}}
-                <div id="{{pageId}}"></div>
-            </div>
-        {{/each}}
         </script>
     </body>
 </html>
