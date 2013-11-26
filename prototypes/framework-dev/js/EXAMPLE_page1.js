@@ -9,7 +9,10 @@
 
     var page = new Page(true);
 
-    page.setRequiredAssets([{name: "test", path: "assets/images/testimg.png"}]);
+    page.setRequiredAssets([
+        {name: "test", path: "assets/images/testimg.png"},
+        {name: "ss", path: "assets/images/spritesheet.png"}
+    ]);
 
     page.initPage = function(images, stage, layers){
         for(var i = 0; i < 10; i++){
@@ -23,8 +26,15 @@
             });
             img.sb_alive = true;
             bodies.push(img);
-            layers.dynBack.add(img);
+            layers.dynFront.add(img);
         }
+        var sprite = storybook.defineSprite({
+            image: images.ss,
+            animation: "testAnim",
+            frameRate: 14
+        }, 200, 150, {testAnim: 9});
+        layers.dynBack.add(sprite);
+        sprite.start();
     };
 
     page.startPage = function(){

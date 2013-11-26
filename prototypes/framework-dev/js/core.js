@@ -91,10 +91,12 @@ window.storybook = {};
             stage.draw();
 
             nextBtn = $("#btn-next").on("click", function(){
+                if(transition.isRunning()) return;
                 currentPage++;
                 changePage("next");
             });
             prevBtn = $("#btn-prev").on("click", function(){
+                if(transition.isRunning()) return;
                 currentPage--;
                 changePage("previous");
             });
@@ -139,6 +141,24 @@ window.storybook = {};
             transitionState = 0;
             pages[currentPage].startPage();
         }
+    };
+
+    app.defineSprite = function(options, width, height, animList){
+        var anim = {}, index = 0;
+        for(var name in animList){
+            anim[name] = [];
+            for(var j = 0; j < animList[name]; j++){
+                anim[name].push({
+                    x: j * width,
+                    y: index * height,
+                    width: width,
+                    height: height
+                });
+            }
+            index++;
+        }
+        options.animations = anim;
+        return new K.Sprite(options);
     };
 
     app.registerPage = function(page){
