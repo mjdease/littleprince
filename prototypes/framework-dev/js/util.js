@@ -1,9 +1,17 @@
-//random utility functions
+// utility functions
 
-var randomInt = function(min, max){
+function randomInt(min, max){
     return Math.round(min + Math.random() * (max-min));
-};
+}
 
+// pass in two kinetic objects
+function dist(obj1, obj2){
+    var pt1 = obj1.getPosition();
+    var pt2 = obj2.getPosition();
+    return Math.sqrt(Math.pow(pt1.x - pt2.x, 2) + Math.pow(pt1.y - pt2.y, 2));
+}
+
+// h,s,and v need to be 0.0-1.0
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;
     if (h && s === undefined && v === undefined) {
