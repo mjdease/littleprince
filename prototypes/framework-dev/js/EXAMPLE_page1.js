@@ -7,15 +7,24 @@
     var bodies = [];
     var score = 0;
 
+    // Create new page object, if there's a game that has to be done pass in true
     var page = new Page(true);
 
+    // Pass in array of images in format:
+    // [{name: "test", path: "assets/images/testimg.png"},
+    //  {name: "test2", path: "assets/images/test2img.png"}]
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
         {name: "ss", path: "assets/images/spritesheet.png"}
     ]);
 
+    // Set the text to be displayed on the page, any number of parameters can be passed in.
+    // Display of the text is done automatically.
     page.setText(storyText.page1_1, storyText.page1_2);
 
+    // Add all objects that should be present at the start of the game/page here.
+    // Images from required assets above are preloaded and provided in the images parameter.
+    // Text defined above are displayed on the page already in staticFront layer.
     page.initPage = function(images, stage, layers){
         for(var i = 0; i < 10; i++){
             var img = new Kinetic.Image({
@@ -39,10 +48,14 @@
         sprite.start();
     };
 
+    // Page transition has completed and the game/animations should start now
+    // Bind event listeners no earlier than here
     page.startPage = function(){
         page.setState(page.States.PLAYING);
     };
 
+    // Called every frame, be very conservative of what is done in here!
+    // frame object contains timeDiff, lastTime, time, and frameRate properties
     page.update = function(frame, stage, layers){
         if(page.getState() != page.States.PLAYING){
             return;
@@ -65,5 +78,7 @@
         }
     }
 
+    //must call register page, passing in the current page object.
     storybook.registerPage(page);
+
 })();// scoping. ignore.
