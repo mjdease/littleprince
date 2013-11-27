@@ -2,6 +2,7 @@
 
 function Page(hasChallenge){
     this.hasChallenge = hasChallenge;
+    this.text = [];
     this.state = this.States.UNINITIALIZED;
 }
 
@@ -22,6 +23,12 @@ Page.prototype.setState = function(state){
         storybook.pageComplete();
     }
 };
+
+Page.prototype.setText = function(){
+    for(var i = 0; i < arguments.length; i++){
+        this.text.push(arguments[i]);
+    }
+}
 
 // arguments in array of objects containing name and asset path
 Page.prototype.setRequiredAssets = function(images){

@@ -6,6 +6,12 @@ window.storybook = {};
     var currentPage = 0, transitionSpeed = 1500, transitionState = 0, transitionDir = 1, pages = [], pagesComplete = [];
     var prevBtn, nextBtn;
     var book;
+    // TODO change these defaults
+    var fontDefaults = {
+        fontFamily: "Times New Roman",
+        fontSize: 24,
+        fill: "black"
+    };
 
 
     app.initialize = function(){
@@ -134,12 +140,18 @@ window.storybook = {};
     };
 
     var initPage = function(images){
-        pages[currentPage].initPage(images, stage, layers);
+        var newPage = pages[currentPage];
+        for(var i = 0; i < newPage.text.length; i++){
+            var textBlock = new K.Text($.extend(fontDefaults, newPage.text[i]));
+            layers.staticFront.add(textBlock);
+        }
+        layers.staticFront.batchDraw();
+        newPage.initPage(images, stage, layers);
         updateLoop.start();
         transitionState++;
         if(transitionState == 2){
             transitionState = 0;
-            pages[currentPage].startPage();
+            newPage.startPage();
         }
     };
 

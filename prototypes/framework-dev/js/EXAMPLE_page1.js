@@ -14,6 +14,8 @@
         {name: "ss", path: "assets/images/spritesheet.png"}
     ]);
 
+    page.setText(storyText.page1_1, storyText.page1_2);
+
     page.initPage = function(images, stage, layers){
         for(var i = 0; i < 10; i++){
             var img = new Kinetic.Image({
