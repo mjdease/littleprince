@@ -11,6 +11,8 @@
 
     page.setRequiredAssets([{name: "test", path: "assets/images/testimg.png"}]);
 
+    page.setNarration("assets/sound/test.mp3");
+
     page.setText(storyText.page2_1, storyText.page2_2);
 
     page.initPage = function(images, stage, layers){

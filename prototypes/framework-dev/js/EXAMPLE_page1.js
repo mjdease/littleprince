@@ -18,6 +18,9 @@
         {name: "ss", path: "assets/images/spritesheet.png"}
     ]);
 
+    // Pass in path of narration audio, playback is handled automatically.
+    page.setNarration("assets/sound/test.mp3");
+
     // Set the text to be displayed on the page, any number of parameters can be passed in.
     // Display of the text is done automatically.
     page.setText(storyText.page1_1, storyText.page1_2);
@@ -25,6 +28,9 @@
     // Add all objects that should be present at the start of the game/page here.
     // Images from required assets above are preloaded and provided in the images parameter.
     // Text defined above are displayed on the page already in staticFront layer.
+    // The layers object contains staticBack, dynBack, dynFront, and staticFront in that order,
+    // the dyn* layers will show any change to them automatically but batchDraw() should be called on
+    // the static* layers if changes are made to them eg layers.staticBack.batchDraw();
     page.initPage = function(images, stage, layers){
         for(var i = 0; i < 10; i++){
             var img = new Kinetic.Image({

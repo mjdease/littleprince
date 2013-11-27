@@ -1,11 +1,14 @@
 window.storybook = {};
 
 (function(app, K, $, undefined) {
+    var isPhonegap = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
+    var pgAssetPath = "/andoid_asset/www/";
     var stage, layers = {}, updateLoop, transition;
     var deviceReady = false, bookReady = false;
     var currentPage = 0, transitionSpeed = 1500, transitionState = 0, transitionDir = 1, pages = [], pagesComplete = [];
     var prevBtn, nextBtn;
     var book;
+    var narration;
     // TODO change these defaults
     var fontDefaults = {
         fontFamily: "Times New Roman",
@@ -15,14 +18,16 @@ window.storybook = {};
 
 
     app.initialize = function(){
-        if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
+        if(isPhonegap){
             $(document).on("deviceready", onDeviceReady);
-        } else {
+        }
+        else{
             $().ready(onDeviceReady);
         }
     };
 
     var onDeviceReady = function(){
+        FastClick.attach(document.body);
         deviceReady = true;
         if(bookReady){
             begin();
@@ -127,14 +132,14 @@ window.storybook = {};
         transition.stop();
         transitionState++;
         if(transitionState == 2){
-            transitionState = 0;
-            pages[currentPage].startPage();
+            startPage();
         }
     };
 
     var changePage = function(page){
         transitionDir = page == "next" ? 1 : -1;
         updateLoop.stop();
+        narration.stop();
         updateButtonVisibility();
         transition.start();
     };
@@ -146,14 +151,20 @@ window.storybook = {};
             layers.staticFront.add(textBlock);
         }
         layers.staticFront.batchDraw();
+        narration = newPage.narration;
         newPage.initPage(images, stage, layers);
         updateLoop.start();
         transitionState++;
         if(transitionState == 2){
-            transitionState = 0;
-            newPage.startPage();
+            startPage();
         }
     };
+
+    var startPage = function(){
+        transitionState = 0;
+        narration.play();
+        pages[currentPage].startPage();
+    }
 
     //optons - all sprite options except for animations
     //width - frame width
@@ -218,7 +229,7 @@ window.storybook = {};
                         onComplete(images);
                     }
                 }
-                img.src = obj.path;
+                img.src = (isPhonegap ? pgAssetPath : "") +  obj.path;
             })(imageList[i]);
         }
     };

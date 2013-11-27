@@ -30,6 +30,14 @@ Page.prototype.setText = function(){
     }
 }
 
+Page.prototype.setNarration = function(path){
+    this.narration = new Howl({
+        urls: [getPath(path)],
+        autoplay: false,
+        loop: false
+    });
+}
+
 // arguments in array of objects containing name and asset path
 Page.prototype.setRequiredAssets = function(images){
     this.requiredImages = images;

@@ -11,6 +11,14 @@ function dist(obj1, obj2){
     return Math.sqrt(Math.pow(pt1.x - pt2.x, 2) + Math.pow(pt1.y - pt2.y, 2));
 }
 
+// returns correct path depending on the current enironment
+function getPath(path){
+    if(navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)){
+        path = "/andoid_asset/www/" + path;
+    }
+    return path;
+}
+
 // h,s,and v need to be 0.0-1.0
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;
