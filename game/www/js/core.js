@@ -42,6 +42,13 @@ window.storybook = {};
     }
 
     var begin = function(){
+        if(isPhonegap){
+            for(var k = 0; k < pages.length; k++){
+                if(pages[k].narration) {
+                    pages[k].loadNarration();
+                }
+            }
+        }
         loadImages([{name: 'texture', path: "assets/images/texture-even.png"}],
             function(imgs){
             stage = new K.Stage({
@@ -229,7 +236,7 @@ window.storybook = {};
                         onComplete(images);
                     }
                 }
-                img.src = (isPhonegap ? pgAssetPath : "") +  obj.path;
+                img.src = obj.path;
             })(imageList[i]);
         }
     };
