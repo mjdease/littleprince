@@ -34,11 +34,11 @@ Page.prototype.setNarration = function(path){
     this.narrationSrc = getPath(path);
 }
 
-Page.prototype.loadNarration = function(){
-    if(isPhonegap()){
-        this.narration = new Media(this.narrationSrc);
-    }
-}
+// Page.prototype.loadNarration = function(){
+//     if(isPhonegap()){
+//         this.narration = new Media(this.narrationSrc);
+//     }
+// }
 
 // arguments in array of objects containing name and asset path
 Page.prototype.setRequiredAssets = function(images){

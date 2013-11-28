@@ -42,13 +42,13 @@ window.storybook = {};
     }
 
     var begin = function(){
-        if(isPhonegap){
-            for(var k = 0; k < pages.length; k++){
-                if(pages[k].narration) {
-                    pages[k].loadNarration();
-                }
-            }
-        }
+        // if(isPhonegap){
+        //     for(var k = 0; k < pages.length; k++){
+        //         if(pages[k].narration) {
+        //             pages[k].loadNarration();
+        //         }
+        //     }
+        // }
         loadImages([{name: 'texture', path: "assets/images/texture-even.png"}],
             function(imgs){
             stage = new K.Stage({
@@ -158,7 +158,11 @@ window.storybook = {};
             layers.staticFront.add(textBlock);
         }
         layers.staticFront.batchDraw();
-        narration = newPage.narration;
+        if(isPhonegap && narration != null){
+            narration.release();
+            narration = null;
+        }
+        narration = loadNarration(newPage.narrationSrc);
         newPage.initPage(images, stage, layers);
         updateLoop.start();
         transitionState++;
@@ -240,6 +244,19 @@ window.storybook = {};
             })(imageList[i]);
         }
     };
+
+    var loadNarration = function(path){
+        if(isPhonegap){
+            return new Media(path);
+        }
+        else{
+            return new Howl({
+                urls : [path],
+                autoplay : false,
+                loop : false
+            });
+        }
+    }
 })(window.storybook, Kinetic, jQuery);
 
 storybook.initialize();

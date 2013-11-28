@@ -19,7 +19,7 @@ function dist(obj1, obj2){
 // returns correct path depending on the current enironment
 function getPath(path){
     if(isPhonegap()){
-        path = "/andoid_asset/www/" + path;
+        path = "/android_asset/www/" + path;
     }
     return path;
 }
