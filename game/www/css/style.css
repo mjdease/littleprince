@@ -39,17 +39,17 @@ body {
     left:0;
 }
 
+#page-nav{
+    pointer-events:none;
+}
+
 #game-stage{
     background:beige;
 }
 
-#page-texture{
-    pointer-events:none;
-    z-index:100;
-}
-
 .btn{
     position:absolute;
+    pointer-events:auto;
     /*TODO - Replace with actual button styles*/
     bottom:30px;
     padding:20px;

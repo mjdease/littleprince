@@ -6,10 +6,11 @@ window.storybook = {};
     var pgAssetPath = "/andoid_asset/www/";
     var stage, layers = {}, updateLoop, transition;
     var deviceReady = false, bookReady = false;
-    var currentPage = 0, transitionSpeed = 1500, transitionState = 0, transitionDir = -1, pages = [], pagesComplete = [];
+    var currentPage, targetPage, transitionSpeed = 1500, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
     var prevBtn, nextBtn;
     var book;
     var narration;
+    var asteroidProgress = {};
 
 
     app.initialize = function(){
@@ -62,12 +63,12 @@ window.storybook = {};
                 offsetX: gameWidth,
                 image:imgs.texture
             });
-            var textureLayer = new K.Layer();
+            var textureLayer = new K.Layer({listening:false});
             textureLayer.add(textureImg);
             stage.add(textureLayer);
 
             updateLoop = new K.Animation(function(frame){
-                pages[currentPage].update(frame, stage, layers);
+                currentPage.update(frame, stage, layers);
             }, [layers.dynBack, layers.dynFront]);
 
             var state = 'out';
@@ -99,25 +100,27 @@ window.storybook = {};
 
             nextBtn = $("#btn-next").on("click", function(){
                 if(transition.isRunning()) return;
-                currentPage++;
                 changePage("next");
             });
             prevBtn = $("#btn-prev").on("click", function(){
                 if(transition.isRunning()) return;
-                currentPage--;
                 changePage("previous");
             });
 
-            updateButtonVisibility();
+            targetPage = pages["menu0"];
 
             onNewPage();
             transitionDone();
+
+            updateButtonVisibility();
         });
     }
 
     var onNewPage = function(){
-        if(pages[currentPage].requiredImages){
-            loadImages(pages[currentPage].requiredImages, initPage);
+        currentPage = targetPage;
+        targetPage = null;
+        if(currentPage.requiredImages){
+            loadImages(currentPage.requiredImages, initPage);
         }
         else{
             initPage();
@@ -133,26 +136,47 @@ window.storybook = {};
     };
 
     var changePage = function(page){
-        transitionDir = page == "previous" ? 1 : -1;
+        if(page){
+            var isNext = (page == "next");
+            transitionDir = isNext ? -1 : 1;
+            targetPage = pages[currentPage[(isNext ? "nextPage" : "previousPage")]];
+        }
+        else{
+            transitionDir = -1;
+        }
         updateLoop.stop();
         if(narration) narration.stop();
-        updateButtonVisibility();
         transition.start();
     };
 
+    app.goToPage = function(id){
+        if(id == "next"){
+            changePage("next");
+        }
+        else{
+            targetPage = pages[id];
+            changePage(false);
+        }
+    }
+
     var initPage = function(images){
-        var newPage = pages[currentPage];
-        for(var i = 0; i < newPage.text.length; i++){
-            var textBlock = new K.Text($.extend(fontDefaults, newPage.text[i]));
-            layers.staticFront.add(textBlock);
+        if(currentPage.text){
+            for(var i = 0; i < currentPage.text.length; i++){
+                layers.staticFront.add(currentPage.text[i]);
+            }
+        }
+        if(currentPage.hasChallenge){
+            layers.staticFront.add(currentPage.challengeText);
         }
         layers.staticFront.batchDraw();
-        if(isPhonegap && narration != null){
-            narration.release();
+        if(narration != null){
+            if(isPhonegap) narration.release();
             narration = null;
         }
-        narration = loadNarration(newPage.narrationSrc);
-        newPage.initPage(images, stage, layers);
+        if(currentPage.narrationSrc){
+            narration = loadNarration(currentPage.narrationSrc);
+        }
+        currentPage.initPage(images, stage, layers);
         updateLoop.start();
         transitionState++;
         if(transitionState == 2){
@@ -163,7 +187,12 @@ window.storybook = {};
     var startPage = function(){
         transitionState = 0;
         if(narration) narration.play();
-        pages[currentPage].startPage();
+        currentPage.startPage();
+        updateButtonVisibility();
+    }
+
+    app.getAsteroidProgress = function(){
+        return asteroidProgress;
     }
 
     //optons - all sprite options except for animations
@@ -191,18 +220,29 @@ window.storybook = {};
     };
 
     app.registerPage = function(page){
-        pages.push(page);
-        pagesComplete.push(false);
+        pages[page.id] = page;
+        if(page.hasChallenge){
+            challengesComplete[page.id] = false;
+        }
     };
 
     app.pageComplete = function(){
-        pagesComplete[currentPage] = true;
+        if(currentPage.hasChallenge){
+            challengesComplete[currentPage.id] = true;
+        }
+        if(currentPage.asteroidId && currentPage.nextPage == "menu1"){
+            asteroidProgress[currentPage.asteroidId] = true;
+        }
         updateButtonVisibility();
     }
 
     var updateButtonVisibility = function(){
-        prevBtn.toggle(currentPage > 0);
-        nextBtn.toggle(currentPage < pages.length - 1 && pagesComplete[currentPage]);
+        var challengeDone = true;
+        if(currentPage.hasChallenge){
+            challengeDone = challengesComplete[currentPage.id];
+        }
+        prevBtn.toggle(!currentPage.isMenu && !!currentPage.previousPage);
+        nextBtn.toggle(!currentPage.isMenu && !!currentPage.nextPage && challengeDone);
     };
 
     var clearStage = function(){

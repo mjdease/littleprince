@@ -86,6 +86,31 @@ var storyTexts = {
     ]
 };
 
+var challengeWords = {
+    earthIntro : [],
+    asteroids : {
+        b612 : [],
+        b325 : [],
+        b326 : [],
+        b327 : [],
+        b328 : [],
+        b329 : [],
+        b330 : []
+    },
+    earthEnding : []
+};
+
+//TODO - move fix x/y coordinates to cover the word on the page
+challengeWords.earthIntro[1] = {word: "manoeuvre", x:0, y:0};
+challengeWords.asteroids.b612[0] = {word: "weeding", x:0, y:0};
+challengeWords.asteroids.b612[2] = {word: "spruce up", x:0, y:0};
+challengeWords.asteroids.b325[1] = {word: "entrap", x:0, y:0};
+challengeWords.asteroids.b329[1] = {word: "coordinated", x:0, y:0};
+challengeWords.earthEnding[1] = {word: "think outside the box", x:0, y:0};
+challengeWords.earthEnding[3] = {word: "tame", x:0, y:0};
+challengeWords.earthEnding[5] = {word: "quench", x:0, y:0};
+challengeWords.earthEnding[8] = {word: "sequence", x:0, y:0};
+
 var story = {};
 
 (function initStory(){
@@ -93,11 +118,17 @@ var story = {};
         var volume = storyTexts[volumeName];
         if(volume.length){
             story[volumeName] = [];
-            for(var i = 0; i < volume.length; i+=2){
-                var page = [];
-                page.push(getStoryText(volume[i], 40));
-                page.push(getStoryText(volume[i+1], 680));
-                story[volumeName].push(page);
+            for(var i = 0; i < volume.length; i++){
+                if(i%2 == 0){
+                    var page = [];
+                    page.push(getStoryText(volume[i], 40));
+                    page.push(getStoryText(volume[i+1], 680));
+                    story[volumeName].push(page);
+                }
+                var challengeWord = challengeWords[volumeName][i];
+                if(challengeWord){
+                    challengeWords[volumeName][i] = getStoryText(challengeWord.word, challengeWord.x, challengeWord.y, "red");
+                }
             }
         }
         else{
@@ -105,25 +136,32 @@ var story = {};
             for(var chapterName in volume){
                 story[volumeName][chapterName] = []
                 var chapter = volume[chapterName];
-                for(var j = 0; j < chapter.length; j+=2){
-                    var page = [];
-                    page.push(getStoryText(chapter[j], 40));
-                    page.push(getStoryText(chapter[j+1], 680));
-                    story[volumeName][chapterName].push(page);
+                for(var j = 0; j < chapter.length; j++){
+                    if(j%2 == 0){
+                        var page = [];
+                        page.push(getStoryText(chapter[j], 40));
+                        page.push(getStoryText(chapter[j+1], 680));
+                        story[volumeName][chapterName].push(page);
+                    }
+                    var challengeWord = challengeWords[volumeName][chapterName][j];
+                    if(challengeWord){
+                        challengeWords[volumeName][chapterName][j] = getStoryText(challengeWord.word, challengeWord.x, challengeWord.y, "red");
+                    }
                 }
             }
         }
     }
 
-    function getStoryText(text, x){
+    function getStoryText(text, x, y, color){
+        var textY = (typeof y != "number") ? 40 : y;
         return new Kinetic.Text({
             text : text,
             x : x,
-            y : 40,
+            y : textY,
             width : 560,
             fontFamily: "lp_BodyFont",
             fontSize: 24,
-            fill: "black",
+            fill: color || "black",
             lineHeight: 1.2
         });
     }

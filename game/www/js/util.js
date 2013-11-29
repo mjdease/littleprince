@@ -1,5 +1,25 @@
 // utility functions
 
+function getStoryPageById(storyObj, id, index){
+    var collection;
+    if(/\./.test(id)){
+        var levels = id.split(".");
+        collection = storyObj[levels[0]][levels[1]];
+    }
+    else{
+        collection = storyObj[id]
+    }
+    if(!collection){
+        return;
+    }
+    if(index != null){
+        return collection[index];
+    }
+    else{
+        return collection;
+    }
+}
+
 function randomInt(min, max){
     return Math.round(min + Math.random() * (max-min));
 }
