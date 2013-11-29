@@ -1,11 +1,12 @@
 window.storybook = {};
 
 (function(app, K, $, undefined) {
+    var gameHeight = 752, gameWidth = 1280;
     var isPhonegap = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
     var pgAssetPath = "/andoid_asset/www/";
     var stage, layers = {}, updateLoop, transition;
     var deviceReady = false, bookReady = false;
-    var currentPage = 0, transitionSpeed = 1500, transitionState = 0, transitionDir = 1, pages = [], pagesComplete = [];
+    var currentPage = 0, transitionSpeed = 1500, transitionState = 0, transitionDir = -1, pages = [], pagesComplete = [];
     var prevBtn, nextBtn;
     var book;
     var narration;
@@ -42,19 +43,12 @@ window.storybook = {};
     }
 
     var begin = function(){
-        // if(isPhonegap){
-        //     for(var k = 0; k < pages.length; k++){
-        //         if(pages[k].narration) {
-        //             pages[k].loadNarration();
-        //         }
-        //     }
-        // }
         loadImages([{name: 'texture', path: "assets/images/texture-even.png"}],
             function(imgs){
             stage = new K.Stage({
                 container: "game-stage",
-                width: 1280,
-                height: 800
+                width: gameWidth,
+                height: gameHeight
             });
             layers.staticBack = new K.Layer();
             layers.dynBack = new K.Layer();
@@ -69,9 +63,9 @@ window.storybook = {};
             textureImg = new K.Image({
                 x:0,
                 y:0,
-                height:800,
-                width: 1280*3,
-                offsetX: 1280,
+                height:gameHeight,
+                width: gameWidth*3,
+                offsetX: gameWidth,
                 image:imgs.texture
             });
             var textureLayer = new K.Layer();
@@ -84,21 +78,22 @@ window.storybook = {};
 
             var state = 'out';
             transition = new K.Animation(function(frame){
-                var disp = transitionSpeed * frame.timeDiff/1000;
-                var newX = textureLayer.getX() - (disp * transitionDir);
-                if(state == 'out' && ((transitionDir == 1 && newX <= -1280) || (transitionDir == -1 && newX >=1280))){
+                var disp = transitionSpeed * frame.timeDiff/1000 * transitionDir;
+                var currentX = textureLayer.getX();
+                var proposedX = currentX + disp;
+                if(state == 'out' && ((transitionDir == -1 && proposedX <= -gameWidth) || (transitionDir == 1 && proposedX >=gameWidth))){
                     state = "in";
-                    newX = transitionDir * 1280;
+                    disp = transitionDir * -gameWidth - currentX;
                     clearStage();
                     onNewPage();
                 }
-                if(state == "in" && ((transitionDir == 1 && newX <= 0) || (transitionDir == -1 && newX >= 0))){
+                else if(state == "in" && ((transitionDir == -1 && proposedX <= 0) || (transitionDir == 1 && proposedX >= 0))){
                     state = "done";
-                    newX = 0;
+                    disp = 0 - currentX;
                 }
-                textureLayer.setX(newX);
+                textureLayer.move(disp, 0);
                 for(var layer in layers){
-                    layers[layer].setX(newX);
+                    layers[layer].move(disp, 0);
                 }
                 if(state == "done"){
                     state = "out";
@@ -144,7 +139,7 @@ window.storybook = {};
     };
 
     var changePage = function(page){
-        transitionDir = page == "next" ? 1 : -1;
+        transitionDir = page == "previous" ? 1 : -1;
         updateLoop.stop();
         if(narration) narration.stop();
         updateButtonVisibility();
@@ -218,7 +213,7 @@ window.storybook = {};
 
     var clearStage = function(){
         for(var layer in layers){
-            layers[layer].removeChildren();
+            layers[layer].destroyChildren();
         }
     };
 

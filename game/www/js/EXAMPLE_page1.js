@@ -70,16 +70,17 @@
         for(var i = 0; i < bodies.length; i++){
             var gameObject = bodies[i];
             if(gameObject.sb_alive){
-                var newY = gameObject.getY() + (speed * frame.timeDiff / 1000);
-                if(newY >= stage.getHeight() - 36){
-                    newY = stage.getHeight() - 36;
+                var currentY = gameObject.getY();
+                var dist =  speed * frame.timeDiff / 1000;
+                if(currentY + dist >= stage.getHeight() - 36){
+                    dist = (stage.getHeight() - 36) - currentY;
                     gameObject.sb_alive = false;
                     score++;
                     if(score == bodies.length){
                         page.setState(page.States.PASSED);
                     }
                 }
-                gameObject.setY(newY);
+                gameObject.move(0, dist);
             }
         }
     }
