@@ -1,4 +1,5 @@
 // utility functions
+var clickEvt = isPhonegap() ? "tap" : "click";
 
 function getStoryPageById(storyObj, id, index){
     var collection;

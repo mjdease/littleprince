@@ -23,7 +23,6 @@ window.storybook = {};
     };
 
     var onDeviceReady = function(){
-        FastClick.attach(document.body);
         deviceReady = true;
         if(bookReady){
             begin();
