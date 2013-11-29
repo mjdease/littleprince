@@ -16,9 +16,12 @@
     // [{name: "test", path: "assets/images/testimg.png"},
     //  {name: "test2", path: "assets/images/test2img.png"}]
     // these images get loaded before the page is initialized
+    // IMPORTANT: 'background' is a reserved name and will automatically
+    // be used for the page background. Do not name an image 'background' if it's not the background image.
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/spritesheet.png"}
+        {name: "spriteimg", path: "assets/images/spritesheet.png"},
+        {name: "background", path: "assets/images/testbg.jpg"}
     ]);
 
     // Pass in path of narration audio (relative to index.html), playback is handled automatically.
