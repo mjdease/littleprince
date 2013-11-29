@@ -41,7 +41,7 @@
         //animList - object where the keys are the names of the animations
         //          and the value is the number of frames.
         //          eg: {idle:1, run: 14, walk: 14}
-        sprite = storybook.defineSprite({
+        sprite = defineSprite({
             x:300,
             y:500,
             image: images.spriteimg,

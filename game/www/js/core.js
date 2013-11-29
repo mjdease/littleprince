@@ -192,28 +192,9 @@ window.storybook = {};
         return asteroidProgress;
     }
 
-    //optons - all sprite options except for animations
-    //width - frame width
-    //height - frame height
-    //animList - object where the keys are the names of the animations
-    //          and the value is ne number of frames.
-    //          eg: {idle:1, run: 14, walk: 14}
-    app.defineSprite = function(options, width, height, animList){
-        var anim = {}, index = 0;
-        for(var name in animList){
-            anim[name] = [];
-            for(var j = 0; j < animList[name]; j++){
-                anim[name].push({
-                    x: j * width,
-                    y: index * height,
-                    width: width,
-                    height: height
-                });
-            }
-            index++;
-        }
-        options.animations = anim;
-        return new K.Sprite(options);
+    //exists here only for backwards compatibility. use defineSprite in util.js
+    app.defineSprite = function(){
+        return defineSprite.apply(this, arguments);
     };
 
     app.registerPage = function(page){

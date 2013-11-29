@@ -21,6 +21,31 @@ function getStoryPageById(storyObj, id, index){
     }
 }
 
+//optons - all sprite options except for animations
+//width - frame width
+//height - frame height
+//animList - object where the keys are the names of the animations
+//          and the value is ne number of frames.
+//          eg: {idle:1, run: 14, walk: 14}
+ function defineSprite(options, width, height, animList){
+    var anim = {}, index = 0;
+    for(var name in animList){
+        anim[name] = [];
+        for(var j = 0; j < animList[name]; j++){
+            anim[name].push({
+                x: j * width,
+                y: index * height,
+                width: width,
+                height: height
+            });
+        }
+        index++;
+    }
+    options.animations = anim;
+    return new Kinetic.Sprite(options);
+}
+
+
 function randomInt(min, max){
     return Math.round(min + Math.random() * (max-min));
 }
