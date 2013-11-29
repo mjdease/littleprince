@@ -143,6 +143,15 @@ window.storybook = {};
     }
 
     var initPage = function(images){
+        var target = new K.Rect({
+            x:0, y:0,
+            width: gameWidth,
+            height:gameHeight
+        });
+        target.on(clickEvt, function(e){
+            currentPage.onStageClick(e);
+        });
+        layers.staticBack.add(target);
         if(currentPage.text){
             for(var i = 0; i < currentPage.text.length; i++){
                 layers.staticFront.add(currentPage.text[i]);

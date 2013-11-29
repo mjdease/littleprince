@@ -39,6 +39,10 @@
         }
     };
 
+    page.onStageClick = function(e){
+        console.log(e);
+    };
+
     function onSpriteClick(e){
         sprite.stop();
         page.challengeComplete();

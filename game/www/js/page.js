@@ -65,3 +65,8 @@ Page.prototype.startPage = function(){};
 //override this.
 //accepts frame, stage, and layers object arguments
 Page.prototype.update = function(){};
+
+//override this. accepts event object
+Page.prototype.onStageClick = function(e){
+
+}

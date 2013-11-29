@@ -162,7 +162,8 @@ var story = {};
             fontFamily: "lp_BodyFont",
             fontSize: 24,
             fill: color || "black",
-            lineHeight: 1.2
+            lineHeight: 1.2,
+            listening:false
         });
     }
 })();

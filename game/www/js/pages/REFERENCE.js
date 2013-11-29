@@ -81,6 +81,14 @@
 
     }
 
+    // Called when the user clicks on an _empty_ part of the game.
+    // ANY object in the way will prevent this event from firing
+    // If you want the obscuring object to never capture events
+    // and allow the click through to the stage set the listening property to false
+    page.onStageClick = function(e){
+        //handle the click event however you want
+    };
+
     //define any functions you need here
 
     function onSpriteClick(e){
