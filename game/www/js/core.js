@@ -10,12 +10,6 @@ window.storybook = {};
     var prevBtn, nextBtn;
     var book;
     var narration;
-    // TODO change these defaults
-    var fontDefaults = {
-        fontFamily: "Times New Roman",
-        fontSize: 24,
-        fill: "black"
-    };
 
 
     app.initialize = function(){
