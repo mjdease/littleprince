@@ -188,7 +188,12 @@ window.storybook = {};
         transitionState = 0;
         if(narration) narration.play();
         currentPage.startPage();
-        updateButtonVisibility();
+        if(!currentPage.hasChallenge){
+            app.pageComplete();
+        }
+        else{
+            updateButtonVisibility();
+        }
     }
 
     app.getAsteroidProgress = function(){
