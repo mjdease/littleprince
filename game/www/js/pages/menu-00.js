@@ -7,6 +7,8 @@
 
     page.setNextPage("earthIntro", 0);
 
+    page.setRequiredAssets([{name: "background", path:"assets/images/testbg.jpg"}]);
+
     page.initPage = function(images, stage, layers){
         startBtn = new Kinetic.Rect({
             fill: "green",

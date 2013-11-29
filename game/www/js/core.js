@@ -37,82 +37,66 @@ window.storybook = {};
     }
 
     var begin = function(){
-        loadImages([{name: 'texture', path: "assets/images/texture-even.png"}],
-            function(imgs){
-            stage = new K.Stage({
-                container: "game-stage",
-                width: gameWidth,
-                height: gameHeight
-            });
-            layers.staticBack = new K.Layer();
-            layers.dynBack = new K.Layer();
-            layers.dynFront = new K.Layer();
-            layers.staticFront = new K.Layer();
-
-            stage.add(layers.staticBack);
-            stage.add(layers.dynBack);
-            stage.add(layers.dynFront);
-            stage.add(layers.staticFront);
-
-            textureImg = new K.Image({
-                x:0,
-                y:0,
-                height:gameHeight,
-                width: gameWidth*3,
-                offsetX: gameWidth,
-                image:imgs.texture
-            });
-            var textureLayer = new K.Layer({listening:false});
-            textureLayer.add(textureImg);
-            stage.add(textureLayer);
-
-            updateLoop = new K.Animation(function(frame){
-                currentPage.update(frame, stage, layers);
-            }, [layers.dynBack, layers.dynFront]);
-
-            var state = 'out';
-            transition = new K.Animation(function(frame){
-                var disp = transitionSpeed * frame.timeDiff/1000 * transitionDir;
-                var currentX = textureLayer.getX();
-                var proposedX = currentX + disp;
-                if(state == 'out' && ((transitionDir == -1 && proposedX <= -gameWidth) || (transitionDir == 1 && proposedX >=gameWidth))){
-                    state = "in";
-                    disp = transitionDir * -gameWidth - currentX;
-                    clearStage();
-                    onNewPage();
-                }
-                else if(state == "in" && ((transitionDir == -1 && proposedX <= 0) || (transitionDir == 1 && proposedX >= 0))){
-                    state = "done";
-                    disp = 0 - currentX;
-                }
-                textureLayer.move(disp, 0);
-                for(var layer in layers){
-                    layers[layer].move(disp, 0);
-                }
-                if(state == "done"){
-                    state = "out";
-                    transitionDone();
-                }
-            }, [layers.staticFront, layers.staticBack, layers.dynFront, layers.dynBack]);
-
-            stage.draw();
-
-            nextBtn = $("#btn-next").on("click", function(){
-                if(transition.isRunning()) return;
-                changePage("next");
-            });
-            prevBtn = $("#btn-prev").on("click", function(){
-                if(transition.isRunning()) return;
-                changePage("previous");
-            });
-
-            targetPage = pages["menu0"];
-
-            onNewPage();
-            transitionDone();
-
-            updateButtonVisibility();
+        stage = new K.Stage({
+            container: "game-stage",
+            width: gameWidth,
+            height: gameHeight
         });
+        layers.staticBack = new K.Layer();
+        layers.dynBack = new K.Layer();
+        layers.dynFront = new K.Layer();
+        layers.staticFront = new K.Layer();
+
+        stage.add(layers.staticBack);
+        stage.add(layers.dynBack);
+        stage.add(layers.dynFront);
+        stage.add(layers.staticFront);
+
+        updateLoop = new K.Animation(function(frame){
+            currentPage.update(frame, stage, layers);
+        }, [layers.dynBack, layers.dynFront]);
+
+        var state = 'out';
+        transition = new K.Animation(function(frame){
+            var disp = transitionSpeed * frame.timeDiff/1000 * transitionDir;
+            var currentX = layers.staticBack.getX();
+            var proposedX = currentX + disp;
+            if(state == 'out' && ((transitionDir == -1 && proposedX <= -gameWidth) || (transitionDir == 1 && proposedX >=gameWidth))){
+                state = "in";
+                disp = transitionDir * -gameWidth - currentX;
+                clearStage();
+                onNewPage();
+            }
+            else if(state == "in" && ((transitionDir == -1 && proposedX <= 0) || (transitionDir == 1 && proposedX >= 0))){
+                state = "done";
+                disp = 0 - currentX;
+            }
+            for(var layer in layers){
+                layers[layer].move(disp, 0);
+            }
+            if(state == "done"){
+                state = "out";
+                transitionDone();
+            }
+        }, [layers.staticFront, layers.staticBack, layers.dynFront, layers.dynBack]);
+
+        stage.draw();
+
+        nextBtn = $("#btn-next").on("click", function(){
+            if(transition.isRunning()) return;
+            changePage("next");
+        });
+        prevBtn = $("#btn-prev").on("click", function(){
+            if(transition.isRunning()) return;
+            changePage("previous");
+        });
+
+        targetPage = pages["menu0"];
+
+        onNewPage();
+        transitionDone();
+
+        updateButtonVisibility();
     }
 
     var onNewPage = function(){
@@ -270,6 +254,15 @@ window.storybook = {};
                     numComplete++;
                     images[obj.name] = img;
                     if(numComplete == numImages){
+                        if(images["background"]){
+                            layers.staticBack.add(new K.Image({
+                                image : images.background,
+                                x: 0, y: 0,
+                                width: gameWidth,
+                                height: gameHeight
+                            }));
+                            layers.staticBack.batchDraw();
+                        }
                         onComplete(images);
                     }
                 }
