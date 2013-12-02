@@ -153,7 +153,7 @@ var story = {};
     }
 
     function getStoryText(text, x, y, color){
-        var textY = (typeof y != "number") ? 40 : y;
+        var textY = (typeof y != "number") ? 95 : y;
         return new Kinetic.Text({
             text : text,
             x : x,

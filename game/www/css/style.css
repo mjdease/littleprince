@@ -51,15 +51,34 @@ body {
     position:absolute;
     pointer-events:auto;
     /*TODO - Replace with actual button styles*/
-    bottom:30px;
-    padding:20px;
-    background:#fff;
+    bottom:10px;
+    width:136px;
+    height:90px;
+}
+
+.btn.btn-sm{
+    bottom:auto;
+    top:10px;
+    width:75px;
+    height:75px;
 }
 
 #btn-prev{
-    left:30px;
+    left:10px;
+    background:url("../assets/images/ui/page_global/button_nextPage.png");
 }
 
 #btn-next{
-    right:30px;
+    right:10px;
+    background:url("../assets/images/ui/page_global/button_prevPage.png");
+}
+
+#btn-home{
+    left:10px;
+    background:url("../assets/images/ui/page_global/button_home.png");
+}
+
+#btn-audio{
+    right:10px;
+    background:url("../assets/images/ui/page_global/button_audio.png");
 }

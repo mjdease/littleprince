@@ -7,7 +7,7 @@ window.storybook = {};
     var stage, layers = {}, updateLoop, transition;
     var deviceReady = false, bookReady = false;
     var currentPage, targetPage, transitionSpeed = 1500, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
-    var prevBtn, nextBtn;
+    var prevBtn, nextBtn, homeBtn, audioBtn;
     var book;
     var narration;
     var asteroidProgress = {};
@@ -89,6 +89,14 @@ window.storybook = {};
         prevBtn = $("#btn-prev").on("click", function(){
             if(transition.isRunning()) return;
             changePage("previous");
+        });
+        menuBtn = $("#btn-home").on("click", function(){
+            if(transition.isRunning()) return;
+            app.goToPage("menu0");
+        });
+        audioBtn = $("#btn-audio").on("click", function(){
+            if(transition.isRunning()) return;
+            //app.showSettings();
         });
 
 
@@ -226,6 +234,8 @@ window.storybook = {};
         if(currentPage.hasChallenge){
             challengeDone = challengesComplete[currentPage.id];
         }
+        menuBtn.toggle(currentPage.id != "menu0");
+        audioBtn.toggle(currentPage.id != "menu0");
         prevBtn.toggle(!currentPage.isMenu && !!currentPage.previousPage);
         nextBtn.toggle(!currentPage.isMenu && !!currentPage.nextPage && challengeDone);
     };
