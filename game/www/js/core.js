@@ -91,7 +91,14 @@ window.storybook = {};
             changePage("previous");
         });
 
-        targetPage = pages["menu0"];
+
+        if(startAtPageId && pages[startAtPageId]){
+            // DEBUG ONLY
+            targetPage = pages[startAtPageId];
+        }
+        else{
+            targetPage = pages["menu0"];
+        }
 
         onNewPage();
         transitionDone();
