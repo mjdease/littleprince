@@ -19,17 +19,31 @@ Page.prototype.States = {
     FAILED : 3
 };
 
+Page.prototype.setLeftTextStyle = function(x, y, width, color){
+    if(x != null) this.text[0].setX(x);
+    if(x != null) this.text[0].setX(x);
+    if(width != null) this.text[0].setWidth(width);
+    if(color != null) this.text[0].setFill(color);
+};
+
+Page.prototype.setRightTextStyle = function(x, y, width, color){
+    if(x != null) this.text[1].setX(x);
+    if(y != null) this.text[1].setY(y);
+    if(width != null) this.text[1].setWidth(width);
+    if(color != null) this.text[1].setFill(color);
+};
+
 Page.prototype.setPreviousPage = function(sectionId, pageNum){
     if(sectionId){
         this.previousPage = sectionId + pageNum;
     }
-}
+};
 
 Page.prototype.setNextPage = function(sectionId, pageNum){
     if(sectionId){
         this.nextPage = sectionId + pageNum;
     }
-}
+};
 
 Page.prototype.getState = function(){
     return this.state;
@@ -69,4 +83,4 @@ Page.prototype.update = function(){};
 //override this. accepts event object
 Page.prototype.onStageClick = function(e){
 
-}
+};

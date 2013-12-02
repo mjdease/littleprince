@@ -12,6 +12,22 @@
     // REQUIRED. set the section ID and page number of the next page, pass false if there is no next page
     page.setNextPage("earthIntro", 2);
 
+    // Set the position and color of the pages text blocks. Separate functions for the left and right blocks.
+    // arguments are x, y, width, and color where color is a hex string eg "#ffaa00",
+    // All arguments are optional, pass in null if you just want the default to be used
+    // Let me know if you need to customize any other properties!
+    // If you don't override them, the default properties are:
+    // x : 40 (left) 680 (right),
+    // y : 40,
+    // width : 560,
+    // fontFamily: "lp_BodyFont",
+    // fontSize: 24,
+    // fill: "black",
+    // lineHeight: 1.2
+    page.setLeftTextStyle(20, 200, null,"#ff0000");
+
+    page.setRightTextStyle(660, 60, null, "#ff00aa");
+
     // Pass in array of images in format:
     // [{name: "test", path: "assets/images/testimg.png"},
     //  {name: "test2", path: "assets/images/test2img.png"}]
@@ -21,7 +37,7 @@
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
         {name: "spriteimg", path: "assets/images/spritesheet.png"},
-        {name: "background", path: "assets/images/testbg.jpg"}
+        {name: "background", path: "assets/images/testbg.jpg"} // <---automatically used as page background
     ]);
 
     // Pass in path of narration audio (relative to index.html), playback is handled automatically.
