@@ -167,24 +167,75 @@ window.storybook = {};
             currentPage.onStageClick(e);
         });
         layers.staticBack.add(target);
+
+        stage.off(clickEvt);
+
         if(currentPage.text){
             for(var i = 0; i < currentPage.text.length; i++){
                 layers.staticFront.add(currentPage.text[i]);
             }
         }
-        if(currentPage.hasChallenge){
-            layers.staticFront.add(currentPage.challengeText);
+
+        if(currentPage.hasChallenge && images["hint"]){
+            currentPage.challengeStarted = false;
+            var hint = new K.Image({
+                image: images.hint,
+                visible:false
+            });
+            var challengeText = currentPage.challengeText.clone();
+            var hintSize = hint.getSize();
+            hint.setOffset(hintSize.width/2, hintSize.height);
+            layers.staticFront.add(hint);
+            layers.staticFront.batchDraw();
+
+            hint.on(clickEvt, function(e){
+                e.cancelBubble = true;
+                hint.setVisible(false);
+                layers.staticFront.batchDraw();
+
+                if(!currentPage.challengeStarted){
+                    currentPage.challengeStarted = true;
+                    currentPage.startChallenge();
+                }
+
+                stage.off(clickEvt);
+            });
+
+            challengeText.on(clickEvt, function(e){
+                e.cancelBubble = true;
+
+                if(hint.getVisible()) return;
+
+                var trigger = challengeText;
+                hint.setPosition(trigger.getX() + trigger.getWidth()/2, trigger.getY());
+                hint.setVisible(true);
+                layers.staticFront.batchDraw();
+
+                stage.on(clickEvt, function(){
+                    hint.setVisible(false);
+                    layers.staticFront.batchDraw();
+                    stage.off(clickEvt);
+                });
+            });
+
+            layers.staticFront.add(challengeText);
         }
+
         layers.staticFront.batchDraw();
+        layers.staticBack.batchDraw();
+
         if(narration != null){
             if(isPhonegap) narration.release();
             narration = null;
         }
+
         if(currentPage.narrationSrc){
             narration = loadNarration(currentPage.narrationSrc);
         }
+
         currentPage.initPage(images, stage, layers);
         updateLoop.start();
+
         transitionState++;
         if(transitionState == 2){
             startPage();

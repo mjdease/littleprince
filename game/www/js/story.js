@@ -101,15 +101,15 @@ var challengeWords = {
 };
 
 //TODO - move fix x/y coordinates to cover the word on the page
-challengeWords.earthIntro[1] = {word: "manoeuvre", x:0, y:0};
-challengeWords.asteroids.b612[0] = {word: "weeding", x:0, y:0};
-challengeWords.asteroids.b612[2] = {word: "spruce up", x:0, y:0};
-challengeWords.asteroids.b325[1] = {word: "entrap", x:0, y:0};
-challengeWords.asteroids.b329[1] = {word: "coordinated", x:0, y:0};
-challengeWords.earthEnding[1] = {word: "think outside the box", x:0, y:0};
-challengeWords.earthEnding[3] = {word: "tame", x:0, y:0};
-challengeWords.earthEnding[5] = {word: "quench", x:0, y:0};
-challengeWords.earthEnding[8] = {word: "sequence", x:0, y:0};
+challengeWords.earthIntro[1] = {word: "manoeuvre", x:400, y:400};
+challengeWords.asteroids.b612[0] = {word: "weeding", x:400, y:400};
+challengeWords.asteroids.b612[2] = {word: "spruce up", x:400, y:400};
+challengeWords.asteroids.b325[1] = {word: "entrap", x:400, y:400};
+challengeWords.asteroids.b329[1] = {word: "coordinated", x:400, y:400};
+challengeWords.earthEnding[1] = {word: "think outside the box", x:400, y:400};
+challengeWords.earthEnding[3] = {word: "tame", x:400, y:400};
+challengeWords.earthEnding[5] = {word: "quench", x:400, y:400};
+challengeWords.earthEnding[8] = {word: "sequence", x:400, y:400};
 
 var story = {};
 
@@ -125,9 +125,9 @@ var story = {};
                     page.push(getStoryText(volume[i+1], 680));
                     story[volumeName].push(page);
                 }
-                var challengeWord = challengeWords[volumeName][i];
-                if(challengeWord){
-                    challengeWords[volumeName][i] = getStoryText(challengeWord.word, challengeWord.x, challengeWord.y, "red");
+                var word = challengeWords[volumeName][i];
+                if(word){
+                    challengeWords[volumeName][i] = getChallengeText(word.word, word.x, word.y, "red");
                 }
             }
         }
@@ -143,27 +143,39 @@ var story = {};
                         page.push(getStoryText(chapter[j+1], 680));
                         story[volumeName][chapterName].push(page);
                     }
-                    var challengeWord = challengeWords[volumeName][chapterName][j];
-                    if(challengeWord){
-                        challengeWords[volumeName][chapterName][j] = getStoryText(challengeWord.word, challengeWord.x, challengeWord.y, "red");
+                    var word = challengeWords[volumeName][chapterName][j];
+                    if(word){
+                        challengeWords[volumeName][chapterName][j] = getChallengeText(word.word, word.x, word.y, "red");
                     }
                 }
             }
         }
     }
 
-    function getStoryText(text, x, y, color){
-        var textY = (typeof y != "number") ? 95 : y;
+    function getStoryText(text, x){
         return new Kinetic.Text({
             text : text,
             x : x,
-            y : textY,
+            y : 95,
             width : 560,
             fontFamily: "lp_BodyFont",
             fontSize: 24,
-            fill: color || "black",
+            fill: "black",
             lineHeight: 1.2,
-            listening:false
+            listening: false
+        });
+    }
+
+    function getChallengeText(text, x, y, color){
+        return new Kinetic.Text({
+            text : text,
+            x : x,
+            y : y,
+            fontFamily: "lp_BodyFont",
+            fontSize: 24,
+            fill: color || "red",
+            lineHeight: 1.2,
+            listening: true
         });
     }
 })();

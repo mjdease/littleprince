@@ -9,7 +9,8 @@
 
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/spritesheet.png"}
+        {name: "spriteimg", path: "assets/images/spritesheet.png"},
+        {name: "hint", path: "assets/images/testHint.png"}
     ]);
 
     page.setNarration("assets/sound/test.mp3");
@@ -27,7 +28,9 @@
 
     page.startPage = function(){
         sprite.start();
+    };
 
+    page.startChallenge = function(){
         sprite.on(clickEvt, onSpriteClick);
 
         page.setState(page.States.PLAYING);

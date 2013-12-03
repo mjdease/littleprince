@@ -32,8 +32,9 @@
     // [{name: "test", path: "assets/images/testimg.png"},
     //  {name: "test2", path: "assets/images/test2img.png"}]
     // these images get loaded before the page is initialized
-    // IMPORTANT: 'background' is a reserved name and will automatically
-    // be used for the page background. Do not name an image 'background' if it's not the background image.
+    // IMPORTANT: 'background' and 'hint' are reserved names and will automatically
+    // be used for the page background and challenge hints respectively.
+    // Do not name an image 'background' or 'hint' if it's not used for its purpose.
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
         {name: "spriteimg", path: "assets/images/spritesheet.png"},
@@ -68,11 +69,16 @@
         layers.dynBack.add(sprite);
     };
 
-    // Page transition has completed and the game/animations should start now
+    // Page transition has completed and non-challenge animations/listeners should start now
     // Event listeners should be bound in here or later - not in the initPage function!
     page.startPage = function(){
         sprite.start();
+    };
 
+    // CHALLENGE PAGES ONLY
+    // The user has tapped on the vocab word and chosen to start the game
+    // Start the game here, at minimum put it into the playing state.
+    page.startChallenge = function(){
         sprite.on("click", onSpriteClick);
 
         // Available states are:
@@ -95,7 +101,7 @@
             return;
         }
 
-    }
+    };
 
     // Called when the user clicks on an _empty_ part of the game.
     // ANY object in the way will prevent this event from firing
