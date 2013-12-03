@@ -122,6 +122,7 @@ window.storybook = {};
         }
         stage.off(clickEvt);
         if(currentPage){
+            currentPage.setState(currentPage.States.UNINITIALIZED);
             currentPage.destroyPage();
         }
 
