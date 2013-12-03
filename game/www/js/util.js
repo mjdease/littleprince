@@ -45,7 +45,6 @@ function getStoryPageById(storyObj, id, index){
     return new Kinetic.Sprite(options);
 }
 
-
 function randomInt(min, max){
     return Math.round(min + Math.random() * (max-min));
 }
@@ -94,4 +93,39 @@ function HSVtoRGB(h, s, v) {
         g: Math.floor(g * 255),
         b: Math.floor(b * 255)
     };
+}
+
+// Sound class, abstracts android and html audio
+function Sound(path, autoplay, loop){
+    this.pg = isPhonegap();
+    this.loop = loop;
+    this.path = getPath(path);
+
+    this.onStatus = function(status){
+        if(this.pg && this.loop && status == Media.MEDIA_STOPPED){
+            this.raw.play();
+        }
+    };
+
+    if(this.pg){
+        this.raw = new Media(this.path, null, null, this.onStatus);
+        if(autoplay){
+            this.raw.play();
+        }
+    }
+    else{
+        this.raw = new Howl({
+            urls : [this.path],
+            autoplay : autoplay,
+            loop : loop
+        });
+    }
+
+    this.play = function(){
+        this.raw.play();
+    };
+
+    this.stop = function(){
+        this.raw.stop();
+    }
 }

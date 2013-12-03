@@ -1,5 +1,6 @@
 (function(){
     var sprite;
+    var soundeffect;
 
     var page = new Page("earthEnding", 8);
 
@@ -23,6 +24,9 @@
             animation: "testAnim",
             frameRate: 14
         }, 200, 150, {testAnim: 9});
+
+        soundeffect = new Sound("assets/sound/test.mp3", false, false);
+
         layers.dynBack.add(sprite);
     };
 
@@ -44,6 +48,7 @@
 
     function onSpriteClick(e){
         sprite.stop();
+        soundeffect.play();
         page.challengeComplete();
     }
 
