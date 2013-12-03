@@ -81,6 +81,9 @@ Page.prototype.startPage = function(){};
 Page.prototype.startChallenge = function(){};
 
 //override this.
+Page.prototype.destroyPage = function(){};
+
+//override this.
 //accepts frame, stage, and layers object arguments
 Page.prototype.update = function(){};
 

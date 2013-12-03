@@ -1,6 +1,6 @@
 (function(){
     var sprite;
-    var soundeffect;
+    var sounds = {};
 
     var page = new Page("earthEnding", 8);
 
@@ -25,7 +25,7 @@
             frameRate: 14
         }, 200, 150, {testAnim: 9});
 
-        soundeffect = new Sound("assets/sound/test.mp3", false, false);
+        sounds.soundeffect = new Sound("assets/sound/test.mp3", false, false);
 
         layers.dynBack.add(sprite);
     };
@@ -46,9 +46,16 @@
         }
     };
 
+    page.destroyPage = function(){
+        sprite.off(clickEvt);
+
+        sounds.soundeffect.destroy();
+        delete sounds.soundeffect;
+    };
+
     function onSpriteClick(e){
         sprite.stop();
-        soundeffect.play();
+        sounds.soundeffect.play();
         page.challengeComplete();
     }
 

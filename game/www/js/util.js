@@ -127,5 +127,15 @@ function Sound(path, autoplay, loop){
 
     this.stop = function(){
         this.raw.stop();
-    }
+    };
+
+    this.destroy = function(){
+        this.stop();
+        if(this.pg){
+            this.raw.release();
+        }
+        else{
+            this.raw.unload();
+        }
+    };
 }

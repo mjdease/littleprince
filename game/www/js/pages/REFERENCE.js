@@ -2,6 +2,11 @@
 (function(){
     // local variables defined here. not accesible from any other file.
     var sprite;
+    // memory management:
+    // local variables are never released so if you want to release memory
+    // when leaving the page declare a local object and set properties as you need
+    // then use the 'delete' keyword on properies when they're no longer needed.
+    var sounds = {};
 
     // REQUIRED. Create new page object, passing in the section id, page number, and if it's a menu
     var page = new Page("earthIntro", 1,  false);
@@ -66,6 +71,11 @@
             frameRate: 14
         }, 200, 150, {testAnim: 9});
 
+        // Sound class, create new instances for each sound you need.
+        // Pass in path, autoplay, and loop.
+        // Current methods are: play, stop, and destroy.
+        sounds.tap = new Sound("assets/sound/test.mp3", false, false);
+
         layers.dynBack.add(sprite);
     };
 
@@ -79,7 +89,8 @@
     // The user has tapped on the vocab word and chosen to start the game
     // Start the game here, at minimum put it into the playing state.
     page.startChallenge = function(){
-        sprite.on("click", onSpriteClick);
+        // the clickEvt will be "click" on desktop, or "tap" on mobile
+        sprite.on(clickEvt, onSpriteClick);
 
         // Available states are:
         // page.States.UNINITIALIZED - default state of all pages
@@ -109,6 +120,17 @@
     // and allow the click through to the stage set the listening property to false
     page.onStageClick = function(e){
         //handle the click event however you want
+    };
+
+    // Called when leaving page. Stop sounds, listeners, etc here.
+    // Release as much memory as possible here, see memory management note at top;
+    page.destroyPage = function(){
+        sprite.off(clickEvt);
+        // `delete sprite` doesn't do anything as sprite isn't a property of an object
+        // sprite will survive between page changes
+
+        sounds.tap.destroy();
+        delete sounds.tap;
     };
 
     //define any functions you need here

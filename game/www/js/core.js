@@ -115,8 +115,21 @@ window.storybook = {};
     }
 
     var onNewPage = function(){
+        // destroy old page
+        if(narration){
+            narration.destroy();
+            narration = null;
+        }
+        stage.off(clickEvt);
+        if(currentPage){
+            currentPage.destroyPage();
+        }
+
+        // set new page
         currentPage = targetPage;
         targetPage = null;
+
+        // initalize new page
         if(currentPage.requiredImages){
             loadImages(currentPage.requiredImages, initPage);
         }
@@ -167,8 +180,6 @@ window.storybook = {};
             currentPage.onStageClick(e);
         });
         layers.staticBack.add(target);
-
-        stage.off(clickEvt);
 
         if(currentPage.text){
             for(var i = 0; i < currentPage.text.length; i++){
@@ -223,11 +234,6 @@ window.storybook = {};
 
         layers.staticFront.batchDraw();
         layers.staticBack.batchDraw();
-
-        if(narration != null){
-            if(isPhonegap) narration.release();
-            narration = null;
-        }
 
         if(currentPage.narrationSrc){
             narration = loadNarration(currentPage.narrationSrc);
@@ -330,16 +336,7 @@ window.storybook = {};
     };
 
     var loadNarration = function(path){
-        if(isPhonegap){
-            return new Media(path);
-        }
-        else{
-            return new Howl({
-                urls : [path],
-                autoplay : false,
-                loop : false
-            });
-        }
+        return new Sound(path, false, false);
     }
 })(window.storybook, Kinetic, jQuery);
 
