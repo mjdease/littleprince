@@ -1,11 +1,11 @@
 @font-face {
     font-family: 'lp_TitleFont';
-    src: url('assets/font/RetroElectro.ttf');
+    src: url('../assets/font/RetroElectro.ttf');
 }
 
 @font-face {
     font-family: 'lp_BodyFont';
-    src: url('assets/font/NoBulliesAllowed.ttf');
+    src: url('../assets/font/NoBulliesAllowed.ttf');
 }
 
 * {
