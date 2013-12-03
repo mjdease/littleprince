@@ -33,7 +33,7 @@ body {
     overflow:hidden;
 }
 
-#game-stage, #page-nav, #page-texture{
+#game-stage, #page-nav{
     position:absolute;
     top:0;
     left:0;
