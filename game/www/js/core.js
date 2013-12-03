@@ -11,7 +11,8 @@ window.storybook = {};
     var book;
     var narration;
     var asteroidProgress = {};
-
+    var accelerometer = {x:0,y:0,z:0};
+    var accWatchId = null;
 
     app.initialize = function(){
         if(isPhonegap){
@@ -260,6 +261,33 @@ window.storybook = {};
             updateButtonVisibility();
         }
     }
+
+    app.initializeAccelerometer = function(){
+        if(navigator.accelerometer){
+            accWatchId = navigator.accelerometer.watchAcceleration(function(acc){
+                accelerometer = acc;
+            }, function(){}, {frequency:100});
+        }
+        else{
+            var getFakeAccelerometer = startFakeAccelerometer();
+            accWatchId =setInterval(function(){accelerometer = getFakeAccelerometer()}, 100);
+        }
+    };
+
+    app.getAccelerometer = function(){
+        return accelerometer;
+    };
+
+    app.destroyAccelerometer = function(){
+        if(navigator.accelerometer){
+            navigator.accelerometer.clearWatch(accWatchId);
+        }
+        else{
+            clearInterval(accWatchId);
+        }
+        accWatchId = null;
+        accelerometer = {x:0,y:0,z:0};
+    };
 
     app.getAsteroidProgress = function(){
         return asteroidProgress;

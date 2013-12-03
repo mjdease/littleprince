@@ -13,6 +13,7 @@
     page.setNarration("assets/sound/test.mp3");
 
     page.initPage = function(images, stage, layers){
+        storybook.initializeAccelerometer();
         sprite = storybook.defineSprite({
             x:300,
             y:500,
@@ -35,6 +36,15 @@
         if(page.getState() != page.States.PLAYING){
             return;
         }
+        //gets accelerometer values
+        //left: x+, right: x-, down: y+, up: y-
+        //magnitude ranges from -10 to 10. Ignore z.
+        //storybook.getAccelerometer();
+    };
+
+    page.destroyPage = function(){
+        //destroy accelerometer when the challenge is complete
+        storybook.destroyAccelerometer();
     };
 
     function onSpriteClick(e){

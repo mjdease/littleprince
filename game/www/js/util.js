@@ -45,6 +45,27 @@ function getStoryPageById(storyObj, id, index){
     return new Kinetic.Sprite(options);
 }
 
+function startFakeAccelerometer(){
+    var acc = {x:0,y:0,z:0};
+    $(document).keydown(function(e){
+        if (e.which == 37 && acc.x < 10) { // left
+            acc.x += 0.1;
+        }
+        if (e.which == 38 && acc.y > -10) { // up
+            acc.y -= 0.1;
+        }
+        if (e.which == 39 && acc.x > -10) { // right
+            acc.x -= 0.1;
+        }
+        if (e.which == 40 && acc.y < 10) { // down
+            acc.y += 0.1;
+        }
+    });
+    return function(){
+        return acc;
+    };
+}
+
 function randomInt(min, max){
     return Math.round(min + Math.random() * (max-min));
 }
