@@ -15,10 +15,10 @@
 
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/asteroid612/spritesheet_baobabv1.png"},
-        {name: "spritehole", path: "assets/images/asteroid612/hole.png"},
-        {name: "background", path: "assets/images/asteroid612/ground.png"},
-        {name: "spriteflower", path: "assets/images/asteroid612/spritesheet_flowerv1.png"},
+        {name: "spriteimg", path: "assets/images/asteroids/b612/spritesheet_baobabv1.png"},
+        {name: "spritehole", path: "assets/images/asteroids/b612/hole.png"},
+        {name: "background", path: "assets/images/asteroids/b612/ground.png"},
+        {name: "spriteflower", path: "assets/images/asteroids/b612/spritesheet_flowerv1.png"},
         {name: "hint", path: "assets/images/testHint.png"}
     ]);
 

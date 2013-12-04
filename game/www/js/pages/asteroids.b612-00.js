@@ -8,7 +8,7 @@
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
         {name: "spriteimg", path: "assets/images/spritesheet.png"},
-        {name: "background", path: "assets/images/asteroid612/ground.png"}
+        {name: "background", path: "assets/images/asteroids/b612/ground.png"}
     ]);
 
     page.setNarration("assets/sound/test.mp3");
