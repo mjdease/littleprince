@@ -21,7 +21,7 @@ Page.prototype.States = {
 
 Page.prototype.setLeftTextStyle = function(x, y, width, color){
     if(x != null) this.text[0].setX(x);
-    if(x != null) this.text[0].setX(x);
+    if(y != null) this.text[0].setY(y);
     if(width != null) this.text[0].setWidth(width);
     if(color != null) this.text[0].setFill(color);
 };
