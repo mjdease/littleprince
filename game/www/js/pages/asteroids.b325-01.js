@@ -1,9 +1,11 @@
 (function(){
     var lay;
+    var lastEndCheck = 0;
+    var checkThreshold = 500;
     var prince;
     var princeSpeed = 50;
     var rat;
-    var ratSpeed = 30;
+    var ratSpeed = 2 * 30;
     var gridSize = 72;
     var gridStartX = 228;
     var gridStartY = 274;
@@ -17,6 +19,17 @@
                 [1,1,1,1,1,1,1,1,0,1,1,1,1,1,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
     var gridCenters = [];
+    var ratPath = [{x: 7, y:1, dir:"right"},
+                   {x: 9, y:1, dir:"down"},
+                   {x: 9, y:5, dir:"right"},
+                   {x:13, y:5, dir:"up"},
+                   {x:13, y:3, dir:"left"},
+                   {x:12, y:3, dir:"up"},
+                   {x:12, y:1, dir:"right"},
+                   {x:14, y:1}];
+    var ratProgress = 0;
+    var ratTarget;
+    var ratDir;
 
     var page = new Page("asteroids.b325", 1, false);
 
@@ -79,7 +92,13 @@
 
         var princeStart = gridCenters[5][0];
         prince.setPosition(princeStart.x, princeStart.y);
-        lay.dynFront.add(prince);
+
+        var ratIndex = ratPath[ratProgress];
+        var ratStart = gridCenters[ratIndex.y][ratIndex.x];
+        rat.setPosition(ratStart.x, ratStart.y);
+        setNextRatTarget();
+
+        lay.dynFront.add(prince).add(rat);
 
         storybook.initializeAccelerometer();
     };
@@ -92,17 +111,17 @@
         //left: x+, right: x-, down: y+, up: y-
         //magnitude ranges from -10 to 10. Ignore z.
         movePrince(storybook.getAccelerometer(), frame.timeDiff);
+        moveRat(frame.timeDiff);
+        if(frame.time - lastEndCheck > checkThreshold){
+            lastEndCheck = frame.time;
+            checkEnd();
+        }
     };
 
     page.destroyPage = function(){
         //destroy accelerometer when the challenge is complete
         storybook.destroyAccelerometer();
     };
-
-    function onSpriteClick(e){
-        sprite.stop();
-        page.challengeComplete();
-    }
 
     function makeGrid(){
         var halfTile = gridSize / 2;
@@ -165,6 +184,101 @@
             }
         }
         prince.move(xDiff, yDiff);
+    }
+
+    function moveRat(timeDiff){
+        var xDiff = 0;
+        var yDiff = 0;
+        var pos = rat.getPosition();
+        switch(ratDir){
+            case "right":
+                xDiff = ratSpeed * timeDiff/1000;
+                if(pos.x + xDiff > ratTarget.x){
+                    xDiff = ratTarget.x - pos.x;
+                    setNextRatTarget();
+                }
+                break;
+            case "left":
+                xDiff = -1 * ratSpeed * timeDiff/1000;
+                if(pos.x + xDiff < ratTarget.x){
+                    xDiff = ratTarget.x - pos.x;
+                    setNextRatTarget();
+                }
+                break;
+            case "up":
+                yDiff = -1 * ratSpeed * timeDiff/1000;
+                if(pos.y + yDiff < ratTarget.y){
+                    yDiff = ratTarget.y - pos.y;
+                    setNextRatTarget();
+                }
+                break;
+            case "down":
+                yDiff = ratSpeed * timeDiff/1000;
+                if(pos.y + yDiff > ratTarget.y){
+                    yDiff = ratTarget.y - pos.y;
+                    setNextRatTarget();
+                }
+                break;
+        }
+        rat.move(xDiff, yDiff);
+    }
+
+    function setNextRatTarget(){
+        if(ratProgress == ratPath.length - 1){
+            checkEnd();
+            return;
+        }
+        ratDir = ratPath[ratProgress].dir;
+        ratProgress++;
+        ratTarget = gridCenters[ratPath[ratProgress].y][ratPath[ratProgress].x];
+    }
+
+    function checkEnd(){
+        var ratPos = rat.getPosition();
+        var ratTile = getTile(ratPos);
+        if(ratTile.y == 1 && ratTile.x == 14){
+            finishGame("lose");
+        }
+
+        var distance = dist(rat, prince);
+        if(distance > 400){
+            prince.setIndex(0);
+        }
+        else if(distance > 150){
+            prince.setIndex(1);
+        }
+        else{
+            prince.setIndex(2);
+        }
+
+        if(distance < 72){
+            finishGame("win");
+        }
+    }
+
+    function finishGame(result){
+        if(result == "win"){
+            lay.dynFront.add(new Kinetic.Text({
+                text: "You caught the rat!",
+                fill: "red",
+                fontSize: 30,
+                align: "center",
+                y: 600,
+                x: 1280/2
+            }));
+            page.challengeComplete();
+        }
+        else{
+            lay.dynFront.add(new Kinetic.Text({
+                text: "The rat escaped!",
+                fill: "red",
+                fontSize: 30,
+                align: "center",
+                y: 600,
+                x: 1280/2
+            }));
+            page.setState(page.States.FAILED);
+        }
     }
 
     storybook.registerPage(page);
