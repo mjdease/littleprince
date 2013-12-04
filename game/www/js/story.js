@@ -100,10 +100,10 @@ var challengeWords = {
 };
 
 //TODO - move fix x/y coordinates to cover the word on the page
-challengeWords.earthIntro[1] = {word: "manoeuvre", x:807, y:124};
-challengeWords.asteroids.b612[0] = {word: "weeding", x:400, y:400};
+challengeWords.earthIntro[1] = {word: "manoeuvre", x:712, y:124};
+challengeWords.asteroids.b612[0] = {word: "weeding", x:1064, y:297};
 challengeWords.asteroids.b612[2] = {word: "spruce up", x:680, y:181};
-challengeWords.asteroids.b325[1] = {word: "entrap", x:400, y:400};
+challengeWords.asteroids.b325[1] = {word: "entrap", x:746, y:300};
 challengeWords.asteroids.b329[1] = {word: "coordinated", x:1097, y:412};
 challengeWords.earthEnding[1] = {word: "think outside the box", x:400, y:400};
 challengeWords.earthEnding[3] = {word: "tame", x:400, y:400};
