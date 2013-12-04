@@ -19,7 +19,7 @@
         {name: "spritehole", path: "assets/images/asteroids/b612/hole.png"},
         {name: "background", path: "assets/images/asteroids/b612/ground.png"},
         {name: "spriteflower", path: "assets/images/asteroids/b612/spritesheet_flowerv1.png"},
-        {name: "hint", path: "assets/images/testHint.png"}
+        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
     ]);
 
     page.setNarration("assets/sound/test.mp3");
@@ -46,8 +46,6 @@
             }, 767, 642, {baobabAnim: 12});
             layers.dynBack.add(baobab[i]);
             baobab[i].setScale(0.5);
-
-            baobab[i].start(); //start baobab animation
         }
         //if baobab is a full tree then stop
         baobab[0].afterFrame(9, function() {
@@ -58,6 +56,7 @@
             baobab[1].stop();
         });
 
+        //hole animation
         for (var s=0; s<3; s++){
             hole[s] = storybook.defineSprite({
                 x:25,
@@ -73,36 +72,31 @@
         flower.afterFrame(7, function() {
             flower.stop();
         });
-
-        console.log(baobab[0]);
-        console.log(baobab[1]);
     };
 
     page.startPage = function(){
-        flower.start();
-
         baobab[0].move(0, 60);
         baobab[1].move(400,0);
-
         for(var x=0; x<3; x++){
             //hide all holes and move to bottom
             hole[x].hide();
             hole[x].moveToBottom();
         }
-
-        baobab[0].on(clickEvt, function(){seedRemove("baobab0")});
-        baobab[1].on(clickEvt, function(){seedRemove("baobab1")});
-
         hole[0].move(400,60);
         hole[1].move(800,1);
         hole[2].move(110,-25); //flower hole position
 
-        flower.on(clickEvt, function(){seedRemove("flower")});
         page.setState(page.States.PLAYING);
     };
 
     page.startChallenge = function(){
-        sprite.on(clickEvt, onSpriteClick);
+        flower.start();
+
+        baobab[0].start(); //start baobab animation
+        baobab[1].start();
+        baobab[0].on(clickEvt, function(){seedRemove("baobab0")});
+        baobab[1].on(clickEvt, function(){seedRemove("baobab1")});
+        flower.on(clickEvt, function(){seedRemove("flower")});
 
         page.setState(page.States.PLAYING);
     };
@@ -117,7 +111,6 @@
                 remove = false;
             }
         }
-
         if(removeCount > 1){
             page.setState(page.States.PASSED);
         }
@@ -217,7 +210,6 @@
                 }
             });
         }
-
         if(seedType == "flower"){
             count[2] = 0;
             flower.on(clickEvt, function() {
