@@ -7,6 +7,12 @@
 
     page.setNarration("assets/sound/test.mp3");
 
+    page.setRequiredAssets([
+        {name: "spritehole", path: "assets/images/asteroid612/hole.png"},
+        {name: "spriteimg", path: "assets/images/spritesheet.png"},
+        {name: "background", path: "assets/images/asteroid612/ground.png"}
+    ]);
+
     page.initPage = function(images, stage, layers){
 
     };

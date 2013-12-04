@@ -27,7 +27,7 @@ var storyTexts = {
             "Apart from eating little bushes, the prince also asked if a sheep also ate flowers.\n\n“A sheep,” I answered, “eats anything it finds in its reach.”\n\n“Even flowers that have thorns?”\n\n“Yes, even flowers that have thorns.”\n\n“Oh!” he said close to tears.\n\nAnd then he told me of a special flower. The most special flower in the entire world. One with a lot of petals. A flower that grew nowhere but on his planet.\n",
             "“If someone loves a flower, the way I love my flower, all millions and millions of stars will shine bright. But if the sheep eats the flower, then all the stars will darken.”\n\nI did not like to see my friend sad and so I said:\n\n“Why don’t I draw something to protect your flower from the sheep?”\n\nBut the little prince did not reply. \n",
             "On the morning the prince left his planet, he had wanted everything to be in perfect order. \n\nThe prince owned two volcanoes that he used to help heat his breakfast that morning. \n\nHe also owned a third volcano, but that one was damaged. \n",
-            "After his breakfast, the prince started to spruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
+            "After his breakfast, the prince started to \nspruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
         ],
         b325 : [
             "The prince found himself on a planet that was ruled by a king.\n\nAll dressed in royal purple and white fur, the king was seated upon a throne that was both simple and magnificent.\n",
@@ -103,7 +103,7 @@ var challengeWords = {
 //TODO - move fix x/y coordinates to cover the word on the page
 challengeWords.earthIntro[1] = {word: "manoeuvre", x:400, y:400};
 challengeWords.asteroids.b612[0] = {word: "weeding", x:400, y:400};
-challengeWords.asteroids.b612[2] = {word: "spruce up", x:400, y:400};
+challengeWords.asteroids.b612[2] = {word: "spruce up", x:680, y:124};
 challengeWords.asteroids.b325[1] = {word: "entrap", x:400, y:400};
 challengeWords.asteroids.b329[1] = {word: "coordinated", x:400, y:400};
 challengeWords.earthEnding[1] = {word: "think outside the box", x:400, y:400};
