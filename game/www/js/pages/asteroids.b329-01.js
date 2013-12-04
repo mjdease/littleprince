@@ -59,7 +59,6 @@
     };
 
     page.startPage = function(){
-
         lampSprite.start();
     };
 
@@ -70,7 +69,7 @@
         lampSprite.stop();
         lampSprite.destroy();
 
-        lampOffImg.on(clickEvt, function(){lampOffImg.setImage(lampOnImg)});
+        lampOffImg.on(clickEvt, onLampClick);
 
     }
 
@@ -91,8 +90,9 @@
 
     };
 
-    function onSpriteClick(e){
+    function onLampClick(e){
         //sprite.stop();
+        lampOffImg.setImage(lampOnImg);
         page.challengeComplete();
     }
 
