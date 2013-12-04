@@ -70,10 +70,8 @@
         lampSprite.stop();
         lampSprite.destroy();
 
+        lampOffImg.on(clickEvt, function(){lampOffImg.setImage(lampOnImg)});
 
-
-        lampOffImg.on(clickEvt, function(){lampOffImg.setImage(lampOnImg)}); 
-        
     }
 
     page.update = function(frame, stage, layers){
@@ -91,9 +89,6 @@
             return;
         }
 
-        // function t(){return function(){return 9}};
-        // t()()
-        
     };
 
     function onSpriteClick(e){

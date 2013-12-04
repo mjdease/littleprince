@@ -119,6 +119,7 @@
     };
 
     page.destroyPage = function(){
+        ratProgress = 0;
         //destroy accelerometer when the challenge is complete
         storybook.destroyAccelerometer();
     };
