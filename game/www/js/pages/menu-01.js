@@ -62,22 +62,21 @@
             }
         }
         if(score == asteroidCount){
-
-         var earthS = new Kinetic.Image({
-            image: images.earthS,
-            x : 380,
-            y : 140
-        });
-        layers.dynBack.add(earthS);
-
+            nextBtn = new Kinetic.Image({
+                image: images.earthS,
+                x : 380,
+                y : 140
+            });
+            layers.dynBack.add(nextBtn);
         }
-        else
-        var earth = new Kinetic.Image({
-            image: images.earth,
-            x : 380,
-            y : 140
-        });
-        layers.dynBack.add(earth);
+        else{
+            var earth = new Kinetic.Image({
+                image: images.earth,
+                x : 380,
+                y : 140
+            });
+            layers.dynBack.add(earth);
+        }
     };
 
     page.startPage = function(){
