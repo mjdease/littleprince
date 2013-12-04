@@ -15,7 +15,7 @@
         {name: "howtoGame", path:"assets/images/startScreen_menu-tutorial.png"},
         {name: "glossary", path:"assets/images/startScreen_menu-glossary.png"},
         {name: "title", path:"assets/images/startScreen_title.png"},
-        {name: "background", path:"assets/images/startScreen_bg.png"}
+        {name: "background", path:"assets/images/startScreen_bg.jpg"}
     ]);
 
     page.initPage = function(images, stage, layers){

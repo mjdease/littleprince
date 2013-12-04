@@ -16,7 +16,7 @@
     page.setRightTextStyle(null, null, null,"#ffffff");
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/asteroids/b329/nightTime.png"},
+        {name: "background", path: "assets/images/asteroids/b329/nightTime.jpg"},
         {name: "planetImg", path: "assets/images/asteroids/b329/planet.png"},
         {name: "lampImg", path: "assets/images/asteroids/b329/lamp.png"},
         {name: "lampOffImg", path: "assets/images/asteroids/b329/lampOff.png"},

@@ -38,7 +38,7 @@
     page.setNextPage("menu", 1);
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/asteroids/b325/1_ground.png"},
+        {name: "background", path: "assets/images/asteroids/b325/1_ground.jpg"},
         {name: "hint", path: "assets/images/asteroids/b325/1_hint.png"},
         {name: "prince_s", path: "assets/images/asteroids/b325/1_prince_spritesheet.png"},
         {name: "atmos", path: "assets/images/asteroids/b325/1_atmosphereOverlay.png"},

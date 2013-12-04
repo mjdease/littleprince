@@ -19,7 +19,7 @@
         {name: "test", path: "assets/images/testimg.png"},
         {name: "spriteimg", path: "assets/images/asteroids/b612/spritesheet_baobabv1.png"},
         {name: "spritehole", path: "assets/images/asteroids/b612/hole.png"},
-        {name: "background", path: "assets/images/asteroids/b612/ground.png"},
+        {name: "background", path: "assets/images/asteroids/b612/ground.jpg"},
         {name: "spriteflower", path: "assets/images/asteroids/b612/spritesheet_flowerv1.png"},
         {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
     ]);
