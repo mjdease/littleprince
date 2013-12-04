@@ -2,7 +2,7 @@ var storyTexts = {
     earthIntro : [
         "My name is of no importance. Really it is of no importance. And no… that is not my name. My name is of no importance because this story is not about me.",
         "This story is about my good friend the prince. Very small in size and very curious by nature. The little prince was most curious about grown-ups.  Grown-ups like a child’s mother and father. Grown-ups like me.",
-        "As a grown-up, I lived my life alone without anyone that I could really talk to, until I had an accident with my plane in the Desert of the Sahara, six years ago.",
+        "As a grown-up, I lived my life alone without \nanyone that I could really talk to, until I had an accident with my plane in the Desert of the Sahara, six years ago.",
         "One of the engines had failed and I was forced to manoeuvre my plane from the sky and land safely on the sandy grounds of the desert.",
         "Something was broken in my engine. With  no one around to help me, I set out to do all the repairs alone. ",
         "I was a thousand miles from people just like me and there was hardly any drinking water to last a week. My first night, I went to sleep on the sand. I was lonelier than a ship far away at sea.",
@@ -100,11 +100,11 @@ var challengeWords = {
 };
 
 //TODO - move fix x/y coordinates to cover the word on the page
-challengeWords.earthIntro[1] = {word: "manoeuvre", x:400, y:400};
+challengeWords.earthIntro[1] = {word: "manoeuvre", x:807, y:124};
 challengeWords.asteroids.b612[0] = {word: "weeding", x:400, y:400};
 challengeWords.asteroids.b612[2] = {word: "spruce up", x:680, y:181};
 challengeWords.asteroids.b325[1] = {word: "entrap", x:400, y:400};
-challengeWords.asteroids.b329[1] = {word: "coordinated", x:400, y:400};
+challengeWords.asteroids.b329[1] = {word: "coordinated", x:1097, y:412};
 challengeWords.earthEnding[1] = {word: "think outside the box", x:400, y:400};
 challengeWords.earthEnding[3] = {word: "tame", x:400, y:400};
 challengeWords.earthEnding[5] = {word: "quench", x:400, y:400};

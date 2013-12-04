@@ -12,6 +12,9 @@
 
     page.setNextPage("menu", 1);
 
+    page.setLeftTextStyle(null, null, null,"#ffffff");
+    page.setRightTextStyle(null, null, null,"#ffffff");
+
     page.setRequiredAssets([
         {name: "background", path: "assets/images/asteroids/b329/nightTime.png"},
         {name: "planetImg", path: "assets/images/asteroids/b329/planet.png"},
@@ -87,7 +90,6 @@
         if(page.getState() != page.States.PLAYING){
             return;
         }
-
     };
 
     function onLampClick(e){

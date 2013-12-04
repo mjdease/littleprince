@@ -7,10 +7,13 @@
 
     page.setNarration("assets/sound/test.mp3"),
 
-   page.setRequiredAssets([
-    //{name: "background", path: "assets/images/earthIntro/page1.jpg"} 
-    {name: "spritePage3", path: "assets/images/earthIntro/spritePage3.jpg"}
-]);
+    page.setLeftTextStyle(null, null, null,"#ffffff");
+    page.setRightTextStyle(null, null, null,"#ffffff");
+
+    page.setRequiredAssets([
+        //{name: "background", path: "assets/images/earthIntro/page1.jpg"}
+        {name: "spritePage3", path: "assets/images/earthIntro/spritePage3.jpg"}
+    ]);
 
 
     page.initPage = function(images, stage, layers){

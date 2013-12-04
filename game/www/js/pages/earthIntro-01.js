@@ -20,6 +20,9 @@
 
     page.setNextPage("earthIntro", 2);
 
+    page.setLeftTextStyle(null, null, null,"#ffffff");
+    page.setRightTextStyle(null, null, null,"#ffffff");
+
     page.setRequiredAssets([
         {name: "planeImg", path: "assets/images/earthIntro/plane.png"},
         {name: "runwayImg", path: "assets/images/earthIntro/runway.png"},
@@ -170,7 +173,7 @@
         layers.staticFront.add(dButton);
     };
 
-    
+
     page.startPage = function(){
         planeSprite.start();
     };
@@ -188,17 +191,17 @@
 
           planeSprite.setY(planeRot);
 
-          
+
             if(planeSprite.getY() <= 0)
             {
                 planeSprite.setY(0);
             }
          }
-      
+
       function moveImageL()
       {
           var planePos = planeSprite.getX() - 2;
-          planeSprite.setX(planePos) ; 
+          planeSprite.setX(planePos) ;
 
           if(planeSprite.getX() <= 0)
             {
@@ -210,7 +213,7 @@
                 planeSprite.setY(0);
             }
       }
-      
+
       function moveImageU()
       {
           var planeRot = planeSprite.getRotationDeg() - 2;
@@ -221,7 +224,7 @@
                 planeSprite.setRotationDeg(-16);
             }
       }
-      
+
       function moveImageD()
       {
           var planeRot = planeSprite.getRotationDeg() + 2;
@@ -233,7 +236,7 @@
             }
       }
 
-       rButton.on(clickEvt, moveImageR); 
+       rButton.on(clickEvt, moveImageR);
        lButton.on(clickEvt, moveImageL);
        uButton.on(clickEvt, moveImageU);
        dButton.on(clickEvt, moveImageD);
@@ -244,30 +247,30 @@
     page.update = function(frame, stage, layers){
 
        var bg1Pos = bg1Img.getX() -0.20;
-        bg1Img.setX(bg1Pos) ; 
+        bg1Img.setX(bg1Pos) ;
 
        var bg2Pos = bg2Img.getX() -0.10;
-        bg2Img.setX(bg2Pos) ; 
+        bg2Img.setX(bg2Pos) ;
 
        var cloud1Pos = cloud1Img.getX() - 0.1;
-        cloud1Img.setX(cloud1Pos) ; 
+        cloud1Img.setX(cloud1Pos) ;
 
        var cloud2Pos = cloud2Img.getX() - 0.01;
         cloud2Img.setX(cloud2Pos) ;
-                
+
         var cloud3Pos = cloud3Img.getX() - 0.1;
-        cloud3Img.setX(cloud3Pos) ; 
-        
+        cloud3Img.setX(cloud3Pos) ;
+
         var cloud4Pos = cloud4Img.getX() - 0.01;
         cloud4Img.setX(cloud4Pos) ;
-        
+
         var cloud5Pos = cloud5Img.getX() - 0.1;
-        cloud5Img.setX(cloud5Pos) ; 
-        
+        cloud5Img.setX(cloud5Pos) ;
+
         var cloud6Pos = cloud6Img.getX() - 0.1;
         cloud6Img.setX(cloud6Pos) ;
 
-        
+
         if(planeSprite.getY() >= 320)
         {
             if((planeSprite.getX() + 644) >= runwayImg.getX())
@@ -276,7 +279,7 @@
                 {
                     page.challengeComplete();
 
-                    rButton.off(clickEvt); 
+                    rButton.off(clickEvt);
                     lButton.off(clickEvt);
                     uButton.off(clickEvt);
                     dButton.off(clickEvt);
@@ -296,7 +299,7 @@
 
         if ((runwayImg.getX() + 900) <= (planeSprite.getX() + 550))
         {
-            
+
             //alert('missed it');
         }
 
@@ -305,7 +308,7 @@
         }
 
         var planePos = planeSprite.getX() + 0.1;
-        planeSprite.setX(planePos) ; 
+        planeSprite.setX(planePos) ;
 
         var runwayPos = runwayImg.getX() -0.5;
             runwayImg.setX(runwayPos) ;
