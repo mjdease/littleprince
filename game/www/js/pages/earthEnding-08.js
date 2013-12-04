@@ -11,7 +11,8 @@
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
         {name: "spriteimg", path: "assets/images/spritesheet.png"},
-        {name: "hint", path: "assets/images/testHint.png"}
+        {name: "hint", path: "assets/images/testHint.png"},
+        {name: "background", path: "assets/images/earthEnding/bgPage32.jpg"}
     ]);
 
     page.setNarration("assets/sound/test.mp3");
