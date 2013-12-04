@@ -1,5 +1,6 @@
 (function(){
     var sprite;
+    var sounds = {};
 
     var page = new Page("earthEnding", 8);
 
@@ -9,7 +10,9 @@
 
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/spritesheet.png"}
+        {name: "spriteimg", path: "assets/images/spritesheet.png"},
+        {name: "hint", path: "assets/images/testHint.png"},
+        {name: "background", path: "assets/images/earthEnding/bgPage32.jpg"}
     ]);
 
     page.setNarration("assets/sound/test.mp3");
@@ -22,12 +25,17 @@
             animation: "testAnim",
             frameRate: 14
         }, 200, 150, {testAnim: 9});
+
+        sounds.soundeffect = new Sound("assets/sound/test.mp3", false, false);
+
         layers.dynBack.add(sprite);
     };
 
     page.startPage = function(){
         sprite.start();
+    };
 
+    page.startChallenge = function(){
         sprite.on(clickEvt, onSpriteClick);
 
         page.setState(page.States.PLAYING);
@@ -39,8 +47,16 @@
         }
     };
 
+    page.destroyPage = function(){
+        sprite.off(clickEvt);
+
+        sounds.soundeffect.destroy();
+        delete sounds.soundeffect;
+    };
+
     function onSpriteClick(e){
         sprite.stop();
+        sounds.soundeffect.play();
         page.challengeComplete();
     }
 

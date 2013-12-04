@@ -7,11 +7,12 @@ window.storybook = {};
     var stage, layers = {}, updateLoop, transition;
     var deviceReady = false, bookReady = false;
     var currentPage, targetPage, transitionSpeed = 1500, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
-    var prevBtn, nextBtn;
+    var prevBtn, nextBtn, homeBtn, audioBtn;
     var book;
     var narration;
     var asteroidProgress = {};
-
+    var accelerometer = {x:0,y:0,z:0};
+    var accWatchId = null;
 
     app.initialize = function(){
         if(isPhonegap){
@@ -37,87 +38,100 @@ window.storybook = {};
     }
 
     var begin = function(){
-        loadImages([{name: 'texture', path: "assets/images/texture-even.png"}],
-            function(imgs){
-            stage = new K.Stage({
-                container: "game-stage",
-                width: gameWidth,
-                height: gameHeight
-            });
-            layers.staticBack = new K.Layer();
-            layers.dynBack = new K.Layer();
-            layers.dynFront = new K.Layer();
-            layers.staticFront = new K.Layer();
-
-            stage.add(layers.staticBack);
-            stage.add(layers.dynBack);
-            stage.add(layers.dynFront);
-            stage.add(layers.staticFront);
-
-            textureImg = new K.Image({
-                x:0,
-                y:0,
-                height:gameHeight,
-                width: gameWidth*3,
-                offsetX: gameWidth,
-                image:imgs.texture
-            });
-            var textureLayer = new K.Layer({listening:false});
-            textureLayer.add(textureImg);
-            stage.add(textureLayer);
-
-            updateLoop = new K.Animation(function(frame){
-                currentPage.update(frame, stage, layers);
-            }, [layers.dynBack, layers.dynFront]);
-
-            var state = 'out';
-            transition = new K.Animation(function(frame){
-                var disp = transitionSpeed * frame.timeDiff/1000 * transitionDir;
-                var currentX = textureLayer.getX();
-                var proposedX = currentX + disp;
-                if(state == 'out' && ((transitionDir == -1 && proposedX <= -gameWidth) || (transitionDir == 1 && proposedX >=gameWidth))){
-                    state = "in";
-                    disp = transitionDir * -gameWidth - currentX;
-                    clearStage();
-                    onNewPage();
-                }
-                else if(state == "in" && ((transitionDir == -1 && proposedX <= 0) || (transitionDir == 1 && proposedX >= 0))){
-                    state = "done";
-                    disp = 0 - currentX;
-                }
-                textureLayer.move(disp, 0);
-                for(var layer in layers){
-                    layers[layer].move(disp, 0);
-                }
-                if(state == "done"){
-                    state = "out";
-                    transitionDone();
-                }
-            }, [layers.staticFront, layers.staticBack, layers.dynFront, layers.dynBack]);
-
-            stage.draw();
-
-            nextBtn = $("#btn-next").on("click", function(){
-                if(transition.isRunning()) return;
-                changePage("next");
-            });
-            prevBtn = $("#btn-prev").on("click", function(){
-                if(transition.isRunning()) return;
-                changePage("previous");
-            });
-
-            targetPage = pages["menu0"];
-
-            onNewPage();
-            transitionDone();
-
-            updateButtonVisibility();
+        stage = new K.Stage({
+            container: "game-stage",
+            width: gameWidth,
+            height: gameHeight
         });
+        layers.staticBack = new K.Layer();
+        layers.dynBack = new K.Layer();
+        layers.dynFront = new K.Layer();
+        layers.staticFront = new K.Layer();
+
+        stage.add(layers.staticBack);
+        stage.add(layers.dynBack);
+        stage.add(layers.dynFront);
+        stage.add(layers.staticFront);
+
+        updateLoop = new K.Animation(function(frame){
+            currentPage.update(frame, stage, layers);
+        }, [layers.dynBack, layers.dynFront]);
+
+        var state = 'out';
+        transition = new K.Animation(function(frame){
+            var disp = transitionSpeed * frame.timeDiff/1000 * transitionDir;
+            var currentX = layers.staticBack.getX();
+            var proposedX = currentX + disp;
+            if(state == 'out' && ((transitionDir == -1 && proposedX <= -gameWidth) || (transitionDir == 1 && proposedX >=gameWidth))){
+                state = "in";
+                disp = transitionDir * -gameWidth - currentX;
+                clearStage();
+                onNewPage();
+            }
+            else if(state == "in" && ((transitionDir == -1 && proposedX <= 0) || (transitionDir == 1 && proposedX >= 0))){
+                state = "done";
+                disp = 0 - currentX;
+            }
+            for(var layer in layers){
+                layers[layer].move(disp, 0);
+            }
+            if(state == "done"){
+                state = "out";
+                transitionDone();
+            }
+        }, [layers.staticFront, layers.staticBack, layers.dynFront, layers.dynBack]);
+
+        stage.draw();
+
+        nextBtn = $("#btn-next").on("click", function(){
+            if(transition.isRunning()) return;
+            changePage("next");
+        });
+        prevBtn = $("#btn-prev").on("click", function(){
+            if(transition.isRunning()) return;
+            changePage("previous");
+        });
+        menuBtn = $("#btn-home").on("click", function(){
+            if(transition.isRunning()) return;
+            app.goToPage("menu0");
+        });
+        audioBtn = $("#btn-audio").on("click", function(){
+            if(transition.isRunning()) return;
+            //app.showSettings();
+        });
+
+
+        if(startAtPageId && pages[startAtPageId]){
+            // DEBUG ONLY
+            targetPage = pages[startAtPageId];
+        }
+        else{
+            targetPage = pages["menu0"];
+        }
+
+        onNewPage();
+        transitionDone();
+
+        updateButtonVisibility();
     }
 
     var onNewPage = function(){
+        // destroy old page
+        if(narration){
+            narration.destroy();
+            narration = null;
+        }
+        stage.off(clickEvt);
+        if(currentPage){
+            currentPage.setState(currentPage.States.UNINITIALIZED);
+            currentPage.destroyPage();
+        }
+
+        // set new page
         currentPage = targetPage;
         targetPage = null;
+
+        // initalize new page
         if(currentPage.requiredImages){
             loadImages(currentPage.requiredImages, initPage);
         }
@@ -159,24 +173,77 @@ window.storybook = {};
     }
 
     var initPage = function(images){
+        var target = new K.Rect({
+            x:0, y:0,
+            width: gameWidth,
+            height:gameHeight
+        });
+        target.on(clickEvt, function(e){
+            currentPage.onStageClick(e);
+        });
+        layers.staticBack.add(target);
+
         if(currentPage.text){
             for(var i = 0; i < currentPage.text.length; i++){
                 layers.staticFront.add(currentPage.text[i]);
             }
         }
-        if(currentPage.hasChallenge){
-            layers.staticFront.add(currentPage.challengeText);
+
+        if(currentPage.hasChallenge && images["hint"]){
+            currentPage.challengeStarted = false;
+            var hint = new K.Image({
+                image: images.hint,
+                visible:false
+            });
+            var challengeText = currentPage.challengeText.clone();
+            var hintSize = hint.getSize();
+            hint.setOffset(hintSize.width/2, hintSize.height);
+            layers.staticFront.add(hint);
+            layers.staticFront.batchDraw();
+
+            hint.on(clickEvt, function(e){
+                e.cancelBubble = true;
+                hint.setVisible(false);
+                layers.staticFront.batchDraw();
+
+                if(!currentPage.challengeStarted){
+                    currentPage.challengeStarted = true;
+                    currentPage.startChallenge();
+                }
+
+                stage.off(clickEvt);
+            });
+
+            challengeText.on(clickEvt, function(e){
+                e.cancelBubble = true;
+
+                if(hint.getVisible()) return;
+
+                var trigger = challengeText;
+                hint.setPosition(trigger.getX() + trigger.getWidth()/2, trigger.getY());
+                hint.setVisible(true);
+                layers.staticFront.batchDraw();
+
+                stage.on(clickEvt, function(){
+                    hint.setVisible(false);
+                    layers.staticFront.batchDraw();
+                    stage.off(clickEvt);
+                });
+            });
+
+            layers.staticFront.add(challengeText);
         }
+
         layers.staticFront.batchDraw();
-        if(narration != null){
-            if(isPhonegap) narration.release();
-            narration = null;
-        }
+        layers.staticBack.batchDraw();
+
         if(currentPage.narrationSrc){
             narration = loadNarration(currentPage.narrationSrc);
         }
+
         currentPage.initPage(images, stage, layers);
         updateLoop.start();
+
         transitionState++;
         if(transitionState == 2){
             startPage();
@@ -195,32 +262,40 @@ window.storybook = {};
         }
     }
 
+    app.initializeAccelerometer = function(){
+        if(navigator.accelerometer){
+            accWatchId = navigator.accelerometer.watchAcceleration(function(acc){
+                accelerometer = acc;
+            }, function(){}, {frequency:100});
+        }
+        else{
+            var getFakeAccelerometer = startFakeAccelerometer();
+            accWatchId =setInterval(function(){accelerometer = getFakeAccelerometer()}, 100);
+        }
+    };
+
+    app.getAccelerometer = function(){
+        return accelerometer;
+    };
+
+    app.destroyAccelerometer = function(){
+        if(navigator.accelerometer){
+            navigator.accelerometer.clearWatch(accWatchId);
+        }
+        else{
+            clearInterval(accWatchId);
+        }
+        accWatchId = null;
+        accelerometer = {x:0,y:0,z:0};
+    };
+
     app.getAsteroidProgress = function(){
         return asteroidProgress;
     }
 
-    //optons - all sprite options except for animations
-    //width - frame width
-    //height - frame height
-    //animList - object where the keys are the names of the animations
-    //          and the value is ne number of frames.
-    //          eg: {idle:1, run: 14, walk: 14}
-    app.defineSprite = function(options, width, height, animList){
-        var anim = {}, index = 0;
-        for(var name in animList){
-            anim[name] = [];
-            for(var j = 0; j < animList[name]; j++){
-                anim[name].push({
-                    x: j * width,
-                    y: index * height,
-                    width: width,
-                    height: height
-                });
-            }
-            index++;
-        }
-        options.animations = anim;
-        return new K.Sprite(options);
+    //exists here only for backwards compatibility. use defineSprite in util.js
+    app.defineSprite = function(){
+        return defineSprite.apply(this, arguments);
     };
 
     app.registerPage = function(page){
@@ -245,6 +320,8 @@ window.storybook = {};
         if(currentPage.hasChallenge){
             challengeDone = challengesComplete[currentPage.id];
         }
+        menuBtn.toggle(currentPage.id != "menu0");
+        audioBtn.toggle(currentPage.id != "menu0");
         prevBtn.toggle(!currentPage.isMenu && !!currentPage.previousPage);
         nextBtn.toggle(!currentPage.isMenu && !!currentPage.nextPage && challengeDone);
     };
@@ -270,6 +347,15 @@ window.storybook = {};
                     numComplete++;
                     images[obj.name] = img;
                     if(numComplete == numImages){
+                        if(images["background"]){
+                            layers.staticBack.add(new K.Image({
+                                image : images.background,
+                                x: 0, y: 0,
+                                width: gameWidth,
+                                height: gameHeight
+                            }));
+                            layers.staticBack.batchDraw();
+                        }
                         onComplete(images);
                     }
                 }
@@ -279,16 +365,7 @@ window.storybook = {};
     };
 
     var loadNarration = function(path){
-        if(isPhonegap){
-            return new Media(path);
-        }
-        else{
-            return new Howl({
-                urls : [path],
-                autoplay : false,
-                loop : false
-            });
-        }
+        return new Sound(path, false, false);
     }
 })(window.storybook, Kinetic, jQuery);
 

@@ -1,44 +1,100 @@
 (function(){
+
+    var planetImg;
+    var lampSprite;
+    var lampOffImg;
+    var lampOnImg;
+
     var page = new Page("asteroids.b329", 1, false);
+    var sounds = {};
 
     page.setPreviousPage("asteroids.b329", 0);
 
     page.setNextPage("menu", 1);
 
+    page.setLeftTextStyle(null, null, null,"#ffffff");
+    page.setRightTextStyle(null, null, null,"#ffffff");
+
     page.setRequiredAssets([
-        {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/spritesheet.png"}
+        {name: "background", path: "assets/images/asteroids/b329/nightTime.jpg"},
+        {name: "planetImg", path: "assets/images/asteroids/b329/planet.png"},
+        {name: "lampImg", path: "assets/images/asteroids/b329/lamp.png"},
+        {name: "lampOffImg", path: "assets/images/asteroids/b329/lampOff.png"},
+        {name: "lampOnImg", path: "assets/images/asteroids/b329/lampOn.png"},
+        {name: "hint", path: "assets/images/ui/page_challenge/05/hint_ch05_01.png"}
     ]);
 
     page.setNarration("assets/sound/test.mp3");
 
     page.initPage = function(images, stage, layers){
-        sprite = storybook.defineSprite({
-            x:300,
-            y:500,
-            image: images.spriteimg,
-            animation: "testAnim",
-            frameRate: 14
-        }, 200, 150, {testAnim: 9});
-        layers.dynBack.add(sprite);
+        lampSprite = storybook.defineSprite({
+            x:stage.getWidth()/2,
+            y:stage.getHeight(),
+            image: images.lampImg,
+            animation: "lampAnim",
+            frameRate: 1,
+            offset: {x:189, y:391 + 212}
+        }, 378, 391, {lampAnim: 2});
+        layers.dynFront.add(lampSprite);
+
+        planetImg = new Kinetic.Image({
+            x:stage.getWidth()/2,
+            y:stage.getHeight(),
+            image: images.planetImg,
+            width: 738,
+            height: 724,
+            offset: {x: 369, y:362}
+        });
+        layers.dynBack.add(planetImg);
+
+        lampOffImg = new Kinetic.Image({
+            x:stage.getWidth()/2,
+            y:stage.getHeight(),
+            image: images.lampOffImg,
+            width: 378,
+            height: 391,
+            offset: {x:189, y:391 + 212}
+        });
+        layers.dynFront.add(lampOffImg);
+
+        lampOnImg = images.lampOnImg;
+
     };
 
     page.startPage = function(){
-        sprite.start();
-
-        sprite.on(clickEvt, onSpriteClick);
-
-        page.setState(page.States.PLAYING);
+        lampSprite.start();
     };
 
+
+     page.startChallenge = function()
+    {
+        page.setState(page.States.PLAYING);
+        lampSprite.stop();
+        lampSprite.destroy();
+
+        lampOffImg.on(clickEvt, onLampClick);
+
+    }
+
     page.update = function(frame, stage, layers){
+
+       var planetRot = planetImg.getRotationDeg() + 0.5;
+        planetImg.setRotationDeg(planetRot);
+
+       var lampSpriteRot = lampSprite.getRotationDeg() + 0.5;
+        lampSprite.setRotationDeg(lampSpriteRot);
+
+       var lampOffRot = lampOffImg.getRotationDeg() + 0.5;
+        lampOffImg.setRotationDeg(lampOffRot);
+
         if(page.getState() != page.States.PLAYING){
             return;
         }
     };
 
-    function onSpriteClick(e){
-        sprite.stop();
+    function onLampClick(e){
+        //sprite.stop();
+        lampOffImg.setImage(lampOnImg);
         page.challengeComplete();
     }
 

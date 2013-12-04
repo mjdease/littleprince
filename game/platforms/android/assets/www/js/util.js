@@ -21,6 +21,51 @@ function getStoryPageById(storyObj, id, index){
     }
 }
 
+//optons - all sprite options except for animations
+//width - frame width
+//height - frame height
+//animList - object where the keys are the names of the animations
+//          and the value is ne number of frames.
+//          eg: {idle:1, run: 14, walk: 14}
+ function defineSprite(options, width, height, animList){
+    var anim = {}, index = 0;
+    for(var name in animList){
+        anim[name] = [];
+        for(var j = 0; j < animList[name]; j++){
+            anim[name].push({
+                x: j * width,
+                y: index * height,
+                width: width,
+                height: height
+            });
+        }
+        index++;
+    }
+    options.animations = anim;
+    return new Kinetic.Sprite(options);
+}
+
+function startFakeAccelerometer(){
+    var acc = {x:0,y:0,z:0};
+    $(document).keydown(function(e){
+        if (e.which == 37 && acc.x < 10) { // left
+            acc.x += 0.1;
+        }
+        if (e.which == 38 && acc.y > -10) { // up
+            acc.y -= 0.1;
+        }
+        if (e.which == 39 && acc.x > -10) { // right
+            acc.x -= 0.1;
+        }
+        if (e.which == 40 && acc.y < 10) { // down
+            acc.y += 0.1;
+        }
+    });
+    return function(){
+        return acc;
+    };
+}
+
 function randomInt(min, max){
     return Math.round(min + Math.random() * (max-min));
 }
@@ -68,5 +113,50 @@ function HSVtoRGB(h, s, v) {
         r: Math.floor(r * 255),
         g: Math.floor(g * 255),
         b: Math.floor(b * 255)
+    };
+}
+
+// Sound class, abstracts android and html audio
+function Sound(path, autoplay, loop){
+    this.pg = isPhonegap();
+    this.loop = loop;
+    this.path = getPath(path);
+
+    this.onStatus = function(status){
+        if(this.pg && this.loop && status == Media.MEDIA_STOPPED){
+            this.raw.play();
+        }
+    };
+
+    if(this.pg){
+        this.raw = new Media(this.path, null, null, this.onStatus);
+        if(autoplay){
+            this.raw.play();
+        }
+    }
+    else{
+        this.raw = new Howl({
+            urls : [this.path],
+            autoplay : autoplay,
+            loop : loop
+        });
+    }
+
+    this.play = function(){
+        this.raw.play();
+    };
+
+    this.stop = function(){
+        this.raw.stop();
+    };
+
+    this.destroy = function(){
+        this.stop();
+        if(this.pg){
+            this.raw.release();
+        }
+        else{
+            this.raw.unload();
+        }
     };
 }

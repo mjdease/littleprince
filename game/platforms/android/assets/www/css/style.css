@@ -1,11 +1,11 @@
 @font-face {
     font-family: 'lp_TitleFont';
-    src: url('assets/font/RetroElectro.ttf');
+    src: url('../assets/font/RetroElectro.ttf');
 }
 
 @font-face {
     font-family: 'lp_BodyFont';
-    src: url('assets/font/NoBulliesAllowed.ttf');
+    src: url('../assets/font/NoBulliesAllowed.ttf');
 }
 
 * {
@@ -33,7 +33,7 @@ body {
     overflow:hidden;
 }
 
-#game-stage, #page-nav, #page-texture{
+#game-stage, #page-nav{
     position:absolute;
     top:0;
     left:0;
@@ -51,15 +51,34 @@ body {
     position:absolute;
     pointer-events:auto;
     /*TODO - Replace with actual button styles*/
-    bottom:30px;
-    padding:20px;
-    background:#fff;
+    bottom:10px;
+    width:136px;
+    height:90px;
+}
+
+.btn.btn-sm{
+    bottom:auto;
+    top:10px;
+    width:75px;
+    height:75px;
 }
 
 #btn-prev{
-    left:30px;
+    left:10px;
+    background:url("../assets/images/ui/page_global/button_nextPage.png");
 }
 
 #btn-next{
-    right:30px;
+    right:10px;
+    background:url("../assets/images/ui/page_global/button_prevPage.png");
+}
+
+#btn-home{
+    left:10px;
+    background:url("../assets/images/ui/page_global/button_home.png");
+}
+
+#btn-audio{
+    right:10px;
+    background:url("../assets/images/ui/page_global/button_audio.png");
 }

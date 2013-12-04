@@ -6,13 +6,13 @@
         <title>The Little Prince</title>
     </head>
     <body>
-        <div id="game-stage" class="maxsize">
-            <img id="page-texture" src="assets/images/texture-even.png"/>
-        </div>
+        <div id="game-stage" class="maxsize"></div>
         <!-- TODO remove these controls and implement it using canvas -->
         <nav id="page-nav" class="maxsize">
-            <div id="btn-prev" class="btn">Previous Page</div>
-            <div id="btn-next" class="btn">Next Page</div>
+            <div id="btn-home" class="btn btn-sm"></div>
+            <div id="btn-audio" class="btn btn-sm"></div>
+            <div id="btn-prev" class="btn"></div>
+            <div id="btn-next" class="btn"></div>
         </nav>
 
         <script type="text/javascript" src="phonegap.js"></script>
@@ -65,6 +65,14 @@
         <script type="text/javascript" src="js/pages/earthEnding-09.js"></script>
 
         <script type="text/javascript">
+            //DEVELOPMENT ONLY
+            // Set this value to a page ID to start the game at this page
+            // useful when developing challenges or laying out a page.
+            // page ID are like "earthIntro4" where the 4 indicates the fifth page (zero-index)
+            // others are like "earthEnding0", "asteroids.b6120", "menu0", etc
+            // If you set an ID that doesn't exist the story will start at the main menu
+            var startAtPageId = "";
+
             storybook.startStory();
         </script>
     </body>

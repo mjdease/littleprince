@@ -2,7 +2,7 @@ var storyTexts = {
     earthIntro : [
         "My name is of no importance. Really it is of no importance. And no… that is not my name. My name is of no importance because this story is not about me.",
         "This story is about my good friend the prince. Very small in size and very curious by nature. The little prince was most curious about grown-ups.  Grown-ups like a child’s mother and father. Grown-ups like me.",
-        "As a grown-up, I lived my life alone without anyone that I could really talk to, until I had an accident with my plane in the Desert of the Sahara, six years ago.",
+        "As a grown-up, I lived my life alone without \nanyone that I could really talk to, until I had an accident with my plane in the Desert of the Sahara, six years ago.",
         "One of the engines had failed and I was forced to manoeuvre my plane from the sky and land safely on the sandy grounds of the desert.",
         "Something was broken in my engine. With  no one around to help me, I set out to do all the repairs alone. ",
         "I was a thousand miles from people just like me and there was hardly any drinking water to last a week. My first night, I went to sleep on the sand. I was lonelier than a ship far away at sea.",
@@ -18,7 +18,6 @@ var storyTexts = {
         "“That is exactly the way I wanted it! Do you think this sheep will have a lot of grass?”\n\n“Why?”\n\n“Because where I live everything is small…”\n",
         "“Where do you come from my little man? What is this ‘where I live’ of which you   speak of?” I asked.\n\nHe walked up to my ear and whispered:\n\n“Far far away in space. Would you like to know more about my planet?”\n\nI nodded. I was very eager to learn more about this strange little boy.\n",
         "He whispered again:\n“Would you like to know about my travels to other planets and the grown-ups who live there?”\n\nI was curious to know what he would say about the other grown-ups who were as old as me. \n\nAnd so I nodded once more to the boy I grew to know as the little prince. \n",
-
     ],
     asteroids : {
         b612 : [
@@ -27,7 +26,7 @@ var storyTexts = {
             "Apart from eating little bushes, the prince also asked if a sheep also ate flowers.\n\n“A sheep,” I answered, “eats anything it finds in its reach.”\n\n“Even flowers that have thorns?”\n\n“Yes, even flowers that have thorns.”\n\n“Oh!” he said close to tears.\n\nAnd then he told me of a special flower. The most special flower in the entire world. One with a lot of petals. A flower that grew nowhere but on his planet.\n",
             "“If someone loves a flower, the way I love my flower, all millions and millions of stars will shine bright. But if the sheep eats the flower, then all the stars will darken.”\n\nI did not like to see my friend sad and so I said:\n\n“Why don’t I draw something to protect your flower from the sheep?”\n\nBut the little prince did not reply. \n",
             "On the morning the prince left his planet, he had wanted everything to be in perfect order. \n\nThe prince owned two volcanoes that he used to help heat his breakfast that morning. \n\nHe also owned a third volcano, but that one was damaged. \n",
-            "After his breakfast, the prince started to spruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
+            "\n\nAfter his breakfast, the prince started to \nspruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
         ],
         b325 : [
             "The prince found himself on a planet that was ruled by a king.\n\nAll dressed in royal purple and white fur, the king was seated upon a throne that was both simple and magnificent.\n",
@@ -101,15 +100,15 @@ var challengeWords = {
 };
 
 //TODO - move fix x/y coordinates to cover the word on the page
-challengeWords.earthIntro[1] = {word: "manoeuvre", x:0, y:0};
-challengeWords.asteroids.b612[0] = {word: "weeding", x:0, y:0};
-challengeWords.asteroids.b612[2] = {word: "spruce up", x:0, y:0};
-challengeWords.asteroids.b325[1] = {word: "entrap", x:0, y:0};
-challengeWords.asteroids.b329[1] = {word: "coordinated", x:0, y:0};
-challengeWords.earthEnding[1] = {word: "think outside the box", x:0, y:0};
-challengeWords.earthEnding[3] = {word: "tame", x:0, y:0};
-challengeWords.earthEnding[5] = {word: "quench", x:0, y:0};
-challengeWords.earthEnding[8] = {word: "sequence", x:0, y:0};
+challengeWords.earthIntro[1] = {word: "manoeuvre", x:712, y:124};
+challengeWords.asteroids.b612[0] = {word: "weeding", x:1064, y:297};
+challengeWords.asteroids.b612[2] = {word: "spruce up", x:680, y:181};
+challengeWords.asteroids.b325[1] = {word: "entrap", x:746, y:300};
+challengeWords.asteroids.b329[1] = {word: "coordinated", x:1097, y:412};
+challengeWords.earthEnding[1] = {word: "think outside the box", x:400, y:400};
+challengeWords.earthEnding[3] = {word: "tame", x:400, y:400};
+challengeWords.earthEnding[5] = {word: "quench", x:400, y:400};
+challengeWords.earthEnding[8] = {word: "sequence", x:400, y:400};
 
 var story = {};
 
@@ -125,9 +124,9 @@ var story = {};
                     page.push(getStoryText(volume[i+1], 680));
                     story[volumeName].push(page);
                 }
-                var challengeWord = challengeWords[volumeName][i];
-                if(challengeWord){
-                    challengeWords[volumeName][i] = getStoryText(challengeWord.word, challengeWord.x, challengeWord.y, "red");
+                var word = challengeWords[volumeName][i];
+                if(word){
+                    challengeWords[volumeName][i] = getChallengeText(word.word, word.x, word.y, "red");
                 }
             }
         }
@@ -143,26 +142,39 @@ var story = {};
                         page.push(getStoryText(chapter[j+1], 680));
                         story[volumeName][chapterName].push(page);
                     }
-                    var challengeWord = challengeWords[volumeName][chapterName][j];
-                    if(challengeWord){
-                        challengeWords[volumeName][chapterName][j] = getStoryText(challengeWord.word, challengeWord.x, challengeWord.y, "red");
+                    var word = challengeWords[volumeName][chapterName][j];
+                    if(word){
+                        challengeWords[volumeName][chapterName][j] = getChallengeText(word.word, word.x, word.y, "red");
                     }
                 }
             }
         }
     }
 
-    function getStoryText(text, x, y, color){
-        var textY = (typeof y != "number") ? 40 : y;
+    function getStoryText(text, x){
         return new Kinetic.Text({
             text : text,
             x : x,
-            y : textY,
+            y : 95,
             width : 560,
             fontFamily: "lp_BodyFont",
             fontSize: 24,
-            fill: color || "black",
-            lineHeight: 1.2
+            fill: "black",
+            lineHeight: 1.2,
+            listening: false
+        });
+    }
+
+    function getChallengeText(text, x, y, color){
+        return new Kinetic.Text({
+            text : text,
+            x : x,
+            y : y,
+            fontFamily: "lp_BodyFont",
+            fontSize: 24,
+            fill: color || "red",
+            lineHeight: 1.2,
+            listening: true
         });
     }
 })();

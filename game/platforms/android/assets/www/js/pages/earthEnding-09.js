@@ -7,6 +7,10 @@
 
     page.setNarration("assets/sound/test.mp3");
 
+    page.setRequiredAssets([
+        {name: "background", path: "assets/images/earthEnding/bgPage33.jpg"}
+    ]);
+
     page.initPage = function(images, stage, layers){
 
     };

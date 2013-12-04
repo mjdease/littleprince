@@ -9,7 +9,8 @@
 
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/spritesheet.png"}
+        {name: "spriteimg", path: "assets/images/spritesheet.png"},
+        {name: "background", path: "assets/images/earthEnding/bgPage27.jpg"}
     ]);
 
     page.setNarration("assets/sound/test.mp3");
