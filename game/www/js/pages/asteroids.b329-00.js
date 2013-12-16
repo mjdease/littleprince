@@ -5,7 +5,7 @@
 
     page.setNextPage("asteroids.b329", 1);
 
-    page.setNarration("assets/sound/test.mp3");
+    page.setNarration();
 
     page.initPage = function(images, stage, layers){
 

@@ -45,7 +45,7 @@
         {name: "shadow", path: "assets/images/asteroids/b325/1_shadowOverlay.png"}
     ]);
 
-    page.setNarration("assets/sound/test.mp3");
+    page.setNarration();
 
     page.setLeftTextStyle(30, 120);
 

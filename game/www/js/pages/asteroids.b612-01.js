@@ -5,7 +5,7 @@
 
     page.setNextPage("asteroids.b612", 2);
 
-    page.setNarration("assets/sound/test.mp3");
+    page.setNarration();
 
     page.setRequiredAssets([
         {name: "spritehole", path: "assets/images/asteroids/b612/hole.png"},

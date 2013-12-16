@@ -39,7 +39,7 @@
         {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch01_01.png"}
     ]);
 
-    page.setNarration("assets/sound/test.mp3");
+    page.setNarration();
 
     page.initPage = function(images, stage, layers){
 
