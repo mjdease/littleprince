@@ -5,7 +5,7 @@ window.storybook = {};
     var isPhonegap = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
     var pgAssetPath = "/andoid_asset/www/";
     var stage, layers = {}, underlay, overlay, updateLoop, transition;
-    var deviceReady = false, bookReady = false, waitingForStage = false;
+    var deviceReady = false, bookReady = false, waitingForStage = false, pageIsLoading = true;
     var currentPage, targetPage, transitionSpeed = 2000, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
     var prevBtn, nextBtn, homeBtn, audioBtn;
     var book;
@@ -63,14 +63,14 @@ window.storybook = {};
             $("#game-stage").width(gameWidth * scale).height(gameHeight * scale);
         }
 
-        underlay = new K.Layer();
+        // underlay = new K.Layer();
         layers.staticBack = new K.Layer();
         layers.dynBack = new K.Layer();
         layers.dynFront = new K.Layer();
         layers.staticFront = new K.Layer();
         overlay = new K.Layer();
 
-        stage.add(underlay);
+        // stage.add(underlay);
         stage.add(layers.staticBack);
         stage.add(layers.dynBack);
         stage.add(layers.dynFront);
@@ -112,7 +112,7 @@ window.storybook = {};
             x: gameWidth - 10 - 136,
             y: gameHeight - 10 - 90
         }).on(clickEvt, function(){
-            if(transition.isRunning()) return;
+            if(transition.isRunning() || pageIsLoading) return;
             changePage("next");
         });
 
@@ -121,7 +121,7 @@ window.storybook = {};
             x: 10,
             y: gameHeight - 10 - 90
         }).on(clickEvt, function(){
-            if(transition.isRunning()) return;
+            if(transition.isRunning() || pageIsLoading) return;
             changePage("previous");
         });
         menuBtn = new K.Image({
@@ -129,7 +129,7 @@ window.storybook = {};
             x: 10,
             y: 10
         }).on(clickEvt, function(){
-            if(transition.isRunning()) return;
+            if(transition.isRunning() || pageIsLoading) return;
             app.goToPage("menu0");
         });
         audioBtn = new K.Image({
@@ -137,7 +137,7 @@ window.storybook = {};
             x: gameWidth - 10 - 136,
             y: 10
         }).on(clickEvt, function(){
-            if(transition.isRunning()) return;
+            if(transition.isRunning() || pageIsLoading) return;
             //app.showSettings();
         });
 
@@ -153,7 +153,7 @@ window.storybook = {};
         }
 
         onNewPage();
-        transitionDone();
+        // transitionDone();
 
         updateButtonVisibility();
     }
@@ -191,28 +191,37 @@ window.storybook = {};
         }
     };
 
+    var hideNavigation = function(){
+        overlay.hide();
+    }
+
+    var showNavigation = function(){
+        overlay.show();
+    }
+
     var changePage = function(page){
+        pageIsLoading = true;
         // stage image isn't ready yet so check later
-        if(!cache.stage){
-            if(waitingForStage && Date.now() - waitingForStage > 2000){
-                nextBtn.show();
-                prevBtn.show();
-                overlay.batchDraw();
-                return;
-            }
-            if(!waitingForStage){
-                waitingForStage = Date.now();
-                nextBtn.hide();
-                prevBtn.hide();
-                overlay.batchDraw();
-            }
-            setTimeout(function(){changePage(page)}, 40);
-        }
-        else{
-            if(waitingForStage){
-                waitingForStage = false;
-            }
-            underlay.add(cache.stage).batchDraw();
+        // if(!cache.stage){
+        //     if(waitingForStage && Date.now() - waitingForStage > 2000){
+        //         nextBtn.show();
+        //         prevBtn.show();
+        //         overlay.batchDraw();
+        //         return;
+        //     }
+        //     if(!waitingForStage){
+        //         waitingForStage = Date.now();
+        //         nextBtn.hide();
+        //         prevBtn.hide();
+        //         overlay.batchDraw();
+        //     }
+        //     setTimeout(function(){changePage(page)}, 40);
+        // }
+        // else{
+            // if(waitingForStage){
+            //     waitingForStage = false;
+            // }
+            // underlay.add(cache.stage).batchDraw();
             if(page){
                 var isNext = (page == "next");
                 transitionDir = isNext ? -1 : 1;
@@ -223,8 +232,10 @@ window.storybook = {};
             }
             updateLoop.stop();
             if(narration) narration.stop();
-            transition.start();
-        }
+            //transition.start();
+            clearStage();
+            onNewPage();
+        // }
     };
 
     app.goToPage = function(id){
@@ -309,10 +320,12 @@ window.storybook = {};
         currentPage.initPage(images, stage, layers);
         updateLoop.start();
 
-        transitionState++;
-        if(transitionState == 2){
+        pageIsLoading = false;
+
+        //transitionState++;
+        //if(transitionState == 2){
             startPage();
-        }
+        //}
     };
 
     var startPage = function(){
@@ -326,20 +339,20 @@ window.storybook = {};
             updateButtonVisibility();
         }
 
-        underlay.destroyChildren();
-        underlay.batchDraw();
-        delete cache.stage;
+        // underlay.destroyChildren();
+        // underlay.batchDraw();
+        // delete cache.stage;
 
-        setTimeout(function(){
-            stage.toImage({
-                callback: function(img){
-                    cache.stage = new K.Image({
-                        image: img,
-                        scale: 1/scale
-                    });
-                }
-            });
-        }, 30);
+        // setTimeout(function(){
+        //     stage.toImage({
+        //         callback: function(img){
+        //             cache.stage = new K.Image({
+        //                 image: img,
+        //                 scale: 1/scale
+        //             });
+        //         }
+        //     });
+        // }, 30);
     }
 
     app.initializeAccelerometer = function(){
@@ -393,16 +406,16 @@ window.storybook = {};
             asteroidProgress[currentPage.asteroidId] = true;
         }
         updateButtonVisibility();
-        if(currentPage.hasChallenge){
-            stage.toImage({
-                callback: function(img){
-                    cache.stage = new K.Image({
-                        image: img,
-                        scale: 1/scale
-                    });
-                }
-            });
-        }
+        // if(currentPage.hasChallenge){
+        //     stage.toImage({
+        //         callback: function(img){
+        //             cache.stage = new K.Image({
+        //                 image: img,
+        //                 scale: 1/scale
+        //             });
+        //         }
+        //     });
+        // }
     }
 
     var updateButtonVisibility = function(){
