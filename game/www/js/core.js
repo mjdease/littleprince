@@ -1,18 +1,19 @@
 window.storybook = {};
 
 (function(app, K, $, undefined) {
-    var gameHeight = 752, gameWidth = 1280;
+    var gameHeight = 752, gameWidth = 1280, scale = 1;
     var isPhonegap = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
     var pgAssetPath = "/andoid_asset/www/";
-    var stage, layers = {}, overlay, updateLoop, transition;
-    var deviceReady = false, bookReady = false;
-    var currentPage, targetPage, transitionSpeed = 1500, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
+    var stage, layers = {}, underlay, overlay, updateLoop, transition;
+    var deviceReady = false, bookReady = false, waitingForStage = false;
+    var currentPage, targetPage, transitionSpeed = 2000, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
     var prevBtn, nextBtn, homeBtn, audioBtn;
     var book;
     var narration;
     var asteroidProgress = {};
     var accelerometer = {x:0,y:0,z:0};
     var accWatchId = null;
+    var cache = {};
 
     var menuAssets = [
         {name: "home", path: "assets/images/ui/page_global/button_home.png"},
@@ -45,26 +46,31 @@ window.storybook = {};
     }
 
     var begin = function(images){
-        var scale = $(window).width()/gameWidth;
         stage = new K.Stage({
             container: "game-stage",
             width: gameWidth,
             height: gameHeight
         });
+
         if(isPhonegap){
+            scale = $(window).width()/gameWidth;
             stage.setScale(scale);
         }
         else{
             //DEV option to fit stage on screen. disable before release
-            stage.setScale(0.6);
-            $("#game-stage").width(gameWidth * 0.6).height(gameHeight * 0.6);
+            scale = 0.6;
+            stage.setScale(scale);
+            $("#game-stage").width(gameWidth * scale).height(gameHeight * scale);
         }
+
+        underlay = new K.Layer();
         layers.staticBack = new K.Layer();
         layers.dynBack = new K.Layer();
         layers.dynFront = new K.Layer();
         layers.staticFront = new K.Layer();
         overlay = new K.Layer();
 
+        stage.add(underlay);
         stage.add(layers.staticBack);
         stage.add(layers.dynBack);
         stage.add(layers.dynFront);
@@ -75,12 +81,12 @@ window.storybook = {};
             currentPage.update(frame, stage, layers);
         }, [layers.dynBack, layers.dynFront]);
 
-        var state = 'out';
+        var state = 'start';
         transition = new K.Animation(function(frame){
             var disp = transitionSpeed * frame.timeDiff/1000 * transitionDir;
             var currentX = layers.staticBack.getX();
             var proposedX = currentX + disp;
-            if(state == 'out' && ((transitionDir == -1 && proposedX <= -gameWidth) || (transitionDir == 1 && proposedX >=gameWidth))){
+            if(state == "start"){
                 state = "in";
                 disp = transitionDir * -gameWidth - currentX;
                 clearStage();
@@ -94,7 +100,7 @@ window.storybook = {};
                 layers[layer].move(disp, 0);
             }
             if(state == "done"){
-                state = "out";
+                state = "start";
                 transitionDone();
             }
         }, [layers.staticFront, layers.staticBack, layers.dynFront, layers.dynBack]);
@@ -186,17 +192,39 @@ window.storybook = {};
     };
 
     var changePage = function(page){
-        if(page){
-            var isNext = (page == "next");
-            transitionDir = isNext ? -1 : 1;
-            targetPage = pages[currentPage[(isNext ? "nextPage" : "previousPage")]];
+        // stage image isn't ready yet so check later
+        if(!cache.stage){
+            if(waitingForStage && Date.now() - waitingForStage > 2000){
+                nextBtn.show();
+                prevBtn.show();
+                overlay.batchDraw();
+                return;
+            }
+            if(!waitingForStage){
+                waitingForStage = Date.now();
+                nextBtn.hide();
+                prevBtn.hide();
+                overlay.batchDraw();
+            }
+            setTimeout(function(){changePage(page)}, 40);
         }
         else{
-            transitionDir = -1;
+            if(waitingForStage){
+                waitingForStage = false;
+            }
+            underlay.add(cache.stage).batchDraw();
+            if(page){
+                var isNext = (page == "next");
+                transitionDir = isNext ? -1 : 1;
+                targetPage = pages[currentPage[(isNext ? "nextPage" : "previousPage")]];
+            }
+            else{
+                transitionDir = -1;
+            }
+            updateLoop.stop();
+            if(narration) narration.stop();
+            transition.start();
         }
-        updateLoop.stop();
-        if(narration) narration.stop();
-        transition.start();
     };
 
     app.goToPage = function(id){
@@ -297,6 +325,21 @@ window.storybook = {};
         else{
             updateButtonVisibility();
         }
+
+        underlay.destroyChildren();
+        underlay.batchDraw();
+        delete cache.stage;
+
+        setTimeout(function(){
+            stage.toImage({
+                callback: function(img){
+                    cache.stage = new K.Image({
+                        image: img,
+                        scale: 1/scale
+                    });
+                }
+            });
+        }, 30);
     }
 
     app.initializeAccelerometer = function(){
@@ -350,6 +393,16 @@ window.storybook = {};
             asteroidProgress[currentPage.asteroidId] = true;
         }
         updateButtonVisibility();
+        if(currentPage.hasChallenge){
+            stage.toImage({
+                callback: function(img){
+                    cache.stage = new K.Image({
+                        image: img,
+                        scale: 1/scale
+                    });
+                }
+            });
+        }
     }
 
     var updateButtonVisibility = function(){
