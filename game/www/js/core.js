@@ -4,7 +4,7 @@ window.storybook = {};
     var gameHeight = 752, gameWidth = 1280;
     var isPhonegap = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
     var pgAssetPath = "/andoid_asset/www/";
-    var stage, layers = {}, updateLoop, transition;
+    var stage, layers = {}, overlay, updateLoop, transition;
     var deviceReady = false, bookReady = false;
     var currentPage, targetPage, transitionSpeed = 1500, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
     var prevBtn, nextBtn, homeBtn, audioBtn;
@@ -13,6 +13,13 @@ window.storybook = {};
     var asteroidProgress = {};
     var accelerometer = {x:0,y:0,z:0};
     var accWatchId = null;
+
+    var menuAssets = [
+        {name: "home", path: "assets/images/ui/page_global/button_home.png"},
+        {name: "audio", path: "assets/images/ui/page_global/button_audio.png"},
+        {name: "next", path: "assets/images/ui/page_global/button_prevPage.png"},
+        {name: "prev", path: "assets/images/ui/page_global/button_nextPage.png"},
+    ];
 
     app.initialize = function(){
         if(isPhonegap){
@@ -26,32 +33,43 @@ window.storybook = {};
     var onDeviceReady = function(){
         deviceReady = true;
         if(bookReady){
-            begin();
+            loadImages(menuAssets, begin);
         }
     }
 
     app.startStory = function(){
         bookReady = true;
         if(deviceReady){
-            begin();
+            loadImages(menuAssets, begin);
         }
     }
 
-    var begin = function(){
+    var begin = function(images){
+        var scale = $(window).width()/gameWidth;
         stage = new K.Stage({
             container: "game-stage",
             width: gameWidth,
             height: gameHeight
         });
+        if(isPhonegap){
+            stage.setScale(scale);
+        }
+        else{
+            //DEV option to fit stage on screen. disable before release
+            stage.setScale(0.6);
+            $("#game-stage").width(gameWidth * 0.6).height(gameHeight * 0.6);
+        }
         layers.staticBack = new K.Layer();
         layers.dynBack = new K.Layer();
         layers.dynFront = new K.Layer();
         layers.staticFront = new K.Layer();
+        overlay = new K.Layer();
 
         stage.add(layers.staticBack);
         stage.add(layers.dynBack);
         stage.add(layers.dynFront);
         stage.add(layers.staticFront);
+        stage.add(overlay);
 
         updateLoop = new K.Animation(function(frame){
             currentPage.update(frame, stage, layers);
@@ -83,22 +101,41 @@ window.storybook = {};
 
         stage.draw();
 
-        nextBtn = $("#btn-next").on("click", function(){
+        nextBtn = new K.Image({
+            image: images.next,
+            x: gameWidth - 10 - 136,
+            y: gameHeight - 10 - 90
+        }).on(clickEvt, function(){
             if(transition.isRunning()) return;
             changePage("next");
         });
-        prevBtn = $("#btn-prev").on("click", function(){
+
+        prevBtn = new K.Image({
+            image: images.prev,
+            x: 10,
+            y: gameHeight - 10 - 90
+        }).on(clickEvt, function(){
             if(transition.isRunning()) return;
             changePage("previous");
         });
-        menuBtn = $("#btn-home").on("click", function(){
+        menuBtn = new K.Image({
+            image: images.home,
+            x: 10,
+            y: 10
+        }).on(clickEvt, function(){
             if(transition.isRunning()) return;
             app.goToPage("menu0");
         });
-        audioBtn = $("#btn-audio").on("click", function(){
+        audioBtn = new K.Image({
+            image: images.audio,
+            x: gameWidth - 10 - 136,
+            y: 10
+        }).on(clickEvt, function(){
             if(transition.isRunning()) return;
             //app.showSettings();
         });
+
+        overlay.add(nextBtn).add(prevBtn).add(menuBtn).add(audioBtn);
 
 
         if(startAtPageId && pages[startAtPageId]){
@@ -324,6 +361,7 @@ window.storybook = {};
         audioBtn.toggle(currentPage.id != "menu0");
         prevBtn.toggle(!currentPage.isMenu && !!currentPage.previousPage);
         nextBtn.toggle(!currentPage.isMenu && !!currentPage.nextPage && challengeDone);
+        overlay.batchDraw();
     };
 
     var clearStage = function(){

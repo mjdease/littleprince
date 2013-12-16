@@ -1,5 +1,18 @@
 // utility functions
+
+// event name abstraction for desktop and mobile
 var clickEvt = isPhonegap() ? "tap" : "click";
+
+// Add jquery-style visibility toggle function to Kinetic nodes
+Kinetic.Util.addMethods(Kinetic.Image, {
+    toggle : function(visible){
+        if(typeof visible !== "undefined"){
+            this.setVisible(!!visible);        }
+        else{
+            this.setVisible(!this.getVisible());
+        }
+    }
+});
 
 function getStoryPageById(storyObj, id, index){
     var collection;

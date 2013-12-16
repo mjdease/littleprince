@@ -19,7 +19,6 @@ body {
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
     margin:0;
     padding:0;
-    overflow:scroll;
     background:#888;
 }
 
@@ -33,52 +32,12 @@ body {
     overflow:hidden;
 }
 
-#game-stage, #page-nav{
+#game-stage{
     position:absolute;
     top:0;
     left:0;
 }
 
-#page-nav{
-    pointer-events:none;
-}
-
 #game-stage{
-    background:beige;
-}
-
-.btn{
-    position:absolute;
-    pointer-events:auto;
-    /*TODO - Replace with actual button styles*/
-    bottom:10px;
-    width:136px;
-    height:90px;
-}
-
-.btn.btn-sm{
-    bottom:auto;
-    top:10px;
-    width:75px;
-    height:75px;
-}
-
-#btn-prev{
-    left:10px;
-    background:url("../assets/images/ui/page_global/button_nextPage.png");
-}
-
-#btn-next{
-    right:10px;
-    background:url("../assets/images/ui/page_global/button_prevPage.png");
-}
-
-#btn-home{
-    left:10px;
-    background:url("../assets/images/ui/page_global/button_home.png");
-}
-
-#btn-audio{
-    right:10px;
-    background:url("../assets/images/ui/page_global/button_audio.png");
+    background:black;
 }
