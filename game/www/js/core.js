@@ -191,14 +191,6 @@ window.storybook = {};
         }
     };
 
-    var hideNavigation = function(){
-        overlay.hide();
-    }
-
-    var showNavigation = function(){
-        overlay.show();
-    }
-
     var changePage = function(page){
         pageIsLoading = true;
         // stage image isn't ready yet so check later
@@ -284,7 +276,7 @@ window.storybook = {};
 
                 if(!currentPage.challengeStarted){
                     currentPage.challengeStarted = true;
-                    currentPage.startChallenge();
+                    currentPage.startChallenge(layers);
                 }
 
                 stage.off(clickEvt);
@@ -331,7 +323,7 @@ window.storybook = {};
     var startPage = function(){
         transitionState = 0;
         if(narration) narration.play();
-        currentPage.startPage();
+        currentPage.startPage(layers);
         if(!currentPage.hasChallenge){
             app.pageComplete();
         }

@@ -58,20 +58,31 @@ function getStoryPageById(storyObj, id, index){
     return new Kinetic.Sprite(options);
 }
 
+function addToStage(layer, objs){
+    if($.isArray(objs)){
+        for(var i = 0; i < objs.length; i++){
+            layer.add(objs[i]);
+        }
+    }
+    else{
+        layer.add(objs);
+    }
+}
+
 function startFakeAccelerometer(){
     var acc = {x:0,y:0,z:0};
     $(document).keydown(function(e){
         if (e.which == 37 && acc.x < 10) { // left
-            acc.x += 0.1;
+            acc.x += 0.5;
         }
         if (e.which == 38 && acc.y > -10) { // up
-            acc.y -= 0.1;
+            acc.y -= 0.5;
         }
         if (e.which == 39 && acc.x > -10) { // right
-            acc.x -= 0.1;
+            acc.x -= 0.5;
         }
         if (e.which == 40 && acc.y < 10) { // down
-            acc.y += 0.1;
+            acc.y += 0.5;
         }
     });
     return function(){
