@@ -2,6 +2,7 @@
     var startBtn;
     var howtoBtn;
     var title, contBtn, glossaryBtn;
+    var canContinue;
 
     var page = new Page("menu", 0, true);
 
@@ -19,6 +20,7 @@
     ]);
 
     page.initPage = function(images, stage, layers){
+        canContinue = storybook.hasSavedGame();
 
         title = new Kinetic.Image({
             x: 250,
@@ -32,6 +34,7 @@
             x: 480,
             y: 50,
             image: images.continueGame,
+            opacity: canContinue ? 1 : 0.6
         });
         layers.staticFront.add(contBtn);
         layers.staticFront.batchDraw();
@@ -68,8 +71,15 @@
     };
 
     page.startPage = function(){
-        startBtn.on(clickEvt, function(){storybook.goToPage("next")});
-        contBtn.on(clickEvt, function(){storybook.goToPage("menu1")});
+        startBtn.on(clickEvt, function(){
+            storybook.discardSavedGame();
+            storybook.goToPage("next");
+        });
+        if(canContinue){
+            contBtn.on(clickEvt, function(){
+                storybook.continueSavedGame();
+            });
+        }
     };
 
     page.update = function(frame, stage, layers){
