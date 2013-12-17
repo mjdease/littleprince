@@ -25,8 +25,8 @@ var storyTexts = {
             "I responded:\n“No. Baobabs aren’t little bushes. They are trees as big as castles. Even a whole herd of elephants would not be able to eat up one single baobab.”\n\nI then suggested to the little prince that instead of using the sheep to eat the little baobabs – that maybe he should consider weeding out all the bad baobab seeds from the good seeds before they grow so big. \n",
             "Apart from eating little bushes, the prince also asked if a sheep also ate flowers.\n\n“A sheep,” I answered, “eats anything it finds in its reach.”\n\n“Even flowers that have thorns?”\n\n“Yes, even flowers that have thorns.”\n\n“Oh!” he said close to tears.\n\nAnd then he told me of a special flower. The most special flower in the entire world. One with a lot of petals. A flower that grew nowhere but on his planet.\n",
             "“If someone loves a flower, the way I love my flower, all millions and millions of stars will shine bright. But if the sheep eats the flower, then all the stars will darken.”\n\nI did not like to see my friend sad and so I said:\n\n“Why don’t I draw something to protect your flower from the sheep?”\n\nBut the little prince did not reply. \n",
-            "On the morning the prince left his planet, he had wanted everything to be in perfect order. \n\nThe prince owned two volcanoes that he used to help heat his breakfast that morning. \n\nHe also owned a third volcano, but that one was damaged. \n",
-            "\n\nAfter his breakfast, the prince started to \nspruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
+            "On the morning the prince left his planet, he had wanted everything to be in perfect order. \n\nThe prince owned two volcanoes that he used to help heat his breakfast that morning.",
+            "He also owned a third volcano, but that one was damaged.\n\nAfter his breakfast, the prince started to spruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
         ],
         b325 : [
             "The prince found himself on a planet that was ruled by a king.\n\nAll dressed in royal purple and white fur, the king was seated upon a throne that was both simple and magnificent.\n",
@@ -120,8 +120,8 @@ var story = {};
             for(var i = 0; i < volume.length; i++){
                 if(i%2 == 0){
                     var page = [];
-                    page.push(getStoryText(volume[i], 40));
-                    page.push(getStoryText(volume[i+1], 680));
+                    page.push(getStoryText(volume[i], 30));
+                    page.push(getStoryText(volume[i+1], 515));
                     story[volumeName].push(page);
                 }
                 var word = challengeWords[volumeName][i];
@@ -138,8 +138,8 @@ var story = {};
                 for(var j = 0; j < chapter.length; j++){
                     if(j%2 == 0){
                         var page = [];
-                        page.push(getStoryText(chapter[j], 40));
-                        page.push(getStoryText(chapter[j+1], 680));
+                        page.push(getStoryText(chapter[j], 30));
+                        page.push(getStoryText(chapter[j+1], 515));
                         story[volumeName][chapterName].push(page);
                     }
                     var word = challengeWords[volumeName][chapterName][j];
@@ -155,13 +155,15 @@ var story = {};
         return new Kinetic.Text({
             text : text,
             x : x,
-            y : 95,
-            width : 560,
+            y : 28,
+            width : 455,
             fontFamily: "lp_BodyFont",
             fontSize: 24,
             fill: "black",
             lineHeight: 1.2,
-            listening: false
+            listening: false,
+            stroke:"black",
+            strokeWidth:1
         });
     }
 
@@ -174,7 +176,9 @@ var story = {};
             fontSize: 24,
             fill: color || "red",
             lineHeight: 1.2,
-            listening: true
+            listening: true,
+            stroke:color || "red",
+            strokeWidth:1
         });
     }
 })();

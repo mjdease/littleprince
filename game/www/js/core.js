@@ -14,6 +14,10 @@ window.storybook = {};
     var asteroidProgress = {};
     var accelerometer = {x:0,y:0,z:0};
     var accWatchId = null;
+    var text = {
+        startY : 60,
+        transSpeed : 800
+    };
     var cache = {};
 
     var menuAssets = [
@@ -21,6 +25,10 @@ window.storybook = {};
         {name: "audio", path: "assets/images/ui/page_global/button_audio.png"},
         {name: "next", path: "assets/images/ui/page_global/button_prevPage.png"},
         {name: "prev", path: "assets/images/ui/page_global/button_nextPage.png"},
+        {name: "top", path: "assets/images/ui/page_global/textFrame_top.png"},
+        {name: "mid", path: "assets/images/ui/page_global/textFrame_content.png"},
+        {name: "bottom_hide", path: "assets/images/ui/page_global/textFrame_bottom_hide.png"},
+        {name: "bottom_show", path: "assets/images/ui/page_global/textFrame_bottom_show.png"}
     ];
 
     app.initialize = function(){
@@ -113,6 +121,32 @@ window.storybook = {};
             }
         }, [layers.staticFront, layers.staticBack, layers.dynFront, layers.dynBack]);
 
+        text.transitionIn = new K.Animation(function(frame){
+            text.position = "transitioning";
+            var dispY = text.transSpeed * frame.timeDiff / 1000;
+            text.group.move(0, dispY);
+            if(text.group.getY() > text.startY){
+                text.group.setY(text.startY);
+                text.position = "down";
+                text.toggle.setImage(text.bottom_hide);
+                text.transitionIn.stop();
+                layers.staticFront.batchDraw();
+            }
+        }, layers.staticFront);
+
+        text.transitionOut = new K.Animation(function(frame){
+            text.position = "transitioning";
+            var dispY = -1 * text.transSpeed * frame.timeDiff / 1000;
+            text.group.move(0, dispY);
+            if(text.group.getY() < -text.groupHeight){
+                text.group.setY(-text.groupHeight);
+                text.position = "up";
+                text.toggle.setImage(text.bottom_show);
+                text.transitionOut.stop();
+                layers.staticFront.batchDraw();
+            }
+        }, layers.staticFront);
+
         stage.draw();
 
         nextBtn = new K.Image({
@@ -142,15 +176,32 @@ window.storybook = {};
         });
         audioBtn = new K.Image({
             image: images.audio,
-            x: gameWidth - 10 - 136,
+            x: gameWidth - 10 - 75,
             y: 10
         }).on(clickEvt, function(){
             if(transition.isRunning() || pageIsLoading) return;
             //app.showSettings();
         });
 
-        overlay.add(nextBtn).add(prevBtn).add(menuBtn).add(audioBtn);
+        text.top = new K.Image({
+            image: images.top,
+            listening: false
+        });
+        text.topHeight = text.top.getHeight();
 
+        text.mid = new K.Image({
+            image: images.mid,
+            listening: false
+        });
+        text.midHeight = text.mid.getHeight();
+
+        text.bottom_show = images.bottom_show;
+        text.bottom_hide = images.bottom_hide;
+        text.bottom = new K.Image({
+            listening: true
+        });
+
+        overlay.add(nextBtn).add(prevBtn).add(menuBtn).add(audioBtn);
 
         if(startAtPageId && pages[startAtPageId]){
             // DEBUG ONLY
@@ -265,9 +316,28 @@ window.storybook = {};
         layers.staticBack.add(target);
 
         if(currentPage.text){
-            for(var i = 0; i < currentPage.text.length; i++){
-                layers.staticFront.add(currentPage.text[i]);
+            var maxHeight = Math.max(currentPage.text[0].getHeight(), currentPage.text[1].getHeight());
+            var numMidSections = Math.ceil(maxHeight / text.midHeight);
+            text.toggle = text.bottom.clone({
+                image : text.bottom_hide,
+                y : text.topHeight + text.midHeight * numMidSections
+            }).on(clickEvt, toggleText);
+            text.group = new K.Group({
+                x:gameWidth/2,
+                y:text.startY,
+                offsetX:500
+            });
+            text.group.add(text.top.clone());
+            for(var i = 0; i < numMidSections; i++){
+                text.group.add(text.mid.clone({
+                    y: text.topHeight + i * text.midHeight
+                }));
             }
+            text.group.add(text.toggle);
+            text.groupHeight = text.topHeight + text.midHeight * numMidSections;
+            text.position = "down";
+            text.group.add(currentPage.text[0]).add(currentPage.text[1]);
+            layers.staticFront.add(text.group);
         }
 
         if(currentPage.hasChallenge && images["hint"]){
@@ -279,7 +349,7 @@ window.storybook = {};
             var challengeText = currentPage.challengeText.clone();
             var hintSize = hint.getSize();
             hint.setOffset(hintSize.width/2, hintSize.height);
-            layers.staticFront.add(hint);
+            text.group.add(hint);
             layers.staticFront.batchDraw();
 
             hint.on(clickEvt, function(e){
@@ -290,6 +360,7 @@ window.storybook = {};
                 if(!currentPage.challengeStarted){
                     currentPage.challengeStarted = true;
                     currentPage.startChallenge(layers);
+                    toggleText(false);
                 }
 
                 stage.off(clickEvt);
@@ -312,7 +383,7 @@ window.storybook = {};
                 });
             });
 
-            layers.staticFront.add(challengeText);
+            text.group.add(challengeText);
         }
 
         layers.staticFront.batchDraw();
@@ -466,6 +537,28 @@ window.storybook = {};
 
     function saveProgress(){
         localStorage.setItem("lp_progress", JSON.stringify(bookProgress));
+    }
+
+    function toggleText(show){
+        if(text.transitionIn.isRunning() || text.transitionOut.isRunning()){
+            return;
+        }
+        if(typeof show === "boolean"){
+            if(show && text.position == "up"){
+                text.transitionIn.start();
+            }
+            else if(!show && text.position == "down"){
+                text.transitionOut.start();
+            }
+        }
+        else{
+            if(text.position === "down"){
+                text.transitionOut.start();
+            }
+            else{
+                text.transitionIn.start();
+            }
+        }
     }
 
     // imageList - array of objects containing name and path
