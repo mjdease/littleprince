@@ -6,9 +6,10 @@ window.storybook = {};
     var pgAssetPath = "/andoid_asset/www/";
     var stage, layers = {}, underlay, overlay, updateLoop, transition;
     var deviceReady = false, bookReady = false, waitingForStage = false, pageIsLoading = true;
-    var currentPage, targetPage, transitionSpeed = 2000, transitionState = 0, transitionDir = -1, pages = {}, challengesComplete = {};
+    var currentPage, targetPage, transitionSpeed = 2000, transitionState = 0, transitionDir = -1, pages = {}, challengeIds = [];
     var prevBtn, nextBtn, homeBtn, audioBtn;
     var book;
+    var bookProgress;
     var narration;
     var asteroidProgress = {};
     var accelerometer = {x:0,y:0,z:0};
@@ -46,6 +47,13 @@ window.storybook = {};
     }
 
     var begin = function(images){
+        loadSavedProgress();
+        if(!bookProgress.currentPage){
+            for(var i = 0; i < challengeIds.length; i++){
+                bookProgress.challenges[challengeIds[i]] = false;
+            }
+        }
+
         stage = new K.Stage({
             container: "game-stage",
             width: gameWidth,
@@ -173,6 +181,11 @@ window.storybook = {};
         // set new page
         currentPage = targetPage;
         targetPage = null;
+
+        if(currentPage.id != "menu0"){
+            bookProgress.currentPage = currentPage.id;
+            saveProgress();
+        }
 
         // initalize new page
         if(currentPage.requiredImages){
@@ -375,7 +388,7 @@ window.storybook = {};
     };
 
     app.getAsteroidProgress = function(){
-        return asteroidProgress;
+        return bookProgress.asteroids;
     }
 
     //exists here only for backwards compatibility. use defineSprite in util.js
@@ -386,16 +399,16 @@ window.storybook = {};
     app.registerPage = function(page){
         pages[page.id] = page;
         if(page.hasChallenge){
-            challengesComplete[page.id] = false;
+            challengeIds.push(page.id);
         }
     };
 
     app.pageComplete = function(){
         if(currentPage.hasChallenge){
-            challengesComplete[currentPage.id] = true;
+            bookProgress.challenges[currentPage.id] = true;
         }
         if(currentPage.asteroidId && currentPage.nextPage == "menu1"){
-            asteroidProgress[currentPage.asteroidId] = true;
+            bookProgress.asteroids[currentPage.asteroidId] = true;
         }
         updateButtonVisibility();
         // if(currentPage.hasChallenge){
@@ -413,7 +426,7 @@ window.storybook = {};
     var updateButtonVisibility = function(){
         var challengeDone = true;
         if(currentPage.hasChallenge){
-            challengeDone = challengesComplete[currentPage.id];
+            challengeDone = bookProgress.challenges[currentPage.id];
         }
         menuBtn.toggle(currentPage.id != "menu0");
         audioBtn.toggle(currentPage.id != "menu0");
@@ -427,6 +440,33 @@ window.storybook = {};
             layers[layer].destroyChildren();
         }
     };
+
+    app.hasSavedGame = function(){
+        return bookProgress.currentPage != "menu0";
+    };
+
+    app.discardSavedGame = function(){
+        bookProgress = {challenges:{}, asteroids:{}};
+        saveProgress();
+    };
+
+    app.continueSavedGame = function(){
+        if(bookProgress.currentPage){
+            app.goToPage(bookProgress.currentPage);
+        }
+        else{
+            changePage("next");
+        }
+    };
+
+    function loadSavedProgress(){
+        var savedProgress = localStorage.getItem("lp_progress");
+        bookProgress = savedProgress ? JSON.parse(savedProgress) : {challenges:{}, asteroids:{}};
+    }
+
+    function saveProgress(){
+        localStorage.setItem("lp_progress", JSON.stringify(bookProgress));
+    }
 
     // imageList - array of objects containing name and path
     //          eg: [{name: "test", path: "assets/images/testimg.png"},
