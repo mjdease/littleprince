@@ -58,6 +58,10 @@
         {name: "cloud4", path: "assets/images/earthIntro/01_cloud4.png"},
         {name: "cloud5", path: "assets/images/earthIntro/01_cloud5.png"},
         {name: "cloud6", path: "assets/images/earthIntro/01_cloud6.png"},
+        {name: "ameter", path: "assets/images/earthIntro/01_angle-meter.jpg"},
+        {name: "smeter", path: "assets/images/earthIntro/01_speed-meter.jpg"},
+        {name: "down", path: "assets/images/earthIntro/01_arrow-down.png"},
+        {name: "up", path: "assets/images/earthIntro/01_arrow-up.png"},
         {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch01_01.png"}
         ]);
 
@@ -108,7 +112,21 @@
         }, 644, 446, {planeAnim: 7});
         layers.dynFront.add(assets.plane);
 
+        assets.images = {
+            up : images.up,
+            down: images.down,
+            smeter: images.smeter,
+            ameter: images.ameter
+        };
+
         initializeUi();
+
+        stage.on("mouseup touchend", function(){
+            increaseSpeed = false;
+            decreaseSpeed = false;
+            increaseAngle = false;
+            decreaseAngle = false;
+        });
     };
 
     page.startPage = function(layers){
@@ -119,12 +137,6 @@
         initializeUi();
 
         layers.dynFront.add(ui.angle).add(ui.throttle);
-        $(document).on("mouseup touchend", function(){
-            increaseSpeed = false;
-            decreaseSpeed = false;
-            increaseAngle = false;
-            decreaseAngle = false;
-        });
 
         page.setState(page.States.PLAYING);
     };
@@ -329,21 +341,11 @@
 
         var label = new Kinetic.Text({
             fontFamily:"lp_BodyFont",
-            fontWeight:"bold",
+            y:3,
             fontSize:28,
-            lineHeight:30,
             width:90,
             align:"center",
             fill:"black"
-        });
-        var meter = new Kinetic.Rect({
-            y:30,
-            width: 30,
-            height: 160,
-            stroke: "black",
-            strokeWeight: 3,
-            fillLinearGradientStartPointY : 0,
-            fillLinearGradientEndPointY : 160
         });
         var loc = new Kinetic.Rect({
             width:10,
@@ -352,23 +354,23 @@
             rotation : Math.PI/4,
             fill:"black"
         });
-        var btn = new Kinetic.Rect({
-            width:50,
-            height:80,
-            fill:"orange"
+        var btnUp = new Kinetic.Image({
+            image: assets.images.up
+        });
+        var btnDown = new Kinetic.Image({
+            image: assets.images.down
         });
 
-        ui.angleUp = btn.clone({
+        ui.angleUp = btnUp.clone({
             x:40,
             y:30
         }).on("mousedown touchstart", function(){
             decreaseAngle = true;
-        })
+        });
 
-        ui.angleDown = btn.clone({
+        ui.angleDown = btnDown.clone({
             x:40,
-            y:30+80,
-            fill:"blue"
+            y:30+80
         }).on("mousedown touchstart", function(){
             increaseAngle = true;
         });
@@ -378,22 +380,26 @@
         });
         ui.angleLabel = label.clone({
             fontSize:24,
-            y: 200
         });
-        ui.angle.add(meter.clone({
-            fillLinearGradientColorStops : [0, "red", 0.5, "green", 1, "red"]
+        ui.angle.add(new Kinetic.Image({
+            y:30,
+            stroke: "black",
+            strokeWidth: 6,
+            image:assets.images.ameter
         })).add(label.clone({
-            text:"Angle"
+            text:"Angle",
+            y: -32,
+            stroke: "black",
+            strokeWidth: 1,
         })).add(ui.angleIndicator).add(ui.angleDown).add(ui.angleUp).add(ui.angleLabel);
 
-        ui.throttleUp = btn.clone({
+        ui.throttleUp = btnUp.clone({
             y:30
         }).on("mousedown touchstart", function(){
             increaseSpeed = true;
         });
-        ui.throttleDown = btn.clone({
-            y:30+80,
-            fill:"blue"
+        ui.throttleDown = btnDown.clone({
+            y:30+80
         }).on("mousedown touchstart", function(){
             decreaseSpeed = true;
         });
@@ -404,14 +410,20 @@
         });
         ui.throttleLabel = label.clone({
             fontSize:24,
-            y: 200,
-            width:120
+            width:120,
+            offsetX:15
         });
-        ui.throttle.add(meter.clone({
+        ui.throttle.add(new Kinetic.Image({
+            y: 30,
             x: 60,
-            fillLinearGradientColorStops : [0, "red", map(landingSpeed, stallSpeed, maxSpeed, 1, 0), "green", 1, "red"]
+            stroke: "black",
+            strokeWidth: 6,
+            image: assets.images.smeter
         })).add(label.clone({
-            text:"Speed"
+            text:"Speed",
+            y: -32,
+            stroke: "black",
+            strokeWidth: 1,
         })).add(ui.throttleIndicator).add(ui.throttleDown).add(ui.throttleUp).add(ui.throttleLabel);
     }
 
