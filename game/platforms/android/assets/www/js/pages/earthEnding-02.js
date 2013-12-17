@@ -5,7 +5,7 @@
 
     page.setNextPage("earthEnding", 3);
 
-    page.setNarration("assets/sound/test.mp3");
+    page.setNarration();
 
     page.setRequiredAssets([
         {name: "background", path: "assets/images/earthEnding/bgPage26.jpg"}

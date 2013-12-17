@@ -81,14 +81,14 @@
 
     // Page transition has completed and non-challenge animations/listeners should start now
     // Event listeners should be bound in here or later - not in the initPage function!
-    page.startPage = function(){
+    page.startPage = function(layers){
         sprite.start();
     };
 
     // CHALLENGE PAGES ONLY
     // The user has tapped on the vocab word and chosen to start the game
     // Start the game here, at minimum put it into the playing state.
-    page.startChallenge = function(){
+    page.startChallenge = function(layers){
         // the clickEvt will be "click" on desktop, or "tap" on mobile
         sprite.on(clickEvt, onSpriteClick);
 

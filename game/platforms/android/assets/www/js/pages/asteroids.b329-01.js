@@ -24,7 +24,7 @@
         {name: "hint", path: "assets/images/ui/page_challenge/05/hint_ch05_01.png"}
     ]);
 
-    page.setNarration("assets/sound/test.mp3");
+    page.setNarration();
 
     page.initPage = function(images, stage, layers){
         lampSprite = storybook.defineSprite({

@@ -11,7 +11,7 @@
         {name: "background", path: "assets/images/asteroids/b612/ground.jpg"}
     ]);
 
-    page.setNarration("assets/sound/test.mp3");
+    page.setNarration();
 
     page.initPage = function(images, stage, layers){
         sprite = storybook.defineSprite({
