@@ -4,20 +4,20 @@
     var loops = {};
     var ui = {};
     var scale = {
-        clouds : -0.1,
-        dunes : -0.35,
-        sand : -1
+        clouds : -0.15,
+        dunes : -0.6,
+        sand : -2
     }
 
     // gameplay constants
     var speed = 226;
-    var speedChangeRate = 0.8;
+    var speedChangeRate = 1.3;
     var landingSpeed = 113;
     var landingSpeedTolerance = 25;
     var maxSpeed = 302;
     var stallSpeed = 87;
     var angle = 0;
-    var angleChangeRate = Math.PI/256;
+    var angleChangeRate = Math.PI/512;
     var angleLimit = Math.PI / 4;
     var angleLandingTolerance = Math.PI / 16;
 
@@ -81,7 +81,7 @@
         }
 
         assets.sand = new Kinetic.Image({
-            y: 752,
+            y: stageHeight,
             image: images.sand,
             offsetY: 120
         });
@@ -118,12 +118,13 @@
     page.startChallenge = function(layers){
         initializeUi();
 
-        layers.dynFront.add(ui.angle).add(ui.throttle).on("mouseup touchend", function(){
+        layers.dynFront.add(ui.angle).add(ui.throttle);
+        $(document).on("mouseup touchend", function(){
             increaseSpeed = false;
             decreaseSpeed = false;
             increaseAngle = false;
             decreaseAngle = false;
-        });;
+        });
 
         page.setState(page.States.PLAYING);
     };
@@ -237,7 +238,7 @@
                 return;
             }
             //touchdown
-            if(assets.plane.getY() > 752 - 120){
+            if(assets.plane.getY() > stageHeight - 120){
                 if(angle > angleLandingTolerance || angle < -angleLandingTolerance){
                     endChallenge(false, "The plane landed at too steep an angle.", layer);
                     return;
@@ -304,6 +305,10 @@
         angle = 0;
         inputLastCheck = 0;
         endLastCheck = 0;
+        increaseSpeed = false;
+        decreaseSpeed = false;
+        increaseAngle = false;
+        decreaseAngle = false;
     }
 
     function restartChallenge(){
@@ -315,11 +320,11 @@
     function initializeUi(){
         ui.angle = new Kinetic.Group({
             x:1280 - 90 - 20,
-            y:752 - 10 - 136 - 10 - 190
+            y:stageHeight - 10 - 136 - 10 - 190
         });
         ui.throttle = new Kinetic.Group({
             x:20,
-            y:752 - 10 - 136 - 10 - 190
+            y:stageHeight - 10 - 136 - 10 - 190
         });
 
         var label = new Kinetic.Text({
