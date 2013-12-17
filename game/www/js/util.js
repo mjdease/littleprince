@@ -114,6 +114,10 @@ function getPath(path){
     return path;
 }
 
+function map(value, low1, high1, low2, high2) {
+    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+}
+
 // h,s,and v need to be 0.0-1.0
 function HSVtoRGB(h, s, v) {
     var r, g, b, i, f, p, q, t;

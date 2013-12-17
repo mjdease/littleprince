@@ -1,21 +1,45 @@
 (function(){
-    var planeSprite;
-    var bg1Img;
-    var bg2Img;
-    var cloud1Img;
-    var cloud2Img;
-    var cloud3Img;
-    var cloud4Img;
-    var cloud5Img;
-    var cloud6Img;
-    var rButtonImg;
-    var lButtonImg;
-    var uButtonImg;
-    var dButtonImg;
+    var assets = {};
+    var sounds = {};
+    var loops = {};
+    var ui = {};
+    var scale = {
+        clouds : -0.1,
+        dunes : -0.35,
+        sand : -1
+    }
+
+    // gameplay constants
+    var speed = 226;
+    var speedChangeRate = 0.8;
+    var landingSpeed = 113;
+    var landingSpeedTolerance = 25;
+    var maxSpeed = 302;
+    var stallSpeed = 87;
+    var angle = 0;
+    var angleChangeRate = Math.PI/256;
+    var angleLimit = Math.PI / 4;
+    var angleLandingTolerance = Math.PI / 16;
+
+    // asset layout
+    var duneStart = -200;
+    var duneOverlap = 360;
+    var sandOverlap = 5;
+    var stageWidth, duneWidth, sandWidth;
+
+    // inputs
+    var increaseSpeed = false;
+    var decreaseSpeed = false;
+    var increaseAngle = false;
+    var decreaseAngle = false;
+
+    // update rate throttles
+    var inputLastCheck = 0;
+    var inputCheckThreshold = 100;
+    var endLastCheck = 0;
+    var endCheckThreshold = 400;
 
     var page = new Page("earthIntro", 1);
-    var sounds = {};
-
     page.setPreviousPage("earthIntro", 0);
 
     page.setNextPage("earthIntro", 2);
@@ -24,303 +48,366 @@
     page.setRightTextStyle(null, null, null,"#ffffff");
 
     page.setRequiredAssets([
-        {name: "planeImg", path: "assets/images/earthIntro/plane.png"},
-        {name: "runwayImg", path: "assets/images/earthIntro/runway.png"},
-        {name: "background", path: "assets/images/earthIntro/sky.png"},
-        {name: "bg1Img", path: "assets/images/earthIntro/bg1.png"},
-        {name: "sandImg", path: "assets/images/earthIntro/sands.png"},
-        {name: "bg2Img", path: "assets/images/earthIntro/bg2.png"},
-        {name: "cloud1Img", path: "assets/images/earthIntro/cloud1.png"},
-        {name: "cloud2Img", path: "assets/images/earthIntro/cloud2.png"},
-        {name: "cloud3Img", path: "assets/images/earthIntro/cloud3.png"},
-        {name: "cloud4Img", path: "assets/images/earthIntro/cloud4.png"},
-        {name: "cloud5Img", path: "assets/images/earthIntro/cloud5.png"},
-        {name: "cloud6Img", path: "assets/images/earthIntro/cloud6.png"},
+        {name: "plane", path: "assets/images/earthIntro/01_plane.png"},
+        {name: "background", path: "assets/images/earthIntro/01_sky.jpg"},
+        {name: "dunes", path: "assets/images/earthIntro/01_dunes.png"},
+        {name: "sand", path: "assets/images/earthIntro/01_sands.png"},
+        {name: "cloud1", path: "assets/images/earthIntro/01_cloud1.png"},
+        {name: "cloud2", path: "assets/images/earthIntro/01_cloud2.png"},
+        {name: "cloud3", path: "assets/images/earthIntro/01_cloud3.png"},
+        {name: "cloud4", path: "assets/images/earthIntro/01_cloud4.png"},
+        {name: "cloud5", path: "assets/images/earthIntro/01_cloud5.png"},
+        {name: "cloud6", path: "assets/images/earthIntro/01_cloud6.png"},
         {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch01_01.png"}
-    ]);
+        ]);
 
     page.setNarration();
 
     page.initPage = function(images, stage, layers){
+        stageWidth = stage.getWidth();
+        stageHeight = stage.getHeight();
 
-        sandImg = new Kinetic.Image({
-            x: 0,
-            y: 600,
-            image: images.sandImg,
-            width: 2000,
-            height: 152
+        assets.clouds = [];
+        loops.clouds = [];
+        for(var i = 0; i < 6; i++){
+            var cloud = new Kinetic.Image({
+                x: randomInt(30, 1200),
+                y: randomInt(0, 360),
+                image: images["cloud" + i],
+            });
+            layers.dynBack.add(cloud);
+            assets.clouds.push(cloud);
+            loops.clouds.push(cloud);
+        }
+
+        assets.sand = new Kinetic.Image({
+            y: 752,
+            image: images.sand,
+            offsetY: 120
         });
-        layers.staticBack.add(sandImg);
+        sandWidth = assets.sand.getWidth();
+        loops.sands = [assets.sand.clone({x:0}), assets.sand.clone({x:sandWidth - sandOverlap}), assets.sand.clone({x:(sandWidth - sandOverlap)*2})];
 
-        cloud1Img = new Kinetic.Image({
-            x: 600,
-            y: 0,
-            image: images.cloud1Img,
-            width: 427,
-            height: 172
+        assets.dune = new Kinetic.Image({
+            y: 374,
+            image: images.dunes
         });
-        layers.dynBack.add(cloud1Img);
+        duneWidth = assets.dune.getWidth();
+        loops.dunes = [assets.dune.clone({x:duneStart}), assets.dune.clone({x:duneStart + duneWidth - duneOverlap})]
 
-        cloud2Img = new Kinetic.Image({
-            x: 10,
-            y: 50,
-            image: images.cloud2Img,
-            width: 427,
-            height: 172
-        });
-        layers.dynBack.add(cloud2Img);
+        addToStage(layers.dynBack, loops.dunes);
+        addToStage(layers.dynBack, loops.sands);
 
-        cloud3Img = new Kinetic.Image({
-            x: 1000,
-            y: 50,
-            image: images.cloud3Img,
-            width: 427,
-            height: 172
-        });
-        layers.dynBack.add(cloud3Img);
-
-        cloud4Img = new Kinetic.Image({
-            x: 500,
-            y: 100,
-            image: images.cloud4Img,
-            width: 427,
-            height: 172
-        });
-        layers.dynBack.add(cloud4Img);
-
-        cloud5Img = new Kinetic.Image({
-            x: 250,
-            y: 0,
-            image: images.cloud5Img,
-            width: 427,
-            height: 172
-        });
-        layers.dynBack.add(cloud5Img);
-
-        cloud6Img = new Kinetic.Image({
-            x: 0,
-            y: 0,
-            image: images.cloud6Img,
-            width: 427,
-            height: 172
-        });
-        layers.dynBack.add(cloud6Img);
-
-        bg1Img = new Kinetic.Image({
-            x: 0,
-            y: 0,
-            image: images.bg1Img,
-            width: 3682,
-            height: 698
-        });
-        layers.dynBack.add(bg1Img);
-
-        bg2Img = new Kinetic.Image({
-            x: 0,
-            y: 0,
-            image: images.bg2Img,
-            width: 3682,
-            height: 698
-        });
-        layers.dynBack.add(bg2Img);
-
-        runwayImg = new Kinetic.Image({
-            x: 1100,
-            y: 700,
-            image: images.runwayImg,
-            width: 1704,
-            height: 60
-        });
-        layers.dynBack.add(runwayImg);
-
-        planeSprite = storybook.defineSprite({
-            x:0,
-            y:0,
-            image: images.planeImg,
+        assets.plane = defineSprite({
+            x: 510,
+            y: 190,
+            offset: {x:375, y:347},
+            image: images.plane,
             animation: "planeAnim",
             frameRate: 24
         }, 644, 446, {planeAnim: 7});
-        layers.dynFront.add(planeSprite);
+        layers.dynFront.add(assets.plane);
 
-        rButton = new Kinetic.Circle({
-         x: 1150,
-         y: 400,
-         radius: 20,
-         fill: 'blue'
-      });
-        lButton = new Kinetic.Circle({
-         x: 1110,
-         y: 400,
-         radius: 20,
-         fill: 'red'
-      });
-      uButton = new Kinetic.Circle({
-         x: 1125,
-         y: 370,
-         radius: 20,
-         fill: 'green'
-      });
-      dButton = new Kinetic.Circle({
-         x: 1125,
-         y: 430,
-         radius: 20,
-         fill: 'yellow'
-      });
-
-        layers.staticFront.add(rButton);
-        layers.staticFront.add(lButton);
-        layers.staticFront.add(uButton);
-        layers.staticFront.add(dButton);
+        initializeUi();
     };
 
-
-    page.startPage = function(){
-        planeSprite.start();
+    page.startPage = function(layers){
+        assets.plane.start();
     };
 
-    page.startChallenge = function()
-    {
-         function moveImageR()
-        {
-          var planePosX = planeSprite.getX() + 20;
-          planeSprite.setX(planePosX);
+    page.startChallenge = function(layers){
+        initializeUi();
 
-          var rotValue = planeSprite.getRotationDeg();
-          var planePosY = planeSprite.getY();
-          var planeRot = rotValue + planePosY;
+        layers.dynFront.add(ui.angle).add(ui.throttle).on("mouseup touchend", function(){
+            increaseSpeed = false;
+            decreaseSpeed = false;
+            increaseAngle = false;
+            decreaseAngle = false;
+        });;
 
-          planeSprite.setY(planeRot);
-
-
-            if(planeSprite.getY() <= 0)
-            {
-                planeSprite.setY(0);
-            }
-         }
-
-      function moveImageL()
-      {
-          var planePos = planeSprite.getX() - 2;
-          planeSprite.setX(planePos) ;
-
-          if(planeSprite.getX() <= 0)
-            {
-                planeSprite.setX(0);
-            }
-
-            if(planeSprite.getY() <= 0)
-            {
-                planeSprite.setY(0);
-            }
-      }
-
-      function moveImageU()
-      {
-          var planeRot = planeSprite.getRotationDeg() - 2;
-          planeSprite.setRotationDeg(planeRot);
-
-          if(planeSprite.getRotationDeg() <= -16)
-            {
-                planeSprite.setRotationDeg(-16);
-            }
-      }
-
-      function moveImageD()
-      {
-          var planeRot = planeSprite.getRotationDeg() + 2;
-          planeSprite.setRotationDeg(planeRot);
-
-          if(planeSprite.getRotationDeg() >= 16)
-            {
-                planeSprite.setRotationDeg(16);
-            }
-      }
-
-       rButton.on(clickEvt, moveImageR);
-       lButton.on(clickEvt, moveImageL);
-       uButton.on(clickEvt, moveImageU);
-       dButton.on(clickEvt, moveImageD);
-
-       page.setState(page.States.PLAYING);
+        page.setState(page.States.PLAYING);
     };
 
     page.update = function(frame, stage, layers){
+        var pageState = page.getState();
+        if(pageState == page.States.FAILED || speed == 0){
+            return;
+        }
 
-       var bg1Pos = bg1Img.getX() -0.20;
-        bg1Img.setX(bg1Pos) ;
-
-       var bg2Pos = bg2Img.getX() -0.10;
-        bg2Img.setX(bg2Pos) ;
-
-       var cloud1Pos = cloud1Img.getX() - 0.1;
-        cloud1Img.setX(cloud1Pos) ;
-
-       var cloud2Pos = cloud2Img.getX() - 0.01;
-        cloud2Img.setX(cloud2Pos) ;
-
-        var cloud3Pos = cloud3Img.getX() - 0.1;
-        cloud3Img.setX(cloud3Pos) ;
-
-        var cloud4Pos = cloud4Img.getX() - 0.01;
-        cloud4Img.setX(cloud4Pos) ;
-
-        var cloud5Pos = cloud5Img.getX() - 0.1;
-        cloud5Img.setX(cloud5Pos) ;
-
-        var cloud6Pos = cloud6Img.getX() - 0.1;
-        cloud6Img.setX(cloud6Pos) ;
-
-
-        if(planeSprite.getY() >= 320)
-        {
-            if((planeSprite.getX() + 644) >= runwayImg.getX())
-            {
-                if (planeSprite.getRotationDeg() <= 8)
-                {
-                    page.challengeComplete();
-
-                    rButton.off(clickEvt);
-                    lButton.off(clickEvt);
-                    uButton.off(clickEvt);
-                    dButton.off(clickEvt);
-
-                    planeSprite.stop();
-                }
-                else
-                {
-                    //alert('crashed; too steep');
-                }
-            }
-            else
-            {
-                //alert('missed the runway');
+        if(pageState == page.States.PASSED){
+            speed -= 0.2*speedChangeRate;
+            if(speed < 0) {
+                assets.plane.stop();
+                speed = 0;
             }
         }
 
-        if ((runwayImg.getX() + 900) <= (planeSprite.getX() + 550))
-        {
+        var dispX = speed * Math.cos(angle) * frame.timeDiff / 1000;
+        var dispY = speed * Math.sin(angle) * frame.timeDiff / 1000;
 
-            //alert('missed it');
+        assets.plane.setRotation(angle);
+        if(pageState != page.States.PASSED){
+            assets.plane.move(0, dispY);
         }
 
-        if(page.getState() != page.States.PLAYING){
-             return;
+        for(var i = 0; i < loops.clouds.length; i++){
+            var cloud = loops.clouds[i];
+            if(cloud.getX() + cloud.getWidth() < 0){
+                cloud.setX(stageWidth);
+            }
+            else{
+                cloud.move(scale.clouds * dispX, 0);
+            }
         }
 
-        var planePos = planeSprite.getX() + 0.1;
-        planeSprite.setX(planePos) ;
+        for(i = 0; i < loops.dunes.length; i++){
+            var dune = loops.dunes[i];
+            if(dune.getX() + duneWidth < 0){
+                dune.setX(duneWidth - duneOverlap*2);
+            }
+            dune.move(scale.dunes * dispX, 0);
+        }
 
-        var runwayPos = runwayImg.getX() -0.5;
-            runwayImg.setX(runwayPos) ;
+        for(i = 0; i < loops.sands.length; i++){
+            var sand = loops.sands[i];
+            var currX = sand.getX();
+            if(currX + sandWidth < 0){
+                sand.setX(currX + (sandWidth - sandOverlap) * 3);
+            }
+            sand.move(scale.sand * dispX, 0);
+        }
+
+        if(pageState != page.States.PLAYING){
+            return;
+        }
+
+        updateVelocity();
+        checkEnd(layers.staticFront);
     };
 
-    page.onStageClick = function(e){
-        console.log(e);
+    page.destroyPage = function(){
+        resetChallenge();
+
+        for(var n in loops){
+            delete loops[n];
+        }
+        for(n in assets){
+            delete assets[n];
+        }
+        for(n in ui){
+            delete ui[n];
+        }
+        for(n in sounds){
+            sounds[n].destroy();
+            delete sounds[n];
+        }
     };
 
-    function onSpriteClick(e){
-        sprite.stop();
-        page.challengeComplete();
+    function getAngleMeterStatus(){
+        return 30 + map(angle, -angleLimit, angleLimit, 0, 160);
+    }
+
+    function getSpeedMeterStatus(){
+        return 30 + map(speed, maxSpeed, stallSpeed, 0, 160);
+    }
+
+    function updateVelocity(){
+        if(Date.now() - inputLastCheck > inputCheckThreshold){
+            inputLastCheck = Date.now();
+            if(increaseAngle) angle += angleChangeRate;
+            if(decreaseAngle) angle -= angleChangeRate;
+            if(increaseSpeed) speed += speedChangeRate;
+            if(decreaseSpeed) speed -= speedChangeRate;
+            speed += speedChangeRate * 2 * map(angle, -angleLimit, angleLimit, -1, 1);
+            if(speed > maxSpeed) speed = maxSpeed;
+            if(angle < -angleLimit) angle = -angleLimit;
+            if(angle > angleLimit) angle = angleLimit;
+            ui.angleIndicator.setY(getAngleMeterStatus());
+            ui.angleLabel.setText(Math.round(angle * -180 / Math.PI) + "°");
+            ui.throttleIndicator.setY(getSpeedMeterStatus());
+            ui.throttleLabel.setText(Math.round(speed / 0.621) + "km/h");
+        }
+    }
+
+    function checkEnd(layer){
+        if(Date.now() - endLastCheck > endCheckThreshold){
+            endLastCheck = Date.now();
+            if(speed < stallSpeed){
+                endChallenge(false, "The plane was travelling too slow and stalled.", layer);
+                return;
+            }
+            //touchdown
+            if(assets.plane.getY() > 752 - 120){
+                if(angle > angleLandingTolerance || angle < -angleLandingTolerance){
+                    endChallenge(false, "The plane landed at too steep an angle.", layer);
+                    return;
+                }
+                if(speed > landingSpeed + landingSpeedTolerance){
+                    endChallenge(false, "The plane was travelling too fast.", layer);
+                    return;
+                }
+                endChallenge(true, "You landed the plane successfully!", layer);
+                return;
+            }
+        }
+    }
+
+    function endChallenge(isPass, message, layer){
+        var msgbox = new Kinetic.Rect({
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            fill: isPass ? "green" : "red",
+            opacity: 0.8,
+            stroke: "black",
+            strokeWeight: 10
+        });
+        var msg = new Kinetic.Text({
+            text:message + (isPass ? "" : "\nTap to retry."),
+            fontFamily:"lp_BodyFont",
+            fontWeight:"bold",
+            fontSize:32,
+            padding:20,
+            align:"center",
+            fill:"black",
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            listening:false
+        });
+        if(isPass){
+            ui.throttle.hide();
+            ui.angle.hide();
+            page.setState(page.States.PASSED);
+        }
+        else{
+            assets.plane.stop();
+            msgbox.on(clickEvt, function(){
+                msg.destroy();
+                msgbox.destroy();
+                layer.batchDraw();
+                restartChallenge();
+            });
+            page.setState(page.States.FAILED);
+        }
+        layer.add(msgbox).add(msg).batchDraw();
+    }
+
+    function resetChallenge(){
+        speed = 226;
+        angle = 0;
+        inputLastCheck = 0;
+        endLastCheck = 0;
+    }
+
+    function restartChallenge(){
+        resetChallenge();
+        assets.plane.setPosition(510, 190).start();
+        page.setState(page.States.PLAYING);
+    }
+
+    function initializeUi(){
+        ui.angle = new Kinetic.Group({
+            x:1280 - 90 - 20,
+            y:752 - 10 - 136 - 10 - 190
+        });
+        ui.throttle = new Kinetic.Group({
+            x:20,
+            y:752 - 10 - 136 - 10 - 190
+        });
+
+        var label = new Kinetic.Text({
+            fontFamily:"lp_BodyFont",
+            fontWeight:"bold",
+            fontSize:28,
+            lineHeight:30,
+            width:90,
+            align:"center",
+            fill:"black"
+        });
+        var meter = new Kinetic.Rect({
+            y:30,
+            width: 30,
+            height: 160,
+            stroke: "black",
+            strokeWeight: 3,
+            fillLinearGradientStartPointY : 0,
+            fillLinearGradientEndPointY : 160
+        });
+        var loc = new Kinetic.Rect({
+            width:10,
+            height:10,
+            offset: {x:5,y:5},
+            rotation : Math.PI/4,
+            fill:"black"
+        });
+        var btn = new Kinetic.Rect({
+            width:50,
+            height:80,
+            fill:"orange"
+        });
+
+        ui.angleUp = btn.clone({
+            x:40,
+            y:30
+        }).on("mousedown touchstart", function(){
+            decreaseAngle = true;
+        })
+
+        ui.angleDown = btn.clone({
+            x:40,
+            y:30+80,
+            fill:"blue"
+        }).on("mousedown touchstart", function(){
+            increaseAngle = true;
+        });
+        ui.angleIndicator = loc.clone({
+            x: 15,
+            y: getAngleMeterStatus()
+        });
+        ui.angleLabel = label.clone({
+            fontSize:24,
+            y: 200
+        });
+        ui.angle.add(meter.clone({
+            fillLinearGradientColorStops : [0, "red", 0.5, "green", 1, "red"]
+        })).add(label.clone({
+            text:"Angle"
+        })).add(ui.angleIndicator).add(ui.angleDown).add(ui.angleUp).add(ui.angleLabel);
+
+        ui.throttleUp = btn.clone({
+            y:30
+        }).on("mousedown touchstart", function(){
+            increaseSpeed = true;
+        });
+        ui.throttleDown = btn.clone({
+            y:30+80,
+            fill:"blue"
+        }).on("mousedown touchstart", function(){
+            decreaseSpeed = true;
+        });
+
+        ui.throttleIndicator = loc.clone({
+            x: 60 + 15,
+            y: getSpeedMeterStatus()
+        });
+        ui.throttleLabel = label.clone({
+            fontSize:24,
+            y: 200,
+            width:120
+        });
+        ui.throttle.add(meter.clone({
+            x: 60,
+            fillLinearGradientColorStops : [0, "red", map(landingSpeed, stallSpeed, maxSpeed, 1, 0), "green", 1, "red"]
+        })).add(label.clone({
+            text:"Speed"
+        })).add(ui.throttleIndicator).add(ui.throttleDown).add(ui.throttleUp).add(ui.throttleLabel);
     }
 
     storybook.registerPage(page);
