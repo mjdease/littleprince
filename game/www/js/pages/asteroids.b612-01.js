@@ -8,9 +8,7 @@
     page.setNarration();
 
     page.setRequiredAssets([
-        {name: "spritehole", path: "assets/images/asteroids/b612/hole.png"},
-        {name: "spriteimg", path: "assets/images/spritesheet.png"},
-        {name: "background", path: "assets/images/asteroids/b612/ground.jpg"}
+        {name: "background", path: "assets/images/asteroids/b612/00_ground.jpg"}
     ]);
 
     page.initPage = function(images, stage, layers){
