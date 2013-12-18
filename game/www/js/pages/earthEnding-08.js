@@ -33,14 +33,15 @@
     page.setNextPage("earthEnding", 9);
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/earthEnding/bgPage32.jpg"}
+        {name: "background", path: "assets/images/earthEnding/bgPage32.jpg"},
+        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
         //{name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch01_01_over.png"}
     ]);
 
     page.setNarration();
 
     page.initPage = function(images, stage, layers){
-        
+
         //sounds.soundeffect = new Sound("assets/sound/test.mp3", false, false);
 
         playByBar = new Kinetic.Rect({
@@ -58,7 +59,7 @@
             height: 200,
             fill: 'blue',
         })
-        
+
         layers.staticBack.add(starDisplayBar);
         layers.staticBack.add(playByBar);
 
@@ -170,7 +171,7 @@
     };
 
     page.startChallenge = function(){
-      
+
         page.setState(page.States.PLAYING);
     };
 
@@ -199,7 +200,7 @@
         {
             if (((starRDisplay[r].getX() + 10) > 600) && ((starRDisplay[r].getX() + 10) < 620))
             {
-                sDRAtBar = 1; 
+                sDRAtBar = 1;
             }
         }
 
@@ -218,7 +219,7 @@
                 sDBAtBar = 1;
             }
         }
-        
+
 
         if(sCRClicked == 1)
         {
@@ -282,7 +283,7 @@
             starBClick.setStrokeG(sG);
             starBClick.setStrokeB(sB);
         }
-                  
+
 
         if(sCRClicked == 1)
         {
@@ -292,7 +293,7 @@
                 console.log("Hit 1 !");
                 score+= 1;
             }
-            else 
+            else
             {
                 //play error sound
                 console.log("oops");
@@ -307,7 +308,7 @@
                 console.log("Hit 2 !");
                 score+= 1;
             }
-            else 
+            else
             {
                 //play error sound
                 console.log("oops");
@@ -321,7 +322,7 @@
                 console.log("Hit 3 !");
                 score+= 1;
             }
-            else 
+            else
             {
                 //play error sound
                 console.log("oops");
@@ -357,7 +358,7 @@
         {
             starBDisplay[b].off(clickEvt);
         }
-        
+
         for(var y = 0; y < yellowStars; y++)
         {
             starYDisplay[y].off(clickEvt);
@@ -378,9 +379,9 @@
     };
 
     function onSpriteClick(e){
-        
+
         //sounds.soundeffect.play();
-        
+
     }
 
     storybook.registerPage(page);

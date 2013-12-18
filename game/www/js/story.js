@@ -100,15 +100,15 @@ var challengeWords = {
 };
 
 //TODO - move fix x/y coordinates to cover the word on the page
-challengeWords.earthIntro[1] = {word: "manoeuvre", x:712, y:124};
-challengeWords.asteroids.b612[0] = {word: "weeding", x:1064, y:297};
+challengeWords.earthIntro[1] = {word: "manoeuvre", x:641, y:57};
+challengeWords.asteroids.b612[0] = {word: "weeding", x:717, y:287};
 challengeWords.asteroids.b612[2] = {word: "spruce up", x:680, y:181};
-challengeWords.asteroids.b325[1] = {word: "entrap", x:746, y:300};
-challengeWords.asteroids.b329[1] = {word: "coordinated", x:1097, y:412};
-challengeWords.earthEnding[1] = {word: "think outside the box", x:400, y:400};
-challengeWords.earthEnding[3] = {word: "tame", x:400, y:400};
-challengeWords.earthEnding[5] = {word: "quench", x:400, y:400};
-challengeWords.earthEnding[8] = {word: "sequence", x:400, y:400};
+challengeWords.asteroids.b325[1] = {word: "entrap", x:775, y:287};
+challengeWords.asteroids.b329[1] = {word: "coordinated", x:617, y:403};
+challengeWords.earthEnding[1] = {word: "think outside the box", x:693, y:345};
+challengeWords.earthEnding[3] = {word: "tame", x:860, y:57};
+challengeWords.earthEnding[5] = {word: "quench", x:515, y:345};
+challengeWords.earthEnding[8] = {word: "sequence", x:772, y:28};
 
 var story = {};
 

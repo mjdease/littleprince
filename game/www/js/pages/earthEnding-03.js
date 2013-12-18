@@ -1,11 +1,11 @@
 (function(){
-    
+
     var princeImg;
     var princeMoving = new Boolean(0);
     var princeCaught = new Boolean(0);
 
     var safeSpot;
-    var safeSpotPos; 
+    var safeSpotPos;
 
     var foxImage;
     var foxLLimit = 800;
@@ -24,7 +24,8 @@
     page.setRequiredAssets([
         {name: "princeImg", path: "assets/images/earthEnding/prince.png"},
         {name: "foxImg", path: "assets/images/earthEnding/fox.png"},
-        {name: "background", path: "assets/images/earthEnding/bgPage27.jpg"}
+        {name: "background", path: "assets/images/earthEnding/bgPage27.jpg"},
+        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
     ]);
 
 
@@ -98,11 +99,11 @@
 
         if (foxImg.getX() > foxRLimit)
         {
-            foxImg.getX(foxRLimit); 
+            foxImg.getX(foxRLimit);
         }
 
         if (foxSpeed < 0)
-        { 
+        {
             if(princeMoving == 1)
             {
                 //failure start again
@@ -111,7 +112,7 @@
                 //princeCaught = 1;
             }
         }
- 
+
         if ((safeSpotPos >= 400) && (safeSpotPos < 600))
         {
             if ((princeImg.getX() + princeImg.getWidth()) >= safeSpotPos)
@@ -119,7 +120,7 @@
                 levelTwo();
             }
         }
-        
+
         if ((safeSpotPos >= 600) && (safeSpotPos < 800))
         {
             if ((princeImg.getX() + princeImg.getWidth()) >= safeSpotPos)
