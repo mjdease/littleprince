@@ -1,12 +1,8 @@
 (function(){
     var assets = {};
-    var gameObjects = {
-        trees : [],
-        flowers : [],
-        all : [],
-        ambient : []
-    };
+    var gameObjects = {};
     var ui = {};
+    var sounds = {};
 
     var plantCount = 0;
 
@@ -35,6 +31,11 @@
     page.setNarration();
 
     page.initPage = function(images, stage, layers){
+        gameObjects.trees = [];
+        gameObjects.flowers = [];
+        gameObjects.all = [];
+        gameObjects.ambient = [];
+
         stageWidth = stage.getWidth();
         stageHeight = stage.getHeight();
 
@@ -165,6 +166,23 @@
         if(Date.now() - endLastCheck > endCheckThreshold){
             endLastCheck = Date.now();
             checkEnd(layers.staticFront);
+        }
+    };
+
+    page.destroyPage = function(){
+        resetChallenge();
+        for(var n in gameObjects){
+            delete gameObjects[n];
+        }
+        for(n in assets){
+            delete assets[n];
+        }
+        for(n in ui){
+            delete ui[n];
+        }
+        for(n in sounds){
+            sounds[n].destroy();
+            delete sounds[n];
         }
     };
 
