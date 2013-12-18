@@ -25,7 +25,7 @@
     var duneStart = -200;
     var duneOverlap = 360;
     var sandOverlap = 5;
-    var stageWidth, duneWidth, sandWidth;
+    var stageWidth, stageHeight, duneWidth, sandWidth;
 
     // inputs
     var increaseSpeed = false;
