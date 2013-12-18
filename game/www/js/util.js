@@ -101,9 +101,20 @@ function isPhonegap(){
 
 // pass in two kinetic objects
 function dist(obj1, obj2){
-    var pt1 = obj1.getPosition();
-    var pt2 = obj2.getPosition();
-    return Math.sqrt(Math.pow(pt1.x - pt2.x, 2) + Math.pow(pt1.y - pt2.y, 2));
+    var pt1, pt2;
+    if(obj1.x !== undefined && obj1.y !== undefined){
+        pt1 = obj1;
+    }
+    else{
+        pt1 = obj1.getPosition();
+    }
+    if(obj2.x !== undefined && obj2.y !== undefined){
+        pt2 = obj2;
+    }
+    else{
+        pt2 = obj2.getPosition();
+    }
+    return Math.abs(Math.sqrt(Math.pow(pt1.x - pt2.x, 2) + Math.pow(pt1.y - pt2.y, 2)));
 }
 
 // returns correct path depending on the current enironment

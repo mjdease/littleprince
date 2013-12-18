@@ -1,238 +1,388 @@
 (function(){
+    var assets = {};
+    var gameObjects = {
+        trees : [],
+        flowers : [],
+        all : [],
+        ambient : []
+    };
+    var ui = {};
+
+    var plantCount = 0;
+
+    var stageWidth, stageHeight;
+    var numTrees = 5, numFlowers = 10;
+    var numTreeFrames = 11, numFlowerFrames = 9, treeFrameThreshold = 7;
+    var treeRadius = 110, flowerRadius = 30;
+
+    var endLastCheck = 0;
+    var endCheckThreshold = 400;
+
     var page = new Page("asteroids.b612", 0, false);
 
     page.setPreviousPage(false);
 
     page.setNextPage("asteroids.b612", 1);
 
-    var flower;
-    var baobab = new Array();
-    var hole = new Array();
-    var count = new Array();
-    var remove = true;
-    var removeCount = 0;
-    var count2 = 0;
-    var count3 = 0;
-    var flowerDeath = false;
-
     page.setRequiredAssets([
-        {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/asteroids/b612/spritesheet_baobabv1.png"},
-        {name: "spritehole", path: "assets/images/asteroids/b612/hole.png"},
-        {name: "background", path: "assets/images/asteroids/b612/ground.jpg"},
-        {name: "spriteflower", path: "assets/images/asteroids/b612/spritesheet_flowerv1.png"},
+        {name: "baobab", path: "assets/images/asteroids/b612/00_baobab.png"},
+        {name: "hole", path: "assets/images/asteroids/b612/00_hole.png"},
+        {name: "flower", path: "assets/images/asteroids/b612/00_flower.png"},
+        {name: "background", path: "assets/images/asteroids/b612/00_ground.jpg"},
         {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
     ]);
 
     page.setNarration();
 
     page.initPage = function(images, stage, layers){
+        stageWidth = stage.getWidth();
+        stageHeight = stage.getHeight();
 
-        flower = storybook.defineSprite({
-            x:180,
-            y:360,
-            image: images.spriteflower,
+        assets.flower = defineSprite({
+            name: "flower",
+            image: images.flower,
             animation: "flowerAnim",
-            frameRate: 1
-        }, 200, 150, {flowerAnim: 9});
-        layers.dynBack.add(flower);
-        flower.setScale(0.7);
+            frameRate: 0.8,
+            offset: {x:70, y:52}
+        }, 140, 105, {flowerAnim: numFlowerFrames});
 
-        for (var i=0; i<2; i++){
-            baobab[i] = storybook.defineSprite({
-                x:400,
-                y:300,
-                image: images.spriteimg,
-                animation: "baobabAnim",
-                frameRate: 1
-            }, 767, 642, {baobabAnim: 12});
-            layers.dynBack.add(baobab[i]);
-            baobab[i].setScale(0.5);
+        assets.tree = defineSprite({
+            name: "tree",
+            image: images.baobab,
+            animation: "baobabAnim",
+            frameRate: 0.6,
+            offset: {x:192,y:160.5}
+        }, 384, 321, {baobabAnim: numTreeFrames});
+
+        assets.hole = defineSprite({
+            name: "hole",
+            image: images.hole,
+            animation: "holeAnim",
+            listening: false,
+            offset:{x:165.5,y:154},
+            visible:false
+        }, 331, 308, {holeAnim:3});
+
+        for(var i = 0; i < numTrees; i++){
+            var treeObj = makePlant(assets.tree, treeRadius, "tree");
+            var tree = treeObj.find(".tree")[0];
+            if(i == 0){
+                tree.setIndex(10);
+                treeObj.setPosition(stageWidth/2, stageHeight/2);
+            }
+            gameObjects.trees.push({
+                node: treeObj,
+                type: "tree",
+                plant: tree,
+                endFrame: numTreeFrames - 1,
+                untouchable: false,
+                dead: false,
+                grown: i == 0 ? true : false
+            });
+            layers.dynFront.add(treeObj);
+            plantCount++;
         }
-        //if baobab is a full tree then stop
-        baobab[0].afterFrame(9, function() {
-            baobab[0].stop();
-        });
-
-        baobab[1].afterFrame(9, function() {
-            baobab[1].stop();
-        });
-
-        //hole animation
-        for (var s=0; s<3; s++){
-            hole[s] = storybook.defineSprite({
-                x:25,
-                y:330,
-                image: images.spritehole,
-                animation: "holeAnim",
-                frameRate: 3,
-                listening: false
-            }, 331, 308, {holeAnim:4});
-            layers.dynBack.add(hole[s]);
-            hole[s].setScale(1);
+        for(i = 0; i < numFlowers; i++){
+            var flowerObj = makePlant(assets.flower, flowerRadius, "flower");
+            gameObjects.flowers.push({
+                node: flowerObj,
+                type: "flower",
+                plant: flowerObj.find(".flower")[0],
+                endFrame: numFlowerFrames - 1,
+                untouchable: false,
+                dead: false,
+                grown: false
+            });
+            layers.dynBack.add(flowerObj);
+            plantCount++;
         }
-        flower.afterFrame(7, function() {
-            flower.stop();
-        });
+
+        initUi();
+
+        positionPlants(gameObjects.trees, gameObjects.flowers);
     };
 
-    page.startPage = function(){
-        baobab[0].move(0, 60);
-        baobab[1].move(400,0);
-        for(var x=0; x<3; x++){
-            //hide all holes and move to bottom
-            hole[x].hide();
-            hole[x].moveToBottom();
+    page.startPage = function(layers){
+        for(var i = 0; i < gameObjects.flowers.length; i++){
+            var flowerObj = gameObjects.flowers[i];
+            var rand = Math.random();
+            if(rand < 0.15){
+                flowerObj.plant.start();
+                flowerObj.doNotPlay = true;
+                gameObjects.ambient.push(flowerObj);
+            }
+            else if(rand < 0.30){
+                flowerObj.plant.setIndex(1);
+            }
         }
-        hole[0].move(400,60);
-        hole[1].move(800,1);
-        hole[2].move(110,-25); //flower hole position
-
-        page.setState(page.States.PLAYING);
     };
 
-    page.startChallenge = function(){
-        flower.start();
+    page.startChallenge = function(layers){
+        for(var i = 1; i < gameObjects.trees.length; i++){
+            var treeObj = gameObjects.trees[i];
+            addPlantListener(treeObj);
+            growAfterDelay(treeObj.plant);
+            gameObjects.all.push(treeObj);
+        }
+        for(i = 0; i < gameObjects.flowers.length; i++){
+            var flowerObj = gameObjects.flowers[i];
+            addPlantListener(flowerObj);
+            if(!flowerObj.doNotPlay){
+                growAfterDelay(flowerObj.plant);
+                gameObjects.all.push(flowerObj);
+            }
+        }
 
-        baobab[0].start(); //start baobab animation
-        baobab[1].start();
-        baobab[0].on(clickEvt, function(){seedRemove("baobab0")});
-        baobab[1].on(clickEvt, function(){seedRemove("baobab1")});
-        flower.on(clickEvt, function(){seedRemove("flower")});
+        layers.dynFront.add(ui.remaining);
 
         page.setState(page.States.PLAYING);
     };
 
     page.update = function(frame, stage, layers){
+        for(var i = 0; i < gameObjects.ambient.length; i++){
+            var obj = gameObjects.ambient[i];
+            if(obj.plant.getIndex() === obj.endFrame){
+                obj.plant.stop();
+            }
+        }
+
         if(page.getState() != page.States.PLAYING){
             return;
         }
-        for(var z=0; z<2; z++){
-            if(baobab[z].getIndex() > 5){
-                baobab[z].setListening(false);
-                remove = false;
+
+        for(var i = 0; i < gameObjects.all.length; i++){
+            var obj = gameObjects.all[i];
+            var plantIndex = obj.plant.getIndex();
+            if(plantIndex === obj.endFrame){
+                obj.grown = true;
+                obj.plant.stop();
+            }
+            if(obj.type === "tree" && plantIndex >= treeFrameThreshold){
+                obj.untouchable = true;
             }
         }
-        if(removeCount > 1){
-            page.setState(page.States.PASSED);
-        }
 
-        else if (flowerDeath == true){
-            page.setState(page.States.FAILED);
+        if(Date.now() - endLastCheck > endCheckThreshold){
+            endLastCheck = Date.now();
+            checkEnd(layers.staticFront);
         }
     };
 
-    function onSpriteClick(e){
-        page.challengeComplete();
+    function checkEnd(layer){
+        var treesRemoved = 0;
+        var treesGrown = 0
+        for(var i = 0; i < gameObjects.all.length; i++){
+            var obj = gameObjects.all[i];
+            if(obj.type == "flower" && obj.dead){
+                endChallenge(false, "You pulled out a flower. Only remove the baobabs.", layer);
+                return;
+            }
+            if(obj.type === "tree"){
+                if(obj.grown){
+                    treesGrown++;
+                }
+                if(obj.dead){
+                    treesRemoved++;
+                }
+            }
+        }
+        if(treesGrown > 1){
+            endChallenge(false, "You didn't remove all the baobabs soon enough.", layer);
+            return;
+        }
+        if(treesRemoved == numTrees - 1){
+            endChallenge(true, "You removed all the baobabs!", layer);
+            return;
+        }
+        ui.remaining.setText((numTrees - 1 - treesRemoved) + " Baobabs remain");
     }
 
-    function seedRemove(seedType){
-
-    //TODO -- dynamic code
-    /*var removecount = 0;
-    for(var t=0; t<2; t++){
-        var name = "baobab"+t;
-        count[t] = 0;
-        if(seedType == name){
-            if(baobab[t].getIndex() > 5){
-                baobab[t].setListening(false);
-                remove = false;
-            }
-            baobab[t].on(clickEvt, function() {
-                count[t] += 1;
-                if(count[t] == 4){
-                  baobab[t].hide();
-                }
-                if(count[t] == 1){
-                    hole[t].show();
-                    hole[t].setIndex(0);
-                    //index = 0;
-                }
-                if(count[t] == 2){
-                    //index = 1;
-                    hole[t].setIndex(1);
-                }
-                if(count[t] == 3){
-                    //index = 2;
-                    hole[t].setIndex(2);
-                }
-            });
+    function endChallenge(isPass, message, layer){
+        for(var i = 0; i < gameObjects.trees.length; i++){
+            gameObjects.trees[i].plant.stop();
         }
-    }*/
-        if(seedType == "baobab0"){
-            if(baobab[0].getIndex() > 5){
-                baobab[0].setListening(false);
-                remove = false;
-            }
-            baobab[0].on(clickEvt, function() {
-                count2 += 1;
-                if(count2 == 4){
-                  baobab[0].destroy();
-                  removeCount += 1;
-                }
-                if(count2 == 1){
-                    hole[0].show();
-                    hole[0].setIndex(0);
-                    //index = 0;
-                }
-                if(count2 == 2){
-                    //index = 1;
-                    hole[0].setIndex(1);
-                }
-                if(count2 == 3){
-                    //index = 2;
-                    hole[0].setIndex(2);
-                }
-            });
+        for(i = 0; i < gameObjects.flowers.length; i++){
+            gameObjects.flowers[i].plant.stop();
         }
 
-        if(seedType == "baobab1"){
-            if(baobab[1].getIndex() > 5){
-                baobab[1].setListening(false);
-                remove = false;
+        var msgbox = new Kinetic.Rect({
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            fill: isPass ? "green" : "red",
+            opacity: 0.8,
+            stroke: "black",
+            strokeWeight: 10
+        });
+        var msg = new Kinetic.Text({
+            text:message + (isPass ? "" : "\nTap to retry."),
+            fontFamily:"lp_BodyFont",
+            fontWeight:"bold",
+            fontSize:32,
+            padding:20,
+            align:"center",
+            fill:"black",
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            listening:false
+        });
+        if(isPass){
+            ui.remaining.hide();
+            page.setState(page.States.PASSED);
+        }
+        else{
+            msgbox.on(clickEvt, function(){
+                msg.destroy();
+                msgbox.destroy();
+                layer.batchDraw();
+                restartChallenge();
+            });
+            page.setState(page.States.FAILED);
+        }
+        layer.add(msgbox).add(msg).batchDraw();
+    }
+
+    function resetChallenge(){
+        endLastCheck = 0;
+    }
+
+    function restartChallenge(){
+        resetChallenge();
+        for(var i = 0; i < gameObjects.all.length; i++){
+            var obj = gameObjects.all[i];
+            obj.untouchable = false;
+            obj.dead = false;
+            obj.grown = false;
+            obj.plant.setIndex(0);
+            obj.plant.show();
+            var node = obj.node.find(".hole")[0];
+            node.setIndex(0);
+            node.hide();
+            growAfterDelay(obj.plant);
+        }
+        ui.remaining.show();
+        page.setState(page.States.PLAYING);
+    }
+
+    function makePlant(plant, radius, type){
+        var plantWithHole = new Kinetic.Group({
+            id: "plant" + plantCount,
+            x:-1000,
+            drawHitFunc: function(context) {
+                context.beginPath();
+                context.arc(0, 0, radius, 0, Math.PI * 2, true);
+                context.closePath();
+                context.fillStrokeShape(this);
             }
-            baobab[1].on(clickEvt, function() {
-                count3 += 1;
-                if(count3 == 4){
-                  baobab[1].destroy();
-                  removeCount += 1;
+        });
+        plantWithHole.add(assets.hole.clone({scale:type == "flower" ? 0.7 : 1})).add(plant.clone());
+        return plantWithHole;
+    }
+
+    function addPlantListener(plantObj){
+        plantObj.node.on(clickEvt, function(){
+            if(plantObj.dead || plantObj.untouchable || plantObj.doNotPlay || page.getState() != page.States.PLAYING ){
+                return;
+            }
+            var hole = plantObj.node.find(".hole")[0];
+            if(hole.getVisible()){
+                var newIndex = hole.getIndex() + 1;
+                hole.setIndex(newIndex);
+            }
+            else{
+                hole.show();
+            }
+            if(newIndex === 2){
+                plantObj.dead = true;
+                plantObj.plant.hide();
+                plantObj.plant.stop();
+            }
+        });
+    }
+
+    function growAfterDelay(plant){
+        setTimeout(function(){
+            plant.start();
+        }, randomInt(0, 2500));
+    }
+
+    function positionPlants(trees, flowers){
+        var noCollisions;
+        for(var i = 1; i < trees.length; i++){
+            var tree = trees[i].node;
+            noCollisions = false;
+            while(!noCollisions){
+                var treeX = randomInt(treeRadius, stageWidth - treeRadius/2);
+                var treeY = randomInt(treeRadius, stageHeight - treeRadius/2);
+                if(!checkCollision(tree.getId(), {x:treeX,y:treeY}, treeRadius, trees, flowers)){
+                    noCollisions = true;
                 }
-                if(count3 == 1){
-                    hole[1].show();
-                    hole[1].setIndex(0);
-                    //index = 0;
-                }
-                if(count3 == 2){
-                    //index = 1;
-                    hole[1].setIndex(1);
-                }
-                if(count3 == 3){
-                    //index = 2;
-                    hole[1].setIndex(2);
-                }
-            });
+            }
+            tree.setPosition(treeX, treeY);
         }
-        if(seedType == "flower"){
-            count[2] = 0;
-            flower.on(clickEvt, function() {
-                count[2] += 1;
-                if(count[2] == 4){
-                    flower.hide();
-                    flowerDeath = true;
+        for(var i = 0; i < flowers.length; i++){
+            var flower = flowers[i].node;
+            noCollisions = false;
+            while(!noCollisions){
+                var flowerX = randomInt(flowerRadius, stageWidth - flowerRadius);
+                var flowerY = randomInt(flowerRadius, stageHeight - flowerRadius);
+                if(!checkCollision(flower.getId(), {x:flowerX,y:flowerY}, flowerRadius, trees, flowers)){
+                    noCollisions = true;
                 }
-                if(count[2] == 1){
-                    hole[2].show();
-                    hole[2].setScale(0.7);
-                    hole[2].setIndex(0);
-                }
-                if(count[2] == 2){
-                    hole[1].setIndex(1);
-                }
-                if(count[2] == 3){
-                    hole[2].setIndex(2);
-                }
-            });
+            }
+            flower.setPosition(flowerX, flowerY);
         }
-    };
+    }
+
+    function checkCollision(id, point, radius, trees, flowers){
+        for(var i = 0; i < trees.length; i++){
+            var tree = trees[i].node;
+            if(id === tree.getId()){
+                continue;
+            }
+            if(isColliding(point, radius, tree, treeRadius)){
+                return true;
+            }
+        }
+        for(i = 0; i < flowers.length; i++){
+            var flower = flowers[i].node;
+            if(id === flower.getId()){
+                continue;
+            }
+            if(isColliding(point, radius, flower, flowerRadius)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function isColliding(pt1, radius1, pt2, radius2){
+        return dist(pt1, pt2) < (radius1 + radius2);
+    }
+
+    function initUi(){
+        ui.remaining = new Kinetic.Text({
+            fontFamily:"lp_BodyFont",
+            stroke:"black",
+            strokeWidth:1,
+            fontSize:36,
+            padding:20,
+            align:"center",
+            fill:"black",
+            x:stageWidth/2,
+            y:stageHeight - 80,
+            width:500,
+            offsetX:250,
+            listening:false
+        });
+    }
+
     storybook.registerPage(page);
 })();
