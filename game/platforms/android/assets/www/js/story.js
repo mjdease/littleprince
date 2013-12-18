@@ -2,7 +2,7 @@ var storyTexts = {
     earthIntro : [
         "My name is of no importance. Really it is of no importance. And no… that is not my name. My name is of no importance because this story is not about me.",
         "This story is about my good friend the prince. Very small in size and very curious by nature. The little prince was most curious about grown-ups.  Grown-ups like a child’s mother and father. Grown-ups like me.",
-        "As a grown-up, I lived my life alone without \nanyone that I could really talk to, until I had an accident with my plane in the Desert of the Sahara, six years ago.",
+        "As a grown-up, I lived my life alone without anyone that I could really talk to, until I had an accident with my plane in the Desert of the Sahara, six years ago.",
         "One of the engines had failed and I was forced to manoeuvre my plane from the sky and land safely on the sandy grounds of the desert.",
         "Something was broken in my engine. With  no one around to help me, I set out to do all the repairs alone. ",
         "I was a thousand miles from people just like me and there was hardly any drinking water to last a week. My first night, I went to sleep on the sand. I was lonelier than a ship far away at sea.",
@@ -25,8 +25,8 @@ var storyTexts = {
             "I responded:\n“No. Baobabs aren’t little bushes. They are trees as big as castles. Even a whole herd of elephants would not be able to eat up one single baobab.”\n\nI then suggested to the little prince that instead of using the sheep to eat the little baobabs – that maybe he should consider weeding out all the bad baobab seeds from the good seeds before they grow so big. \n",
             "Apart from eating little bushes, the prince also asked if a sheep also ate flowers.\n\n“A sheep,” I answered, “eats anything it finds in its reach.”\n\n“Even flowers that have thorns?”\n\n“Yes, even flowers that have thorns.”\n\n“Oh!” he said close to tears.\n\nAnd then he told me of a special flower. The most special flower in the entire world. One with a lot of petals. A flower that grew nowhere but on his planet.\n",
             "“If someone loves a flower, the way I love my flower, all millions and millions of stars will shine bright. But if the sheep eats the flower, then all the stars will darken.”\n\nI did not like to see my friend sad and so I said:\n\n“Why don’t I draw something to protect your flower from the sheep?”\n\nBut the little prince did not reply. \n",
-            "On the morning the prince left his planet, he had wanted everything to be in perfect order. \n\nThe prince owned two volcanoes that he used to help heat his breakfast that morning. \n\nHe also owned a third volcano, but that one was damaged. \n",
-            "\n\nAfter his breakfast, the prince started to \nspruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
+            "On the morning the prince left his planet, he had wanted everything to be in perfect order. \n\nThe prince owned two volcanoes that he used to help heat his breakfast that morning.",
+            "He also owned a third volcano, but that one was damaged.\n\nAfter his breakfast, the prince started to spruce up everything he owned – from cleaning out the volcanoes to watering his special flower. "
         ],
         b325 : [
             "The prince found himself on a planet that was ruled by a king.\n\nAll dressed in royal purple and white fur, the king was seated upon a throne that was both simple and magnificent.\n",
@@ -100,15 +100,15 @@ var challengeWords = {
 };
 
 //TODO - move fix x/y coordinates to cover the word on the page
-challengeWords.earthIntro[1] = {word: "manoeuvre", x:712, y:124};
-challengeWords.asteroids.b612[0] = {word: "weeding", x:1064, y:297};
+challengeWords.earthIntro[1] = {word: "manoeuvre", x:641, y:57};
+challengeWords.asteroids.b612[0] = {word: "weeding", x:717, y:287};
 challengeWords.asteroids.b612[2] = {word: "spruce up", x:680, y:181};
-challengeWords.asteroids.b325[1] = {word: "entrap", x:746, y:300};
-challengeWords.asteroids.b329[1] = {word: "coordinated", x:1097, y:412};
-challengeWords.earthEnding[1] = {word: "think outside the box", x:400, y:400};
-challengeWords.earthEnding[3] = {word: "tame", x:400, y:400};
-challengeWords.earthEnding[5] = {word: "quench", x:400, y:400};
-challengeWords.earthEnding[8] = {word: "sequence", x:400, y:400};
+challengeWords.asteroids.b325[1] = {word: "entrap", x:775, y:287};
+challengeWords.asteroids.b329[1] = {word: "coordinated", x:617, y:403};
+challengeWords.earthEnding[1] = {word: "think outside the box", x:693, y:345};
+challengeWords.earthEnding[3] = {word: "tame", x:860, y:57};
+challengeWords.earthEnding[5] = {word: "quench", x:515, y:345};
+challengeWords.earthEnding[8] = {word: "sequence", x:772, y:28};
 
 var story = {};
 
@@ -120,8 +120,8 @@ var story = {};
             for(var i = 0; i < volume.length; i++){
                 if(i%2 == 0){
                     var page = [];
-                    page.push(getStoryText(volume[i], 40));
-                    page.push(getStoryText(volume[i+1], 680));
+                    page.push(getStoryText(volume[i], 30));
+                    page.push(getStoryText(volume[i+1], 515));
                     story[volumeName].push(page);
                 }
                 var word = challengeWords[volumeName][i];
@@ -138,8 +138,8 @@ var story = {};
                 for(var j = 0; j < chapter.length; j++){
                     if(j%2 == 0){
                         var page = [];
-                        page.push(getStoryText(chapter[j], 40));
-                        page.push(getStoryText(chapter[j+1], 680));
+                        page.push(getStoryText(chapter[j], 30));
+                        page.push(getStoryText(chapter[j+1], 515));
                         story[volumeName][chapterName].push(page);
                     }
                     var word = challengeWords[volumeName][chapterName][j];
@@ -155,13 +155,15 @@ var story = {};
         return new Kinetic.Text({
             text : text,
             x : x,
-            y : 95,
-            width : 560,
+            y : 28,
+            width : 455,
             fontFamily: "lp_BodyFont",
             fontSize: 24,
             fill: "black",
             lineHeight: 1.2,
-            listening: false
+            listening: false,
+            stroke:"black",
+            strokeWidth:1
         });
     }
 
@@ -174,7 +176,9 @@ var story = {};
             fontSize: 24,
             fill: color || "red",
             lineHeight: 1.2,
-            listening: true
+            listening: true,
+            stroke:color || "red",
+            strokeWidth:1
         });
     }
 })();

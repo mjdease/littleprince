@@ -20,17 +20,11 @@ Page.prototype.States = {
 };
 
 Page.prototype.setLeftTextStyle = function(x, y, width, color){
-    if(x != null) this.text[0].setX(x);
-    if(y != null) this.text[0].setY(y);
-    if(width != null) this.text[0].setWidth(width);
-    if(color != null) this.text[0].setFill(color);
+    console.log("this function is gone! fix yer code!");
 };
 
 Page.prototype.setRightTextStyle = function(x, y, width, color){
-    if(x != null) this.text[1].setX(x);
-    if(y != null) this.text[1].setY(y);
-    if(width != null) this.text[1].setWidth(width);
-    if(color != null) this.text[1].setFill(color);
+    console.log("this function is gone! fix yer code!");
 };
 
 Page.prototype.setPreviousPage = function(sectionId, pageNum){

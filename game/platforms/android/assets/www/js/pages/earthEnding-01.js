@@ -5,7 +5,7 @@
     var i;
     var win = false;
     var page = new Page("earthEnding", 1);
-
+    var sounds = {};
     page.setPreviousPage("earthEnding", 0);
 
     page.setNextPage("earthEnding", 2);
@@ -32,6 +32,9 @@
         });
          layers.dynBack.add(answers[i]);
         }
+
+        sounds.correct = new Sound("assets/sound/earthEnding/ding.mp3", false, false);
+        sounds.wrong = new Sound("assets/sound/earthEnding/wrong.mp3", false, false);
     };
 
     page.startPage = function(){
@@ -79,42 +82,43 @@
 
     function RiddleCheck(question, answerCheck){
 
-    if(question == 1)
-        if(answerCheck == "A"){
-            console.log("Correct");
+        if(question == 1){
+            if(answerCheck == "A"){
+                console.log("Correct");
+                sounds.correct.play();
+                questionNum = 2;
+                answers[0].hide();
+                answers[1].hide();
+                answers[2].hide();
 
-            questionNum = 2;
-            answers[0].hide();
-            answers[1].hide();
-            answers[2].hide();
+                answers[3].show();
+                answers[4].show();
+                answers[5].show();
 
-            answers[3].show();
-            answers[4].show();
-            answers[5].show();
+            } else sounds.wrong.play();
+        }
+        if(question == 2){
+            if(answerCheck == "B"){
+                sounds.correct.play();
+                questionNum = 3;
+                answers[3].hide();
+                answers[4].hide();
+                answers[5].hide();
 
-        } else console.log("Failed");
+                answers[6].show();
+                answers[7].show();
+                answers[8].show();
 
-    if(question == 2)
-        if(answerCheck == "B"){
-            console.log("Correct");
+            } else sounds.wrong.play();
+        }
 
-            questionNum = 3;
-            answers[3].hide();
-            answers[4].hide();
-            answers[5].hide();
+        if(question == 3){
+            if(answerCheck == "C"){
+                sounds.correct.play();
+                win = true;
+            } else sounds.wrong.play();
 
-            answers[6].show();
-            answers[7].show();
-            answers[8].show();
-
-        } else console.log("Failed");
-
-    if(question == 3)
-        if(answerCheck == "C"){
-            console.log("Correct");
-            win = true;
-        } else console.log("Failed");
+        }
     }
-
     storybook.registerPage(page);
 })();

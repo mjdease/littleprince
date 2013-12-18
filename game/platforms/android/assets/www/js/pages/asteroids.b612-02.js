@@ -6,9 +6,8 @@
     page.setNextPage("menu", 1);
 
     page.setRequiredAssets([
-        {name: "test", path: "assets/images/testimg.png"},
         {name: "spriteimg", path: "assets/images/spritesheet.png"},
-        {name: "background", path: "assets/images/asteroids/b612/ground.jpg"}
+        {name: "background", path: "assets/images/asteroids/b612/00_ground.jpg"}
     ]);
 
     page.setNarration();
