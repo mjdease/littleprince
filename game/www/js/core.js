@@ -375,6 +375,7 @@ window.storybook = {};
                 if(!currentPage.challengeStarted){
                     currentPage.challengeStarted = true;
                     currentPage.startChallenge(layers);
+                    if(music) music.play();
                     toggleText(false);
                 }
 
@@ -408,7 +409,7 @@ window.storybook = {};
             narration = new Sound(currentPage.narrationSrc, false, false, "narration");
         }
         if(currentPage.musicSrc){
-            music = new Sound(currentPage.musicSrc, false, false, "music");
+            music = new Sound(currentPage.musicSrc, false, true, "music");
         }
 
         currentPage.initPage(images, stage, layers);
@@ -425,7 +426,6 @@ window.storybook = {};
     var startPage = function(){
         transitionState = 0;
         if(narration) narration.play();
-        if(music) music.play();
         currentPage.startPage(layers);
         if(!currentPage.hasChallenge){
             app.pageComplete();
