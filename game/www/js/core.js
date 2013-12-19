@@ -10,14 +10,15 @@ window.storybook = {};
     var prevBtn, nextBtn, homeBtn, audioBtn;
     var book;
     var bookProgress;
-    var narration;
-    var asteroidProgress = {};
+    var settings;
+    var narration, music;
     var accelerometer = {x:0,y:0,z:0};
     var accWatchId = null;
     var text = {
         startY : 60,
         transSpeed : 800
     };
+    var sounds = [];
     var cache = {};
 
     var menuAssets = [
@@ -28,7 +29,11 @@ window.storybook = {};
         {name: "top", path: "assets/images/ui/page_global/textFrame_top.png"},
         {name: "mid", path: "assets/images/ui/page_global/textFrame_content.png"},
         {name: "bottom_hide", path: "assets/images/ui/page_global/textFrame_bottom_hide.png"},
-        {name: "bottom_show", path: "assets/images/ui/page_global/textFrame_bottom_show.png"}
+        {name: "bottom_show", path: "assets/images/ui/page_global/textFrame_bottom_show.png"},
+        {name: "audio_bar", path: "assets/images/ui/module_audio/audio_bar.png"},
+        {name: "audio_bg", path: "assets/images/ui/module_audio/audio_bg.png"},
+        {name: "audio_handle", path: "assets/images/ui/module_audio/audio_handle.png"},
+        {name: "audio_close", path: "assets/images/ui/module_audio/audio_close.png"},
     ];
 
     app.initialize = function(){
@@ -60,6 +65,9 @@ window.storybook = {};
             for(var i = 0; i < challengeIds.length; i++){
                 bookProgress.challenges[challengeIds[i]] = false;
             }
+        }
+        if(!bookProgress.audio){
+            setDefaultAudioLevels();
         }
 
         stage = new K.Stage({
@@ -180,7 +188,7 @@ window.storybook = {};
             y: 10
         }).on(clickEvt, function(){
             if(transition.isRunning() || pageIsLoading) return;
-            //app.showSettings();
+            openSettings();
         });
 
         text.top = new K.Image({
@@ -203,6 +211,8 @@ window.storybook = {};
 
         overlay.add(nextBtn).add(prevBtn).add(menuBtn).add(audioBtn);
 
+        initSettings(images);
+
         if(startAtPageId && pages[startAtPageId]){
             // DEBUG ONLY
             targetPage = pages[startAtPageId];
@@ -222,6 +232,10 @@ window.storybook = {};
         if(narration){
             narration.destroy();
             narration = null;
+        }
+        if(music){
+            music.destroy();
+            music = null;
         }
         stage.off(clickEvt);
         if(currentPage){
@@ -288,6 +302,7 @@ window.storybook = {};
             }
             updateLoop.stop();
             if(narration) narration.stop();
+            if(music) music.stop();
             //transition.start();
             clearStage();
             onNewPage();
@@ -390,7 +405,10 @@ window.storybook = {};
         layers.staticBack.batchDraw();
 
         if(currentPage.narrationSrc){
-            narration = loadNarration(currentPage.narrationSrc);
+            narration = new Sound(currentPage.narrationSrc, false, false, "narration");
+        }
+        if(currentPage.musicSrc){
+            music = new Sound(currentPage.musicSrc, false, false, "music");
         }
 
         currentPage.initPage(images, stage, layers);
@@ -407,6 +425,7 @@ window.storybook = {};
     var startPage = function(){
         transitionState = 0;
         if(narration) narration.play();
+        if(music) music.play();
         currentPage.startPage(layers);
         if(!currentPage.hasChallenge){
             app.pageComplete();
@@ -474,6 +493,14 @@ window.storybook = {};
         }
     };
 
+    app.registerSound = function(sound){
+        sounds.push(sound);
+    }
+
+    app.removeSound = function(sound){
+        sounds.splice(sounds.indexOf(sound), 1);
+    }
+
     app.pageComplete = function(){
         if(currentPage.hasChallenge){
             bookProgress.challenges[currentPage.id] = true;
@@ -518,6 +545,7 @@ window.storybook = {};
 
     app.discardSavedGame = function(){
         bookProgress = {challenges:{}, asteroids:{}};
+        setDefaultAudioLevels();
         saveProgress();
     };
 
@@ -532,11 +560,169 @@ window.storybook = {};
 
     function loadSavedProgress(){
         var savedProgress = localStorage.getItem("lp_progress");
-        bookProgress = savedProgress ? JSON.parse(savedProgress) : {challenges:{}, asteroids:{}};
+        if(savedProgress){
+            bookProgress = JSON.parse(savedProgress);
+        }
+        else{
+            bookProgress = {
+                challenges:{},
+                asteroids:{},
+                audio:{
+                    narration: 0.7,
+                    effects: 0.6,
+                    music:0.25
+                }
+            };
+        }
     }
 
     function saveProgress(){
         localStorage.setItem("lp_progress", JSON.stringify(bookProgress));
+    }
+
+    function initSettings(images){
+        var sliderOffset = 140;
+        var sliderX = gameWidth / 2 - 248;
+        var barWidth;
+
+        settings = {
+            node : new K.Group()
+        };
+
+        var sliderGrp = new K.Group({
+            width: 476,
+            x : sliderX
+        });
+        var bar = new K.Image({
+            image: images.audio_bar,
+            x: sliderOffset
+        });
+        barWidth = bar.getWidth();
+        var handle = new K.Image({
+            image: images.audio_handle,
+            offsetY: 6,
+            offsetX: 20,
+            draggable: true,
+            dragBoundFunc: function(pos) {
+                if(pos.x/scale < sliderX + sliderOffset) pos.x = (sliderX + sliderOffset) * scale;
+                if(pos.x/scale > sliderX + sliderOffset + barWidth) pos.x = (sliderX + sliderOffset + barWidth) * scale;
+                return {
+                    x: pos.x,
+                    y: this.getAbsolutePosition().y
+                }
+            }
+        });
+        var label = new K.Text({
+            fontFamily:"lp_BodyFont",
+            fontSize:20,
+            stroke:"black",
+            strokeWidth:1,
+            align:"right",
+            fill:"black",
+            y:5,
+            width:sliderOffset
+        });
+
+        settings.node.add(new K.Rect({
+            width:gameWidth,
+            height:gameHeight,
+            fill:"black",
+            opacity: 0.7
+        })).add(new K.Image({
+            image:images.audio_bg,
+            x:gameWidth/2,
+            y:gameHeight/2,
+            offset: {x:246,y:165.5}
+        }));
+
+        var closeBtn = new K.Image({
+            image: images.audio_close,
+            x: 860,
+            y: 200
+        });
+        closeBtn.on(clickEvt, closeSettings);
+        settings.node.add(closeBtn);
+
+        var nSlider = {
+            node : sliderGrp.clone({y:300}),
+            bar : bar.clone(),
+            handle : handle.clone({x:getXFromVolume(bookProgress.audio.narration)}),
+            label : label.clone({text:"Narration "})
+        };
+        nSlider.handle.on("dragend", function(e){
+            setVolume("narration", getVolumeFromX(nSlider.handle.getX()));
+        });
+        nSlider.node.add(nSlider.label).add(nSlider.bar).add(nSlider.handle);
+
+        var eSlider = {
+            node : sliderGrp.clone({y:380}),
+            bar : bar.clone(),
+            handle : handle.clone({x:getXFromVolume(bookProgress.audio.effects)}),
+            label : label.clone({text:"Effects "})
+        };
+        eSlider.handle.on("dragend", function(e){
+            setVolume("effects", getVolumeFromX(eSlider.handle.getX()));
+        });
+        eSlider.node.add(eSlider.label).add(eSlider.bar).add(eSlider.handle);
+
+        var mSlider = {
+            node : sliderGrp.clone({y:460}),
+            bar : bar.clone(),
+            handle : handle.clone({x:getXFromVolume(bookProgress.audio.music)}),
+            label : label.clone({text:"Music "})
+        };
+        mSlider.handle.on("dragend", function(e){
+            setVolume("music", getVolumeFromX(mSlider.handle.getX()));
+        });
+        mSlider.node.add(mSlider.label).add(mSlider.bar).add(mSlider.handle);
+
+        settings.node.add(nSlider.node).add(eSlider.node).add(mSlider.node);
+
+        function getVolumeFromX(x){
+            return map(x, sliderOffset, sliderOffset + barWidth, 0, 1);
+        }
+
+        function getXFromVolume(volume){
+            return map(volume, 0, 1, sliderOffset, sliderOffset + barWidth);
+        }
+    }
+
+    function openSettings(){
+        overlay.add(settings.node);
+        overlay.batchDraw();
+    }
+
+    function closeSettings(){
+        settings.node.remove();
+        overlay.batchDraw();
+    }
+
+    app.getVolume = function(type){
+        if(bookProgress.audio[type] !== undefined){
+            return bookProgress.audio[type];
+        }
+        return 1;
+    };
+
+    function setVolume(type, level){
+        if(level < 0.01) level = 0;
+        if(level > 0.99) level = 1;
+        bookProgress.audio[type] = level;
+        saveProgress();
+        for(var i = 0; i < sounds.length; i++){
+            var sound = sounds[i];
+            if(sound.type === type){
+                sound.setVolume(level);
+            }
+        }
+    }
+
+    function setDefaultAudioLevels(){
+        bookProgress.audio = {
+            narration: 0.7,
+            effects: 0.6,
+            music: 0.25
+        };
     }
 
     function toggleText(show){
@@ -592,10 +778,6 @@ window.storybook = {};
             })(imageList[i]);
         }
     };
-
-    var loadNarration = function(path){
-        return new Sound(path, false, false);
-    }
 })(window.storybook, Kinetic, jQuery);
 
 storybook.initialize();

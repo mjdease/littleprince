@@ -59,6 +59,10 @@ Page.prototype.setNarration = function(path){
     this.narrationSrc = getPath(path);
 };
 
+Page.prototype.setMusic = function(path){
+    this.musicSrc = getPath(path);
+};
+
 // arguments in array of objects containing name and asset path
 Page.prototype.setRequiredAssets = function(images){
     this.requiredImages = images;

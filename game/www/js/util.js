@@ -156,10 +156,15 @@ function HSVtoRGB(h, s, v) {
 }
 
 // Sound class, abstracts android and html audio
-function Sound(path, autoplay, loop){
+function Sound(path, autoplay, loop, type){
+    if(type === undefined){
+        type = "effect";
+    }
     this.pg = isPhonegap();
     this.loop = loop;
+    this.type = type;
     this.path = getPath(path);
+    storybook.registerSound(this);
 
     this.onStatus = function(status){
         if(this.pg && this.loop && status == Media.MEDIA_STOPPED){
@@ -169,6 +174,7 @@ function Sound(path, autoplay, loop){
 
     if(this.pg){
         this.raw = new Media(this.path, null, null, this.onStatus);
+        this.raw.setVolume(storybook.getVolume(type));
         if(autoplay){
             this.raw.play();
         }
@@ -177,8 +183,9 @@ function Sound(path, autoplay, loop){
         this.raw = new Howl({
             urls : [this.path],
             autoplay : autoplay,
-            loop : loop
+            loop : loop,
         });
+        this.raw.volume(storybook.getVolume(type));
     }
 
     this.play = function(){
@@ -189,7 +196,17 @@ function Sound(path, autoplay, loop){
         this.raw.stop();
     };
 
+    this.setVolume = function(volume){
+        if(this.pg){
+            this.raw.setVolume(volume);
+        }
+        else{
+            this.raw.volume(volume);
+        }
+    };
+
     this.destroy = function(){
+        storybook.removeSound(this);
         this.stop();
         if(this.pg){
             this.raw.release();
