@@ -37,22 +37,42 @@ function getStoryPageById(storyObj, id, index){
 //optons - all sprite options except for animations
 //width - frame width
 //height - frame height
-//animList - object where the keys are the names of the animations
-//          and the value is ne number of frames.
-//          eg: {idle:1, run: 14, walk: 14}
+//animList - Array of objects where the object keys are the names of the animations
+//          and the value is the number of frames.
+//          eg: [{idle:1}, {run: 14}, {walk: 14}]
  function defineSprite(options, width, height, animList){
     var anim = {}, index = 0;
-    for(var name in animList){
-        anim[name] = [];
-        for(var j = 0; j < animList[name]; j++){
-            anim[name].push({
-                x: j * width,
-                y: index * height,
-                width: width,
-                height: height
-            });
+    if($.isArray(animList)){
+        for(var i = 0; i < animList.length; i++){
+            var animation = animList[i];
+            var animName = Object.getOwnPropertyNames(animation)[0];
+            console.log(animName);
+            anim[animName] = [];
+            for(var j = 0; j < animList[animName]; j++){
+                anim[animName].push({
+                    x: j * width,
+                    y: index * height,
+                    width: width,
+                    height: height
+                });
+            }
+            index++;
         }
-        index++;
+    }
+    // old buggy code
+    else{
+        for(var name in animList){
+            anim[name] = [];
+            for(var j = 0; j < animList[name]; j++){
+                anim[name].push({
+                    x: j * width,
+                    y: index * height,
+                    width: width,
+                    height: height
+                });
+            }
+            index++;
+        }
     }
     options.animations = anim;
     return new Kinetic.Sprite(options);
