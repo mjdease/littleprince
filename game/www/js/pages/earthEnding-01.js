@@ -12,8 +12,9 @@
 
     page.setRequiredAssets([
         {name: "test", path: "assets/images/testimg.png"},
-        {name: "spriteimg", path: "assets/images/spritesheet.png"}
-        //{name: "background", path: "assets/images/earthEnding/bgPage25.jpg"}
+        {name: "spriteimg", path: "assets/images/spritesheet.png"},
+        {name: "hint", path: "assets/images/ui/page_challenge/06/hint_ch06_01.png"},
+        {name: "background", path: "assets/images/earthEnding/desertBg.png"}
     ]);
 
     page.setNarration();
@@ -49,7 +50,9 @@
         for (var x=3; x<9; x++){
             answers[x].hide();
         }
+    };
 
+    page.startChallenge = function(layers){
         //listening for questions
         answers[0].on(clickEvt, function(){RiddleCheck(questionNum, "A")});
         answers[1].on(clickEvt, function(){RiddleCheck(questionNum, "B")});
@@ -64,7 +67,7 @@
         answers[8].on(clickEvt, function(){RiddleCheck(questionNum, "C")});
 
         page.setState(page.States.PLAYING);
-    };
+    }
 
     page.update = function(frame, stage, layers){
         if(page.getState() != page.States.PLAYING){

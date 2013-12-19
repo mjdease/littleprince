@@ -18,8 +18,7 @@
     page.setNextPage("earthEnding", 6);
 
     page.setRequiredAssets([
-        {name: "test", path: "assets/images/testimg.png"},
-        {name: "hint", path: "assets/images/ui/page_challenge/05/hint_ch05_01.png"},
+        {name: "hint", path: "assets/images/ui/page_challenge/08/hint_ch08_01.png"},
         {name: "background", path: "assets/images/earthEnding/05/bgDesert.png"},
         {name: "spriteimg", path: "assets/images/earthEnding/05/spritesheetWell.png"},
         {name: "handleimg", path: "assets/images/earthEnding/05/wellHandle.png"},
@@ -53,17 +52,6 @@
         });
         layers.dynBack.add(container);
 
-        up = new Kinetic.Rect({
-            x: 239,
-            y: 600,
-            width: 100,
-            height: 50,
-            fill: 'green',
-            stroke: 'black',
-            strokeWidth: 4
-        });
-         layers.dynBack.add(up);
-
         down = new Kinetic.Rect({
             x: 400,
             y: 600,
@@ -93,8 +81,8 @@
     page.startChallenge = function(layers){
         sprite.on(clickEvt, onSpriteClick);
 
-        up.on(clickEvt, function(){moveBucket("up")});
-        down.on(clickEvt, function(){moveBucket("down")});
+        down.on(clickEvt, function(){moveBucket("up")});
+        wellHandle.on(clickEvt, function(){moveBucket("down")});
 
         page.setState(page.States.PLAYING);
     };
@@ -107,19 +95,23 @@
         if (setFillWater == true){
             if(Date.now() - inputLastCheck > inputCheckThreshold){
                 inputLastCheck = Date.now();
-                watercounter -= 0.025;
+                watercounter -= 0.010;
                 console.log(watercounter);
+
+                if(watercounter < -0.060) watercounter -= 0.010;
             }
         }
 
-        //Maximum water
+        //Maximum water overflow -- LOSER SCREEN
         if (watercounter < -0.855){
             setFillWater = false;
             watercounter = -0.855;
             win = false;
         }
 
-        if(watercounter == 0.7) win = true;
+        //WINNING SCREEN
+        //The value at Maxmimum is around 0.7
+        if(watercounter < -0.685 && watercounter > -0.715 && setFillWater == false) win = true;
         if(win == true){
             page.setState(page.States.PASSED);
         }
@@ -135,14 +127,22 @@
     function moveBucket(arrow){
         if(arrow == "up"){
             //bucket move up
-            index++;
+            index--;
             sprite.setIndex(index);
         }
 
         if(arrow == "down"){
             //bucket move down
-            index --;
+            index ++;
+            //speed up water filling
+            if(index > 7){
+                inputCheckThreshold -= 100;
+            }
+            if(index > 9){
+                inputCheckThreshold -= 100;
+            }
         }
+
         sprite.setIndex(index);
 
         if(index >3){
@@ -153,7 +153,7 @@
             sprite.setIndex(0);
         }
 
-        //this is wrong -- need to fix
+        //sound implementation -- need to fix
         if(setFillWater == true) sounds.tap.play();
         else sounds.tap.stop();
 
@@ -165,10 +165,7 @@
             setFillWater = false;
         }
 
-        //speed up water filling
-        if(index > 7){
-            inputCheckThreshold -= 200
-        }
+        console.log(index);
     }
 
     storybook.registerPage(page);
