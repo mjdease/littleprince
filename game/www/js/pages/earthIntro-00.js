@@ -5,7 +5,7 @@
 
     page.setNextPage("earthIntro", 1);
 
-    page.setNarration();
+    page.setNarration("assets/sound/earthIntro/Page1.wav");
 
     page.setLeftTextStyle(null, null, null,"#ffffff");
     page.setRightTextStyle(null, null, null,"#ffffff");
