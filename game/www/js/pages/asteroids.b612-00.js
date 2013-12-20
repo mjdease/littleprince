@@ -25,7 +25,7 @@
         {name: "hole", path: "assets/images/asteroids/b612/00_hole.png"},
         {name: "flower", path: "assets/images/asteroids/b612/00_flower.png"},
         {name: "background", path: "assets/images/asteroids/b612/00_ground.jpg"},
-        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
+        {name: "hint", path: "assets/images/ui/page_challenge/03/hint_ch03_01.png"}
     ]);
 
     page.setNarration();

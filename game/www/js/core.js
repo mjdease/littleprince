@@ -479,7 +479,7 @@ window.storybook = {};
 
     app.getAsteroidProgress = function(){
         return bookProgress.asteroids;
-    }
+    };
 
     //exists here only for backwards compatibility. use defineSprite in util.js
     app.defineSprite = function(){
@@ -495,11 +495,15 @@ window.storybook = {};
 
     app.registerSound = function(sound){
         sounds.push(sound);
-    }
+    };
 
     app.removeSound = function(sound){
         sounds.splice(sounds.indexOf(sound), 1);
-    }
+    };
+
+    app.getScale = function(){
+        return scale;
+    };
 
     app.pageComplete = function(){
         if(currentPage.hasChallenge){

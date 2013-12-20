@@ -34,7 +34,7 @@
 
     page.setRequiredAssets([
         {name: "background", path: "assets/images/earthEnding/bgPage32.jpg"},
-        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
+        {name: "hint", path: "assets/images/ui/page_challenge/09/hint_ch09_01.png"}
         //{name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch01_01_over.png"}
     ]);
 

@@ -178,13 +178,14 @@ function HSVtoRGB(h, s, v) {
 // Sound class, abstracts android and html audio
 function Sound(path, autoplay, loop, type){
     if(type === undefined){
-        type = "effect";
+        type = "effects";
     }
     this.pg = isPhonegap();
     this.loop = loop;
     this.type = type;
     this.path = getPath(path);
     storybook.registerSound(this);
+    this.isPlaying = autoplay;
 
     this.onStatus = function(status){
         if(this.pg && this.loop && status == Media.MEDIA_STOPPED){
@@ -209,10 +210,12 @@ function Sound(path, autoplay, loop, type){
     }
 
     this.play = function(){
+        this.isPlaying = true;
         this.raw.play();
     };
 
     this.stop = function(){
+        this.isPlaying=false;
         this.raw.stop();
     };
 
