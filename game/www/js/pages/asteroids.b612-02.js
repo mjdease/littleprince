@@ -9,7 +9,7 @@
         {name: "background", path: "assets/images/asteroids/p13_bg.jpg"}
     ]);
 
-    page.setNarration("assets/sound/asteroids/B612_3.wav");
+    page.setNarration("assets/narration/B612_3.mp3");
 
     page.initPage = function(images, stage, layers){
 

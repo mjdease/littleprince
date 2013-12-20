@@ -5,7 +5,7 @@
 
     page.setNextPage("earthIntro", 8);
 
-    page.setNarration("assets/sound/earthIntro/Page8.wav");
+    page.setNarration("assets/narration/Page8.mp3");
 
     page.setRequiredAssets([
         {name: "background", path: "assets/images/earthIntro/p8_bg.jpg"},

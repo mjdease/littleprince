@@ -28,7 +28,7 @@
         {name: "hint", path: "assets/images/ui/page_challenge/03/hint_ch03_01.png"}
     ]);
 
-    page.setNarration("assets/sound/asteroids/B612_1.wav");
+    page.setNarration("assets/narration/B612_1.mp3");
     page.setMusic("assets/sound/earthIntro/challenge2Music.mp3");
 
     page.initPage = function(images, stage, layers){
