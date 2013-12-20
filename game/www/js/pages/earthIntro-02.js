@@ -10,9 +10,6 @@
 
     page.setNarration("assets/sound/earthIntro/Page3.wav");
 
-    page.setLeftTextStyle(null, null, null,"#ffffff");
-    page.setRightTextStyle(null, null, null,"#ffffff");
-
     page.setRequiredAssets([
         {name: "background", path: "assets/images/earthIntro/02_background.jpg"},
         {name: "cloud1", path: "assets/images/earthIntro/02_cloud1.png"},
@@ -32,7 +29,6 @@
             layers.dynBack.add(cloud);
             loops.clouds.push(cloud);
         }
-
     };
 
     page.startPage = function(){

@@ -8,7 +8,7 @@
     page.setNarration();
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/earthEnding/bgPage24.jpg"}
+        {name: "background", path: "assets/images/earthEnding/p24_bg.jpg"}
     ]);
 
     page.initPage = function(images, stage, layers){

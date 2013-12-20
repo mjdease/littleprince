@@ -8,7 +8,7 @@
     page.setNarration("assets/sound/earthIntro/Page9.wav");
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/earthIntro/bgPage9.jpg"}
+        {name: "background", path: "assets/images/earthIntro/p9_bg.jpg"}
     ]);
 
     page.initPage = function(images, stage, layers){

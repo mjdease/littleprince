@@ -7,7 +7,7 @@
 
     page.setRequiredAssets([
         {name: "spriteimg", path: "assets/images/spritesheet.png"},
-        {name: "background", path: "assets/images/asteroids/b612/00_ground.jpg"}
+        {name: "background", path: "assets/images/asteroids/p13_bg.jpg"}
     ]);
 
     page.setNarration("assets/sound/asteroids/B612_3.wav");
