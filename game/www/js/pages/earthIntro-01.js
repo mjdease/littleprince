@@ -66,6 +66,7 @@
         ]);
 
     page.setNarration();
+    page.setMusic("assets/sound/earthIntro/challenge1Music.mp3");
 
     page.initPage = function(images, stage, layers){
         stageWidth = stage.getWidth();
