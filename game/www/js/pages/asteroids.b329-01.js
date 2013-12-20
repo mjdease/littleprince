@@ -27,6 +27,7 @@
     ]);
 
     page.setNarration("assets/narration/B329_2.mp3");
+    page.setMusic("assets/sound/earthIntro/challenge4Music.mp3");
 
     page.initPage = function(images, stage, layers){
         gameObjects.lamps = [];
