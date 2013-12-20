@@ -691,6 +691,10 @@ window.storybook = {};
         }
     }
 
+    app.openSettings = function(){
+        openSettings();
+    }
+
     function openSettings(){
         overlay.add(settings.node);
         overlay.batchDraw();
