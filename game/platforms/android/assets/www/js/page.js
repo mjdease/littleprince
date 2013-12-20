@@ -56,7 +56,11 @@ Page.prototype.challengeComplete = function(){
 };
 
 Page.prototype.setNarration = function(path){
-    this.narrationSrc = getPath(path);
+    this.narrationSrc = path;
+};
+
+Page.prototype.setMusic = function(path){
+    this.musicSrc = path;
 };
 
 // arguments in array of objects containing name and asset path

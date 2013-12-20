@@ -189,11 +189,12 @@
     }
 
     function movePrince(acc, timeDiff){
+        // galaxy
         // var xVel = acc.x * -1;
         // var yVel = acc.y;
         //nexus 7
-        var xVel = acc.y * -1;
-        var yVel = acc.x * -1;
+        var xVel = acc.y;
+        var yVel = acc.x;
         var currentPos = assets.prince.getPosition();
         var curX = currentPos.x;
         var curY = currentPos.y;

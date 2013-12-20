@@ -5,7 +5,11 @@
 
     page.setNextPage("menu", 1);
 
-    page.setNarration();
+    page.setNarration("assets/narration/B327_incomplete.mp3");
+
+    page.setRequiredAssets([
+        {name: "background", path: "assets/images/asteroids/p17_bg.jpg"}
+    ]);
 
     page.initPage = function(images, stage, layers){
 

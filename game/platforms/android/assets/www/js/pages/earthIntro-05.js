@@ -5,10 +5,10 @@
 
     page.setNextPage("earthIntro", 6);
 
-    page.setNarration();
+    page.setNarration("assets/narration/Page6.mp3");
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/earthIntro/bgPage5.jpg"}
+        {name: "background", path: "assets/images/earthIntro/p6_bg.jpg"}
     ]);
 
     page.initPage = function(images, stage, layers){

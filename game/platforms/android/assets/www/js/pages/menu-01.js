@@ -19,7 +19,6 @@
         {name: "b326", path: "assets/images/asteroidsMenu/proudN.png"},
         {name: "earth", path: "assets/images/asteroidsMenu/earthN.png"},
         {name: "earthS", path: "assets/images/asteroidsMenu/earthA.png"},
-
         {name: "b612p", path: "assets/images/asteroidsMenu/princeA.png"},
         {name: "b325p", path: "assets/images/asteroidsMenu/kingA.png"},
         {name: "b330p", path: "assets/images/asteroidsMenu/geographA.png"},

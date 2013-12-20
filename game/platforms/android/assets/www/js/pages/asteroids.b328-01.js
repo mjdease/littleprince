@@ -7,6 +7,10 @@
 
     page.setNarration();
 
+    page.setRequiredAssets([
+        {name: "background", path: "assets/images/asteroids/p22_bg.jpg"}
+    ]);
+
     page.initPage = function(images, stage, layers){
 
     };

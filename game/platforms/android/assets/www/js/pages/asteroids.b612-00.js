@@ -1,12 +1,8 @@
 (function(){
     var assets = {};
-    var gameObjects = {
-        trees : [],
-        flowers : [],
-        all : [],
-        ambient : []
-    };
+    var gameObjects = {};
     var ui = {};
+    var sounds = {};
 
     var plantCount = 0;
 
@@ -29,12 +25,18 @@
         {name: "hole", path: "assets/images/asteroids/b612/00_hole.png"},
         {name: "flower", path: "assets/images/asteroids/b612/00_flower.png"},
         {name: "background", path: "assets/images/asteroids/b612/00_ground.jpg"},
-        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
+        {name: "hint", path: "assets/images/ui/page_challenge/03/hint_ch03_01.png"}
     ]);
 
-    page.setNarration();
+    page.setNarration("assets/narration/B612_1.mp3");
+    page.setMusic("assets/sound/earthIntro/challenge2Music.mp3");
 
     page.initPage = function(images, stage, layers){
+        gameObjects.trees = [];
+        gameObjects.flowers = [];
+        gameObjects.all = [];
+        gameObjects.ambient = [];
+
         stageWidth = stage.getWidth();
         stageHeight = stage.getHeight();
 
@@ -165,6 +167,23 @@
         if(Date.now() - endLastCheck > endCheckThreshold){
             endLastCheck = Date.now();
             checkEnd(layers.staticFront);
+        }
+    };
+
+    page.destroyPage = function(){
+        resetChallenge();
+        for(var n in gameObjects){
+            delete gameObjects[n];
+        }
+        for(n in assets){
+            delete assets[n];
+        }
+        for(n in ui){
+            delete ui[n];
+        }
+        for(n in sounds){
+            sounds[n].destroy();
+            delete sounds[n];
         }
     };
 

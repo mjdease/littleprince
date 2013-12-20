@@ -1,28 +1,49 @@
+// TODO - refine
 (function(){
+    var speed = 50;
 
     var redStars = 10;
     var yellowStars = 10;
     var blueStars = 10;
+    var purpleStars = 10;
+
+    var count = 0;
 
     var starRDisplay = new Array();
     var starYDisplay = new Array();
     var starBDisplay = new Array();
+    var starPDisplay = new Array();
+
     var starRClick;
     var starYClick;
-    var starBClick;
+    var starGClick;
+    var starPClick;
 
     var playByBar;
+    var playByPos;
     var starDisplayBar;
 
     var sDRAtBar = new Boolean (0);
     var sDYAtBar = new Boolean (0);
     var sDBAtBar = new Boolean (0);
+    var sDPAtBar = new Boolean (0);
 
     var sCRClicked = new Boolean (0);
     var sCYClicked = new Boolean (0);
     var sCBClicked = new Boolean (0);
+    var sCPClicked = new Boolean (0);
 
     var score = 0;
+    var starsRCrossed = new Boolean (0);
+    var starsYCrossed = new Boolean (0);
+    var starsBCrossed = new Boolean (0);
+    var starsPCrossed = new Boolean (0);
+
+    var starWidth = 32;
+    var barWidth;
+    var stageWidth, stageHeight;
+
+    var scoreTxt;
 
     var sounds = {};
 
@@ -33,83 +54,113 @@
     page.setNextPage("earthEnding", 9);
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/earthEnding/bgPage32.jpg"},
-        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
-        //{name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch01_01_over.png"}
+        {name: "background", path: "assets/images/earthEnding/bgPage32.png"},
+        {name: "hint", path: "assets/images/ui/page_challenge/09/hint_ch09_01.png"},
+        {name: "playByBar", path: "assets/images/earthEnding/musicBar.png"},
+        {name: "starDisplayBar", path: "assets/images/earthEnding/musicTimeline.png"},
+        {name: "starRClick", path: "assets/images/earthEnding/spritesheetStarRed.png"},
+        {name: "starYClick", path: "assets/images/earthEnding/spritesheetStarYellow.png"},
+        {name: "starGClick", path: "assets/images/earthEnding/spritesheetStarGreen.png"},
+        {name: "starPClick", path: "assets/images/earthEnding/spritesheetStarPurple.png"},
+        {name: "starRDisplay", path: "assets/images/earthEnding/starRed.png"},
+        {name: "starYDisplay", path: "assets/images/earthEnding/starYellow.png"},
+        {name: "starBDisplay", path: "assets/images/earthEnding/starGreen.png"},
+        {name: "starPDisplay", path: "assets/images/earthEnding/starPurple.png"}
     ]);
 
     page.setNarration();
 
     page.initPage = function(images, stage, layers){
+        stageWidth = stage.getWidth();
+        stageHeight = stage.getHeight();
 
         //sounds.soundeffect = new Sound("assets/sound/test.mp3", false, false);
 
-        playByBar = new Kinetic.Rect({
-            x: 600,
-            y: 500,
-            width: 20,
-            height: 200,
-            fill: 'green',
+        scoreTxt = new Kinetic.Text({
+            fontFamily:"lp_BodyFont",
+            fontSize:32,
+            stroke:"white",
+            strokeWidth:1,
+            align:"center",
+            fill:"white",
+            y:400,
+            x:stageWidth/2,
+            width:200,
+            offsetX:100
         });
 
-        starDisplayBar = new Kinetic.Rect({
+        playByBar = new Kinetic.Image({
+            x: 400,
+            y: 530,
+            image: images.playByBar,
+            width: 13,
+            height: 224
+        });
+
+        playByPos = playByBar.getX();
+        barWidth = playByBar.getWidth();
+
+        starDisplayBar = new Kinetic.Image({
             x: 0,
             y: 500,
-            width: 1400,
-            height: 200,
-            fill: 'blue',
+            image: images.starDisplayBar,
+            width: 1280,
+            height: 270,
         })
 
         layers.staticBack.add(starDisplayBar);
         layers.staticBack.add(playByBar);
+        layers.dynBack.add(scoreTxt);
 
-        starRClick = new Kinetic.Star({
+        starRClick = storybook.defineSprite({
             x: 400,
             y: 100,
-            numPoints: 5,
-            innerRadius: 50,
-            outerRadius: 70,
-            fill: 'red',
-            stroke: 'black',
-            strokeWidth: 14
-        });
+            image: images.starRClick,
+            animation: "starRClickAnim",
+            frameRate: 2,
+            offset: {x:68,y:68}
+        }, 136, 136, {starRClickAnim: 2});
 
-        starYClick = new Kinetic.Star({
+        starYClick = storybook.defineSprite({
             x: 500,
-            y: 90,
-            numPoints: 5,
-            innerRadius: 10,
-            outerRadius: 20,
-            fill: 'yellow',
-            stroke: 'black',
-            strokeWidth: 4
-        });
+            y: 150,
+            image: images.starYClick,
+            animation: "starYClickAnim",
+            frameRate: 2,
+            offset: {x:68,y:68}
+        }, 136, 136, {starYClickAnim: 2});
 
-        starBClick = new Kinetic.Star({
+        starGClick = storybook.defineSprite({
             x: 600,
-            y: 120,
-            numPoints: 5,
-            innerRadius: 40,
-            outerRadius: 60,
-            fill: 'blue',
-            stroke: 'black',
-            strokeWidth: 4
-        });
+            y: 140,
+            image: images.starGClick,
+            animation: "starGClickAnim",
+            frameRate: 2,
+            offset: {x:68,y:68}
+        }, 136, 136, {starGClickAnim: 2});
+
+        starPClick = storybook.defineSprite({
+            x: 700,
+            y: 70,
+            image: images.starPClick,
+            animation: "starPClickAnim",
+            frameRate: 2,
+            offset: {x:68,y:68}
+        }, 136, 136, {starPClickAnim: 2});
 
         layers.dynFront.add(starRClick);
         layers.dynFront.add(starYClick);
-        layers.dynFront.add(starBClick);
+        layers.dynFront.add(starGClick);
+        layers.dynFront.add(starPClick);
 
         for(var r = 0; r < redStars; r++)
         {
-            starRDisplay[r] = new Kinetic.Star({
-            x: randomInt(-500, 0),
-            y: randomInt(540, 660),
-            numPoints: 5,
-            innerRadius: 10,
-            outerRadius: 20,
-            fill: 'red',
-            stroke: 'black'
+            starRDisplay[r] = new Kinetic.Image({
+            x: -2500 + r*300,
+            y: 540,
+            image: images.starRDisplay,
+            width: 32,
+            height: 32
             });
 
             layers.dynFront.add(starRDisplay[r]);
@@ -117,14 +168,12 @@
 
         for(var y = 0; y < yellowStars; y++)
         {
-            starYDisplay[y] = new Kinetic.Star({
-            x: randomInt(-500, 0),
-            y: randomInt(540, 660),
-            numPoints: 5,
-            innerRadius: 10,
-            outerRadius: 20,
-            fill: 'yellow',
-            stroke: 'black'
+            starYDisplay[y] = new Kinetic.Image({
+            x: -2500 + 150 + y * 300,
+            y: 580,
+            image: images.starYDisplay,
+            width: 32,
+            height: 32
             });
 
             layers.dynFront.add(starYDisplay[y]);
@@ -132,23 +181,42 @@
 
         for(var b = 0; b < blueStars; b++)
         {
-            starBDisplay[b] = new Kinetic.Star({
-            x: randomInt(-500, 0),
-            y: (540, 660),
-            numPoints: 5,
-            innerRadius: 10,
-            outerRadius: 20,
-            fill: 'blue',
-            stroke: 'black'
+            starBDisplay[b] = new Kinetic.Image({
+            x: -2500 + 75 + b * 175,
+            y: 620,
+            image: images.starBDisplay,
+            width: 32,
+            height: 32
             });
 
             layers.dynFront.add(starBDisplay[b]);
         }
+
+        for(var p = 0; p < purpleStars; p++)
+        {
+            starPDisplay[p] = new Kinetic.Image({
+            x: -2500 + 225 + y * 225,
+            y: 660,
+            image: images.starPDisplay,
+            width: 32,
+            height: 32
+            });
+
+            layers.dynFront.add(starPDisplay[p]);
+        }
+
+
     };
 
     page.startPage = function(){
+        starRClick.start();
+        starYClick.start();
+        starGClick.start();
+        starPClick.start();
+    };
 
-        //move to startChallenge when hint is obtained
+    page.startChallenge = function(){
+
         function clickStarCR()
         {
             sCRClicked = 1;
@@ -164,124 +232,107 @@
             sCBClicked = 1;
         }
 
+        function clickStarCP()
+        {
+            sCPClicked = 1;
+        }
+
          starRClick.on(clickEvt, clickStarCR);
          starYClick.on(clickEvt, clickStarCY);
-         starBClick.on(clickEvt, clickStarCB);
-        // move to startChallenge when hint is obtained
-    };
+         starGClick.on(clickEvt, clickStarCB);
+         starPClick.on(clickEvt, clickStarCP);
 
-    page.startChallenge = function(){
-
-        page.setState(page.States.PLAYING);
-    };
+         page.setState(page.States.PLAYING);
+    }
 
     page.update = function(frame, stage, layers){
+        if(page.getState() != page.States.PLAYING){
+            return;
+        }
 
         for(var r = 0; r < redStars; r++)
         {
-            var starRMove = starRDisplay[r].getX() + 0.5;
-            starRDisplay[r].setX(starRMove);
-        }
-
-        for(var y = 0; y < yellowStars; y++)
-        {
-            var starYMove = starYDisplay[y].getX() + 0.5;
-            starYDisplay[y].setX(starYMove);
-        }
-
-        for(var b = 0; b < blueStars; b++)
-        {
-            var starBMove = starBDisplay[b].getX() + 0.5;
-            starBDisplay[b].setX(starBMove);
-        }
-
-
-        for(var r = 0; r < redStars; r++)
-        {
-            if (((starRDisplay[r].getX() + 10) > 600) && ((starRDisplay[r].getX() + 10) < 620))
-            {
+            var starX = starRDisplay[r].getX();
+            if (Math.abs(starX - playByPos) < 32){
                 sDRAtBar = 1;
+                if(!starRDisplay[r].passed){
+                    count++;
+                    starRDisplay[r].passed = true;
+                }
             }
         }
 
         for(var y = 0; y < yellowStars; y++)
         {
-            if(((starYDisplay[y].getX() + 10) > 600) && ((starYDisplay[y].getX() + 10) < 620))
-            {
+            var starX = starYDisplay[y].getX();
+            if (Math.abs(starX - playByPos) < 32){
                 sDYAtBar = 1;
+                if(!starYDisplay[y].passed){
+                    count++;
+                    starYDisplay[y].passed = true;
+                }
             }
         }
 
         for(var b = 0; b < blueStars; b++)
         {
-            if(((starBDisplay[b].getX() + 10) > 600) && ((starBDisplay[b].getX() + 10) < 620))
-            {
+            var starX = starBDisplay[b].getX();
+            if (Math.abs(starX - playByPos) < 32){
                 sDBAtBar = 1;
+                if(!starBDisplay[b].passed){
+                    count++;
+                    starBDisplay[b].passed = true;
+                }
+            }
+        }
+
+        for(var p = 0; p < purpleStars; p++)
+        {
+            var starX = starPDisplay[p].getX();
+            if (Math.abs(starX - playByPos) < 32){
+                sDPAtBar = 1;
+                if(!starPDisplay[p].passed){
+                    count++;
+                    starPDisplay[p].passed = true;
+                }
             }
         }
 
 
         if(sCRClicked == 1)
         {
-            var sR = starRClick.getStrokeR() + 255;
-            var sB = starRClick.getStrokeG() + 255;
-            var sG = starRClick.getStrokeB() + 255;;
-
-            starRClick.setStrokeR(sR);
-            starRClick.setStrokeG(sG);
-            starRClick.setStrokeB(sB);
+            starRClick.setScale(1.5);
         }
         else
         {
-            var sR = 0;
-            var sB = 0;
-            var sG = 0;
-
-            starRClick.setStrokeR(sR);
-            starRClick.setStrokeG(sG);
-            starRClick.setStrokeB(sB);
+            starRClick.setScale(1);
         }
 
         if(sCYClicked == 1)
         {
-            var sR = starYClick.getStrokeR() + 255;
-            var sB = starYClick.getStrokeG() + 255;
-            var sG = starYClick.getStrokeB() + 255;;
-
-            starYClick.setStrokeR(sR);
-            starYClick.setStrokeG(sG);
-            starYClick.setStrokeB(sB);
+           starYClick.setScale(1.5);
         }
         else
         {
-            var sR = 0;
-            var sB = 0;
-            var sG = 0;
-
-            starYClick.setStrokeR(sR);
-            starYClick.setStrokeG(sG);
-            starYClick.setStrokeB(sB);
+            starYClick.setScale(1);
         }
 
         if(sCBClicked == 1)
         {
-            var sR = starBClick.getStrokeR() + 255;
-            var sB = starBClick.getStrokeG() + 255;
-            var sG = starBClick.getStrokeB() + 255;;
-
-            starBClick.setStrokeR(sR);
-            starBClick.setStrokeG(sG);
-            starBClick.setStrokeB(sB);
+           starGClick.setScale(1.5);
         }
         else
         {
-            var sR = 0;
-            var sB = 0;
-            var sG = 0;
+           starGClick.setScale(1);
+        }
 
-            starBClick.setStrokeR(sR);
-            starBClick.setStrokeG(sG);
-            starBClick.setStrokeB(sB);
+        if(sCPClicked == 1)
+        {
+           starPClick.setScale(1.5);
+        }
+        else
+        {
+           starPClick.setScale(1);
         }
 
 
@@ -290,13 +341,11 @@
             if (sDRAtBar == 1)
             {
                 //play note
-                console.log("Hit 1 !");
                 score+= 1;
             }
             else
             {
                 //play error sound
-                console.log("oops");
                 score-= 1;
             }
         }
@@ -305,13 +354,11 @@
             if (sDYAtBar == 1)
             {
                 //play note
-                console.log("Hit 2 !");
                 score+= 1;
             }
             else
             {
                 //play error sound
-                console.log("oops");
                 score-= 1;
             }
         }
@@ -319,69 +366,180 @@
         {
             if (sDBAtBar == 1)
             {   //play note
-                console.log("Hit 3 !");
                 score+= 1;
             }
             else
             {
                 //play error sound
-                console.log("oops");
                 score-= 1;
             }
         }
 
+        if(sCPClicked == 1)
+        {
+            if (sDPAtBar == 1)
+            {   //play note
+                score+= 1;
+            }
+            else
+            {
+                //play error sound
+                score-= 1;
+            }
+        }
+
+        scoreTxt.setText("Score: " + score);
+
         sCRClicked = 0;
         sCYClicked = 0;
         sCBClicked = 0;
+        sCPClicked = 0;
         sDRAtBar = 0;
         sDYAtBar = 0;
         sDBAtBar = 0;
+        sDPAtBar = 0;
 
-        //If all stars are passed bar, do
-        if (score >= (redStars + yellowStars + blueStars)/2)
+        for(var r = 0; r < redStars; r++)
         {
-            page.challengeComplete();
+            // if(starRDisplay[r])
         }
-        //else re-do challenge
 
-
-        console.log(score);
-
-        if(page.getState() != page.States.PLAYING){
-            return;
+        //if((starRCrossed == 1) && (starYCrossed ==1) && (starBCrossed == 1) && (starPCrossed == 1))
+        //{
+        if(count >= 40){
+            if (score >= 15)
+            {
+                 endChallenge(true, "You played the notes!", layers.staticFront);
+            }
+            else
+            {
+                endChallenge(false, "You missed to many notes.", layers.staticFront);
+            }
         }
-    };
-
-    page.destroyPage = function(){
-
-        for(var b = 0; b < blueStars; b++)
+            //}
+        var dispX = speed * frame.timeDiff /1000;
+        for(var r = 0; r < redStars; r++)
         {
-            starBDisplay[b].off(clickEvt);
+            starRDisplay[r].move(dispX, 0);
         }
 
         for(var y = 0; y < yellowStars; y++)
         {
-            starYDisplay[y].off(clickEvt);
+            starYDisplay[y].move(dispX, 0);
         }
 
-        for(var r = 0; r < redStars; r++)
+        for(var b = 0; b < blueStars; b++)
         {
-            starRDisplay[r].off(clickEvt);
+            starBDisplay[b].move(dispX, 0);
         }
 
-        starBClick.off(clickEvt);
-        starYClick.off(clickEvt);
-        starRClick.off(clickEvt);
+        for(var p = 0; p < purpleStars; p++)
+        {
+            starPDisplay[p].move(dispX, 0);
+        }
+    };
 
+    page.destroyPage = function(){
+        resetChallenge();
+        // for(var b = 0; b < blueStars; b++)
+        // {
+        //     starBDisplay[b].off(clickEvt);
+        // }
+
+        // for(var y = 0; y < yellowStars; y++)
+        // {
+        //     starYDisplay[y].off(clickEvt);
+        // }
+
+        // for(var r = 0; r < redStars; r++)
+        // {
+        //     starRDisplay[r].off(clickEvt);
+        // }
+
+        // for(var p = 0; p < purpleStars; r++)
+        // {
+        //     starPDisplay[p].off(clickEvt);
+        // }
+
+        // starBClick.off(clickEvt);
+        // starYClick.off(clickEvt);
+        // starRClick.off(clickEvt);
+        // starPClick.off(clickEvt);
 
         //sounds.soundeffect.destroy();
         //delete sounds.soundeffect;
     };
 
-    function onSpriteClick(e){
+    function endChallenge(isPass, message, layer){
+        var msgbox = new Kinetic.Rect({
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: 72,
+            offsetX:450,
+            offsetY: 36,
+            fill: isPass ? "green" : "red",
+            opacity: 0.8,
+            stroke: "black",
+            strokeWeight: 10
+        });
+        var msg = new Kinetic.Text({
+            text:message,
+            fontFamily:"lp_BodyFont",
+            fontWeight:"bold",
+            fontSize:32,
+            padding:20,
+            align:"center",
+            fill:"black",
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: 72,
+            offsetX:450,
+            offsetY: 36,
+            listening:false
+        });
+        if(isPass){
+            page.setState(page.States.PASSED);
+        }
+        else{
+            page.setState(page.States.FAILED);
+        }
+        layer.add(msgbox).add(msg).batchDraw();
+    }
 
-        //sounds.soundeffect.play();
+    function resetChallenge(){
+        sCRClicked = 0;
+        sCYClicked = 0;
+        sCBClicked = 0;
+        sCPClicked = 0;
+        sDRAtBar = 0;
+        sDYAtBar = 0;
+        sDBAtBar = 0;
+        sDPAtBar = 0;
 
+        score = 0;
+        count = 0;
+
+        // for(var r = 0; r < redStars; r++)
+        // {
+        //     starRDisplay[r].passed = false;
+        // }
+
+        // for(var y = 0; y < yellowStars; y++)
+        // {
+        //     starYDisplay[y].passed = false;
+        // }
+
+        // for(var b = 0; b < blueStars; b++)
+        // {
+        //     starBDisplay[b].passed = false;
+        // }
+
+        // for(var p = 0; p < purpleStars; p++)
+        // {
+        //     starPDisplay[p].passed = false;
+        // }
     }
 
     storybook.registerPage(page);

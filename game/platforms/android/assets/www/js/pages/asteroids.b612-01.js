@@ -8,7 +8,7 @@
     page.setNarration();
 
     page.setRequiredAssets([
-        {name: "background", path: "assets/images/asteroids/b612/00_ground.jpg"}
+        {name: "background", path: "assets/images/asteroids/p12_bg.jpg"}
     ]);
 
     page.initPage = function(images, stage, layers){

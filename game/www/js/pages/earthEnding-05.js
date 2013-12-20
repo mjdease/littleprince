@@ -179,7 +179,6 @@
         inputLastCheck = 0;
         endLastCheck = 0;
         ui.touching = false;
-        ui.water.setScaleY(fill);
     }
 
     function restartChallenge(){

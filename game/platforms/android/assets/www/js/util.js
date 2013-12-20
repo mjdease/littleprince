@@ -37,22 +37,42 @@ function getStoryPageById(storyObj, id, index){
 //optons - all sprite options except for animations
 //width - frame width
 //height - frame height
-//animList - object where the keys are the names of the animations
-//          and the value is ne number of frames.
-//          eg: {idle:1, run: 14, walk: 14}
+//animList - Array of objects where the object keys are the names of the animations
+//          and the value is the number of frames.
+//          eg: [{idle:1}, {run: 14}, {walk: 14}]
  function defineSprite(options, width, height, animList){
     var anim = {}, index = 0;
-    for(var name in animList){
-        anim[name] = [];
-        for(var j = 0; j < animList[name]; j++){
-            anim[name].push({
-                x: j * width,
-                y: index * height,
-                width: width,
-                height: height
-            });
+    if($.isArray(animList)){
+        for(var i = 0; i < animList.length; i++){
+            var animation = animList[i];
+            var animName = Object.getOwnPropertyNames(animation)[0];
+            console.log(animName);
+            anim[animName] = [];
+            for(var j = 0; j < animList[animName]; j++){
+                anim[animName].push({
+                    x: j * width,
+                    y: index * height,
+                    width: width,
+                    height: height
+                });
+            }
+            index++;
         }
-        index++;
+    }
+    // old buggy code
+    else{
+        for(var name in animList){
+            anim[name] = [];
+            for(var j = 0; j < animList[name]; j++){
+                anim[name].push({
+                    x: j * width,
+                    y: index * height,
+                    width: width,
+                    height: height
+                });
+            }
+            index++;
+        }
     }
     options.animations = anim;
     return new Kinetic.Sprite(options);
@@ -156,10 +176,16 @@ function HSVtoRGB(h, s, v) {
 }
 
 // Sound class, abstracts android and html audio
-function Sound(path, autoplay, loop){
+function Sound(path, autoplay, loop, type){
+    if(type === undefined){
+        type = "effects";
+    }
     this.pg = isPhonegap();
     this.loop = loop;
+    this.type = type;
     this.path = getPath(path);
+    storybook.registerSound(this);
+    this.isPlaying = autoplay;
 
     this.onStatus = function(status){
         if(this.pg && this.loop && status == Media.MEDIA_STOPPED){
@@ -169,6 +195,7 @@ function Sound(path, autoplay, loop){
 
     if(this.pg){
         this.raw = new Media(this.path, null, null, this.onStatus);
+        this.raw.setVolume(storybook.getVolume(type));
         if(autoplay){
             this.raw.play();
         }
@@ -177,19 +204,32 @@ function Sound(path, autoplay, loop){
         this.raw = new Howl({
             urls : [this.path],
             autoplay : autoplay,
-            loop : loop
+            loop : loop,
         });
+        this.raw.volume(storybook.getVolume(type));
     }
 
     this.play = function(){
+        this.isPlaying = true;
         this.raw.play();
     };
 
     this.stop = function(){
+        this.isPlaying=false;
         this.raw.stop();
     };
 
+    this.setVolume = function(volume){
+        if(this.pg){
+            this.raw.setVolume(volume);
+        }
+        else{
+            this.raw.volume(volume);
+        }
+    };
+
     this.destroy = function(){
+        storybook.removeSound(this);
         this.stop();
         if(this.pg){
             this.raw.release();

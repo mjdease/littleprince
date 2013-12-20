@@ -1,32 +1,42 @@
 (function(){
-    var lay;
+    var assets = {};
+    var sounds = {};
+
     var lastEndCheck = 0;
-    var checkThreshold = 500;
-    var prince;
-    var princeSpeed = 50;
-    var rat;
-    var ratSpeed = 2 * 30;
-    var gridSize = 72;
-    var gridStartX = 228;
-    var gridStartY = 274;
-    var gridWidth = 15;
-    var gridHeight = 7;
-    var grid = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,1,1,1,1,0,1,1,1],
-                [0,0,0,0,0,1,1,1,0,1,0,0,1,0,0],
-                [0,0,0,0,0,1,0,0,1,1,1,0,1,1,0],
-                [0,0,0,0,0,1,0,1,1,1,0,0,0,1,0],
-                [1,1,1,1,1,1,1,1,0,1,1,1,1,1,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
+    var checkThreshold = 300;
+
+    var stageWidth, stageHeight;
+    var prince = {
+        speed : 20,
+        x : 0,
+        y : 1
+    };
+    var ratSpeed = 80;
+    var gridSize = 90;
+    var gridStartX = 0;
+    var gridStartY = -28;
+    var gridWidth = 14;
+    var gridHeight = 9;
+    var grid = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,],
+                [1,1,1,1,1,1,0,1,1,1,1,1,1,0,],
+                [0,1,0,0,0,1,0,1,0,1,0,0,1,0,],
+                [0,1,1,1,0,1,1,1,0,1,0,0,1,0,],
+                [0,1,0,1,0,1,0,1,0,1,1,1,1,0,],
+                [0,1,1,1,1,1,1,1,0,1,0,0,1,0,],
+                [0,0,0,1,0,0,0,1,0,1,0,0,1,0,],
+                [0,1,1,1,1,1,1,1,1,1,0,0,1,1,],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,]];
     var gridCenters = [];
-    var ratPath = [{x: 7, y:1, dir:"right"},
-                   {x: 9, y:1, dir:"down"},
-                   {x: 9, y:5, dir:"right"},
-                   {x:13, y:5, dir:"up"},
-                   {x:13, y:3, dir:"left"},
-                   {x:12, y:3, dir:"up"},
-                   {x:12, y:1, dir:"right"},
-                   {x:14, y:1}];
+    var ratPath = [{x: 1, y:7, dir:"right"},
+                   {x: 3, y:7, dir:"up"},
+                   {x: 3, y:5, dir:"right"},
+                   {x: 7, y:5, dir:"down"},
+                   {x: 7, y:7, dir:"right"},
+                   {x: 9, y:7, dir:"up"},
+                   {x: 9, y:4, dir:"right"},
+                   {x:12, y:4, dir:"down"},
+                   {x:12, y:7, dir:"right"},
+                   {x:13, y:7}];
     var ratProgress = 0;
     var ratTarget;
     var ratDir;
@@ -40,67 +50,63 @@
     page.setRequiredAssets([
         {name: "background", path: "assets/images/asteroids/b325/1_ground.jpg"},
         {name: "hint", path: "assets/images/asteroids/b325/1_hint.png"},
-        {name: "prince_s", path: "assets/images/asteroids/b325/1_prince_spritesheet.png"},
+        {name: "prince", path: "assets/images/asteroids/b325/1_prince_spritesheet.png"},
+        {name: "rat", path: "assets/images/asteroids/b325/1_rat.png"},
         {name: "atmos", path: "assets/images/asteroids/b325/1_atmosphereOverlay.png"},
         {name: "shadow", path: "assets/images/asteroids/b325/1_shadowOverlay.png"}
     ]);
 
-    page.setNarration();
-
-    page.setLeftTextStyle(30, 120);
-
-    page.setRightTextStyle(660, 40, 540);
+    page.setNarration("assets/narration/B325_2.mp3");
 
     page.initPage = function(images, stage, layers){
-        lay = layers;
+        stageWidth = stage.getWidth();
+        stageHeight = stage.getHeight();
 
         makeGrid();
 
         layers.staticBack.add(new Kinetic.Image({
             image: images.atmos,
             listening: false
-        }));
-        layers.staticFront.add(new Kinetic.Image({
+        })).add(new Kinetic.Image({
             image: images.shadow,
             listening: false
         }));
 
-        prince = storybook.defineSprite({
-            image: images.prince_s,
+        assets.prince = defineSprite({
+            image: images.prince,
             animation: "normal",
             frameRate: 1,
-            scale: 0.75,
-            offset:{x:36, y:36}
-        }, 96, 96, {normal: 3});
+            offset:{x:40 , y:40}
+        }, 80, 80, {normal: 3});
 
-        //temp sprite
-        rat = storybook.defineSprite({
-            image: images.prince_s,
-            animation: "normal",
-            frameRate: 1,
-            scale: 0.75,
-            offset:{x:36, y:36}
-        }, 96, 96, {normal: 3});
+        assets.rat = defineSprite({
+            image: images.rat,
+            animation: "rightWalk",
+            frameRate: 14,
+            offset:{x:55, y:26}
+        }, 110, 52, {rightWalk: 3, leftWalk: 3});
     };
 
-    page.startPage = function(){
+    page.startPage = function(layers){
 
     };
 
-    page.startChallenge = function(){
-        page.setState(page.States.PLAYING);
+    page.startChallenge = function(layers){
+        layers.dynFront.add(assets.prince).add(assets.rat);
 
-        var princeStart = gridCenters[5][0];
-        prince.setPosition(princeStart.x, princeStart.y);
+        var princeStart = getTileCenterFromCoordinate(prince);
+        assets.prince.setPosition(princeStart.x, princeStart.y);
 
-        var ratIndex = ratPath[ratProgress];
-        var ratStart = gridCenters[ratIndex.y][ratIndex.x];
-        rat.setPosition(ratStart.x, ratStart.y);
+        var ratStart = getTileCenterFromCoordinate(ratPath[ratProgress]);
+        assets.rat.setPosition(ratStart.x, ratStart.y);
         setNextRatTarget();
 
-        lay.dynFront.add(prince).add(rat);
+
+        assets.rat.start();
 
         storybook.initializeAccelerometer();
+
+        page.setState(page.States.PLAYING);
     };
 
     page.update = function(frame, stage, layers){
@@ -108,21 +114,52 @@
             return;
         }
         //gets accelerometer values
+        //GALAXY TAB
         //left: x+, right: x-, down: y+, up: y-
+        //NEXUS 7
+        //left: tilt towards, right: tilt away , down: tilt right, up: tilt left
         //magnitude ranges from -10 to 10. Ignore z.
         movePrince(storybook.getAccelerometer(), frame.timeDiff);
         moveRat(frame.timeDiff);
         if(frame.time - lastEndCheck > checkThreshold){
             lastEndCheck = frame.time;
-            checkEnd();
+            checkEnd(layers.staticFront);
         }
     };
 
     page.destroyPage = function(){
-        ratProgress = 0;
+        resetChallenge();
+
         //destroy accelerometer when the challenge is complete
         storybook.destroyAccelerometer();
+
+        for(n in assets){
+            delete assets[n];
+        }
+        for(n in sounds){
+            sounds[n].destroy();
+            delete sounds[n];
+        }
     };
+
+    function resetChallenge(){
+        ratProgress = 0;
+    }
+
+    function restartChallenge(){
+        resetChallenge();
+
+        var princeStart = getTileCenterFromCoordinate(prince);
+        assets.prince.setPosition(princeStart.x, princeStart.y);
+
+        var ratStart = getTileCenterFromCoordinate(ratPath[ratProgress]);
+        assets.rat.setPosition(ratStart.x, ratStart.y);
+        setNextRatTarget();
+
+        assets.rat.start();
+
+        page.setState(page.States.PLAYING);
+    }
 
     function makeGrid(){
         var halfTile = gridSize / 2;
@@ -142,16 +179,29 @@
         return {x: Math.floor(pos.x/gridSize), y: Math.floor(pos.y/gridSize)};
     }
 
+    function getTileCenterFromPosition(pos){
+        var tile = getTile(pos);
+        return gridCenters[tile.y][tile.x];
+    }
+
+    function getTileCenterFromCoordinate(pos){
+        return gridCenters[pos.y][pos.x];
+    }
+
     function movePrince(acc, timeDiff){
-        var xVel = acc.x * -1;
-        var yVel = acc.y;
-        var currentPos = prince.getPosition();
+        // galaxy
+        // var xVel = acc.x * -1;
+        // var yVel = acc.y;
+        //nexus 7
+        var xVel = acc.y;
+        var yVel = acc.x;
+        var currentPos = assets.prince.getPosition();
         var curX = currentPos.x;
         var curY = currentPos.y;
         var i = getTile(currentPos);
         var tileCenter = gridCenters[i.y][i.x];
-        var xDiff = xVel * princeSpeed * timeDiff / 1000;
-        var yDiff = yVel * princeSpeed * timeDiff / 1000;
+        var xDiff = xVel * prince.speed * timeDiff / 1000;
+        var yDiff = yVel * prince.speed * timeDiff / 1000;
         if(xDiff > 0){//right
             if(!grid[i.y][i.x + 1]){ // can't enter the right tile
                 xDiff = Math.min(xDiff, tileCenter.x - curX);
@@ -184,13 +234,13 @@
 
             }
         }
-        prince.move(xDiff, yDiff);
+        assets.prince.move(xDiff, yDiff);
     }
 
     function moveRat(timeDiff){
         var xDiff = 0;
         var yDiff = 0;
-        var pos = rat.getPosition();
+        var pos = assets.rat.getPosition();
         switch(ratDir){
             case "right":
                 xDiff = ratSpeed * timeDiff/1000;
@@ -221,7 +271,7 @@
                 }
                 break;
         }
-        rat.move(xDiff, yDiff);
+        assets.rat.move(xDiff, yDiff);
     }
 
     function setNextRatTarget(){
@@ -230,56 +280,81 @@
             return;
         }
         ratDir = ratPath[ratProgress].dir;
+        if(ratDir === "right" || ratDir === "left"){
+            assets.rat.setAnimation(ratDir + "Walk");
+        }
         ratProgress++;
         ratTarget = gridCenters[ratPath[ratProgress].y][ratPath[ratProgress].x];
     }
 
-    function checkEnd(){
-        var ratPos = rat.getPosition();
+    function checkEnd(layer){
+        var ratPos = assets.rat.getPosition();
         var ratTile = getTile(ratPos);
-        if(ratTile.y == 1 && ratTile.x == 14){
-            finishGame("lose");
+        if(ratTile.y == 7 && ratTile.x == 13){
+            endChallenge(false, "The rat escaped.", layer);
+            return;
         }
 
-        var distance = dist(rat, prince);
+        var distance = dist(assets.rat, assets.prince);
         if(distance > 400){
-            prince.setIndex(0);
+            assets.prince.setIndex(0);
         }
         else if(distance > 150){
-            prince.setIndex(1);
+            assets.prince.setIndex(1);
         }
         else{
-            prince.setIndex(2);
+            assets.prince.setIndex(2);
         }
 
         if(distance < 72){
-            finishGame("win");
+            endChallenge(true, "You caught the rat!", layer);
+            return;
         }
     }
 
-    function finishGame(result){
-        if(result == "win"){
-            lay.dynFront.add(new Kinetic.Text({
-                text: "You caught the rat!",
-                fill: "red",
-                fontSize: 30,
-                align: "center",
-                y: 600,
-                x: 1280/2
-            }));
-            page.challengeComplete();
+        function endChallenge(isPass, message, layer){
+        var msgbox = new Kinetic.Rect({
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            fill: isPass ? "green" : "red",
+            opacity: 0.8,
+            stroke: "black",
+            strokeWeight: 10
+        });
+        var msg = new Kinetic.Text({
+            text:message + (isPass ? "" : "\nTap to retry."),
+            fontFamily:"lp_BodyFont",
+            fontWeight:"bold",
+            fontSize:32,
+            padding:20,
+            align:"center",
+            fill:"black",
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            listening:false
+        });
+        assets.rat.stop();
+        if(isPass){
+            page.setState(page.States.PASSED);
         }
         else{
-            lay.dynFront.add(new Kinetic.Text({
-                text: "The rat escaped!",
-                fill: "red",
-                fontSize: 30,
-                align: "center",
-                y: 600,
-                x: 1280/2
-            }));
+            msgbox.on(clickEvt, function(){
+                msg.destroy();
+                msgbox.destroy();
+                layer.batchDraw();
+                restartChallenge();
+            });
             page.setState(page.States.FAILED);
         }
+        layer.add(msgbox).add(msg).batchDraw();
     }
 
     storybook.registerPage(page);

@@ -40,7 +40,7 @@
         for(var i = 0; i < loops.clouds.length; i++){
             var cloud = loops.clouds[i];
             if(cloud.getX() + cloud.getWidth() < 0){
-                cloud.setX(stageWidth);
+                cloud.setX(stage.getWidth());
             }
             else{
                 cloud.move(dispX, 0);

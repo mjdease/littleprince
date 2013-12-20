@@ -49,6 +49,9 @@
     // Pass in path of narration audio (relative to index.html), playback is handled automatically.
     page.setNarration("assets/sound/test.mp3");
 
+    // Pass in path of music audio (relative to index.html), playback is handled automatically.
+    page.setMusic("assets/sound/test.mp3");
+
     // Add all objects that should be present at the start of the game/page here.
     // Images from required assets above are preloaded and provided in the images parameter.
     // Save this object to a local variable if you need to access the raw images later in the game.

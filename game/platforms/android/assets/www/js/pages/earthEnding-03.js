@@ -1,19 +1,38 @@
 (function(){
+    var assets = {};
+    var ui = {};
+    var sounds = {};
 
-    var princeImg;
-    var princeMoving = new Boolean(0);
-    var princeCaught = new Boolean(0);
+    var stageWidth, stageHeight, scale;
 
-    var safeSpot;
-    var safeSpotPos;
+    var currentDay = 0;
+    var foxAwareness = 0;
+    var awarenessLimit = 15;
+    var resetTimeout;
 
-    var foxImage;
-    var foxLLimit = 800;
-    var foxRLimit = 1200;
-    var foxSpeed = 1;
-    var foxScale = 1;
-    var foxPos;
-    var flipTime;
+    var fox = {
+        startX:1000,
+        startY:752/2,
+        speed: 80,
+        targetX:1180,
+        dir: 1,
+        moving: true
+    };
+    var prince = {
+        startX:100,
+        startY:752/2,
+        speed: 50,
+        target: null
+    };
+    var hedgePositions = [300, 600, 900];
+
+    //input throttles
+    var inputLastCheck = 0;
+    var inputCheckThreshold = 75;
+    var endLastCheck = 0;
+    var endCheckThreshold = 200;
+    var dayChangeLastCheck = 0;
+    var dayChangeThreshold = 1000;
 
     var page = new Page("earthEnding", 3);
 
@@ -22,161 +41,253 @@
     page.setNextPage("earthEnding", 4);
 
     page.setRequiredAssets([
-        {name: "princeImg", path: "assets/images/earthEnding/prince.png"},
-        {name: "foxImg", path: "assets/images/earthEnding/fox.png"},
-        {name: "background", path: "assets/images/earthEnding/bgPage27.jpg"},
-        {name: "hint", path: "assets/images/ui/page_challenge/01/hint_ch02_01.png"}
+        {name: "prince", path: "assets/images/earthEnding/3_prince.png"},
+        {name: "hedge", path: "assets/images/earthEnding/3_hedge.png"},
+        {name: "fox", path: "assets/images/earthEnding/3_fox.png"},
+        {name: "background", path: "assets/images/earthEnding/3_background.jpg"},
+        {name: "hint", path: "assets/images/ui/page_challenge/07/hint_ch07_01.png"}
     ]);
-
 
     page.setNarration();
 
     page.initPage = function(images, stage, layers){
+        stageWidth = stage.getWidth();
+        stageHeight = stage.getHeight();
+        scale = storybook.getScale();
 
-        safeSpot = new Kinetic.Rect({
-            x: 400,
-            y: 600,
-            width: 20,
-            height: 30,
-            fill: 'blue',
-        })
+        ui.touched = false;
+        ui.layer = layers.staticFront;
 
-        layers.dynBack.add(safeSpot);
-
-        safeSpotPos = safeSpot.getX();
-
-        princeImg = new Kinetic.Image({
-            x: 0,
-            y: 600,
-            image: images.princeImg,
-            width: 62,
-            height: 71
+        assets.hedge = new Kinetic.Image({
+            y: stageHeight/2,
+            image: images.hedge,
+            listening: false,
+            offset: {x:135,y:366}
         });
 
-        foxImg = new Kinetic.Image({
-            x: 800,
-            y: 600,
-            image: images.foxImg,
-            width: 62,
-            height: 71
+        assets.prince = new Kinetic.Image({
+            x: prince.startX,
+            y: prince.startY,
+            image: images.prince,
+            listening: false,
+            offset:{x:65,y:95}
         });
 
-        layers.dynFront.add(princeImg);
-        layers.dynFront.add(foxImg);
+        assets.fox = new Kinetic.Image({
+            x: fox.startX,
+            y: fox.startY,
+            image: images.fox,
+            listening: false,
+            offset:{x:82,y:86}
+        });
 
+        layers.dynFront.add(assets.prince).add(assets.fox);
+
+        stage.on("touchstart mousedown", function(e){
+            if(page.getState() != page.States.PLAYING){
+                return;
+            }
+            ui.touched = true;
+            var pos = stage.getPointerPosition();
+            prince.target = {x : pos.x/scale, y : pos.y/scale};
+        });
+        stage.on("touchend mouseup", function(e){
+            if(page.getState() != page.States.PLAYING){
+                return;
+            }
+            ui.touched = false;
+            prince.target = null;
+        });
+        stage.on("mousemove touchmove", function(e){
+            if(!ui.touched || page.getState() != page.States.PLAYING){
+                return;
+            }
+            if(Date.now() - inputLastCheck > inputCheckThreshold){
+                inputLastCheck = Date.now();
+                var pos = stage.getPointerPosition();
+                prince.target = {x : pos.x/scale, y : pos.y/scale};
+            }
+        });
     };
 
     page.startPage = function(){
 
-    //move to startChallenge when hint is obtained
-        function movePrince()
-        {
-            var princePos = princeImg.getX() + 10;
-            princeImg.setX(princePos);
-            princeMoving = 1;
-        }
-
-        princeImg.on(clickEvt, movePrince);
-
-        flipTime = Math.floor(Math.random() * (5000-2000) + 2000);
-
-        setInterval(function() {flipFox()}, flipTime);
-
-    //move to startChallenge when hint is obtained
-
-        page.setState(page.States.PLAYING);
     };
 
+    page.startChallenge = function(layers){
+        ui.msgbox = new Kinetic.Rect({
+            x:stageWidth/2,
+            y:100,
+            opacity: 0.8,
+            stroke: "black",
+            strokeWeight: 10
+        });
+        ui.msg = new Kinetic.Text({
+            fontFamily:"lp_BodyFont",
+            fontWeight:"bold",
+            fontSize:32,
+            padding:20,
+            align:"center",
+            fill:"black",
+            x:stageWidth/2,
+            y:100,
+            listening:false
+        });
+        layers.dynBack.add(assets.hedge);
+        layers.staticFront.add(ui.msgbox).add(ui.msg);
+        nextDay(false);
+        resetMessage();
+
+        page.setState(page.States.PLAYING);
+    }
+
     page.update = function(frame, stage, layers){
-
-        foxPos = foxImg.getX() + foxSpeed;
-        foxImg.setX(foxPos);
-
-        if (foxImg.getX() < foxLLimit)
-        {
-            foxImg.setX(foxLLimit);
-        }
-
-        if (foxImg.getX() > foxRLimit)
-        {
-            foxImg.getX(foxRLimit);
-        }
-
-        if (foxSpeed < 0)
-        {
-            if(princeMoving == 1)
-            {
-                //failure start again
-                console.log("oops");
-                //princeImg.off(clickEvt);
-                //princeCaught = 1;
-            }
-        }
-
-        if ((safeSpotPos >= 400) && (safeSpotPos < 600))
-        {
-            if ((princeImg.getX() + princeImg.getWidth()) >= safeSpotPos)
-            {
-                levelTwo();
-            }
-        }
-
-        if ((safeSpotPos >= 600) && (safeSpotPos < 800))
-        {
-            if ((princeImg.getX() + princeImg.getWidth()) >= safeSpotPos)
-            {
-                levelThree();
-            }
-        }
-
-        if ((safeSpotPos >= 800) && (safeSpotPos < 1000))
-        {
-            if ((princeImg.getX() + princeImg.getWidth()) >= safeSpotPos)
-            {
-                princeImg.off(clickEvt);
-            }
-        }
-
         if(page.getState() != page.States.PLAYING){
             return;
         }
-
-        princeMoving = 0;
-
+        movePrince(frame.timeDiff);
+        moveFox(frame.timeDiff);
+        checkEnd();
     };
 
-    function flipFox()
-    {
-        if(princeCaught == 0)
-        {
-            foxScale*= -1;
-            foxImg.setScale({ x: foxScale });
+    page.destroyPage = function(){
+        resetChallenge();
+        for(n in assets){
+            delete assets[n];
+        }
+        for(n in ui){
+            delete ui[n];
+        }
+        for(n in sounds){
+            sounds[n].destroy();
+            delete sounds[n];
+        }
+    };
 
-            foxSpeed*= -1;
+    function checkEnd(){
+        if(Date.now() - endLastCheck > endCheckThreshold){
+            endLastCheck = Date.now();
+            if(fox.dir === -1 && prince.target && prince.target.x > assets.prince.getX()){
+                foxAwareness++;
+                if(foxAwareness > awarenessLimit){
+                    endChallenge(false, "The fox saw you. Tap to try again.");
+                    return;
+                }
+                else{
+                    showMessage("Don't move when the fox can see you!", "orange", 1000);
+                    return;
+                }
+            }
+            if(currentDay === 4){
+                endChallenge(true, "You tamed the fox!");
+            }
         }
     }
 
-    function levelTwo()
-    {
-        alert("Day 2");
-        foxLLimit = 800;
-        safeSpot.setX(600);
-        safeSpotPos = safeSpot.getX();
-        princeImg.setX(0);
+    function endChallenge(isPass, message){
+        if(isPass){
+            showMessage(message, "green");
+            page.setState(page.States.PASSED);
+        }
+        else{
+            ui.msgbox.on(clickEvt, function(){
+                restartChallenge();
+            });
+            showMessage(message, "red");
+            page.setState(page.States.FAILED);
+        }
     }
 
-    function levelThree()
-    {
-        alert("Day 3");
-        foxLLimit = 1000;
-        safeSpot.setX(800);
-        safeSpotPos = safeSpot.getX();
-        princeImg.setX(0);
-
+    function resetChallenge(){
+        currentDay = 0;
+        foxAwareness = 0;
+        fox.dir = 1;
+        fox.moving = true;
+        prince.target = null;
+        ui.touched = false;
+        if(resetTimeout){
+            clearTimeout(resetTimeout);
+            resetTimeout = null;
+        }
     }
 
-    function onSpriteClick(e){
-        page.challengeComplete();
+    function restartChallenge(){
+        resetChallenge();
+        assets.fox.setX(fox.startX);
+        assets.prince.setPosition(prince.startX, prince.startY);
+        nextDay(false);
+        resetMessage();
+        page.setState(page.States.PLAYING);
+    }
+
+    function movePrince(timeDiff){
+        if(prince.target){
+            var angle = Math.atan2(prince.target.y-assets.prince.getY(), prince.target.x-assets.prince.getX());
+            var dispX = prince.speed * Math.cos(angle) * timeDiff / 1000;
+            var dispY = prince.speed * Math.sin(angle) * timeDiff / 1000;
+            assets.prince.move(dispX, dispY);
+            if(assets.prince.getX() > assets.hedge.getX()){
+                nextDay(true);
+            }
+        }
+    }
+
+    function moveFox(timeDiff){
+        if(fox.moving){
+            var foxX = assets.fox.getX();
+            var target = fox.dir === -1 ? fox.startX : fox.targetX;
+            var disp = fox.dir * fox.speed * timeDiff / 1000;
+            assets.fox.move(disp, 0);
+            if((fox.dir === 1 && foxX + disp > target) ||
+               (fox.dir === -1 && foxX + disp < target)){
+                assets.fox.setX(foxX + disp);
+                fox.moving=false;
+                setTimeout(function(){
+                    fox.moving = true;
+                    fox.dir *= -1;
+                    assets.fox.setScaleX(fox.dir);
+                }, randomInt(fox.dir === -1 ? 250 : 2000, fox.dir === -1 ? 1500 : 6000));
+            }
+        }
+    }
+
+    function nextDay(message){
+        if(Date.now() - dayChangeLastCheck > dayChangeThreshold){
+            dayChangeLastCheck = Date.now();
+            assets.hedge.setX(hedgePositions[currentDay]);
+            currentDay++;
+            if(message && currentDay <= 3){
+                showMessage("Congratulations! You made it to Day " + currentDay, "green", 1500);
+            }
+        }
+    }
+
+    function showMessage(msg, color, resetDelay){
+        ui.msg.setText(msg);
+        var msgWidth = ui.msg.getWidth();
+        var msgHeight = ui.msg.getHeight();
+        ui.msg.setOffsetX(msgWidth/2);
+        ui.msg.setOffsetY(msgHeight/2);
+
+        ui.msgbox.setWidth(msgWidth);
+        ui.msgbox.setHeight(msgHeight);
+        ui.msgbox.setOffsetX(msgWidth/2);
+        ui.msgbox.setOffsetY(msgHeight/2);
+        ui.msgbox.setFill(color);
+
+        if(resetTimeout){
+            clearTimeout(resetTimeout);
+            resetTimeout = null;
+        }
+
+        if(resetDelay){
+            resetTimeout = setTimeout(resetMessage, resetDelay);
+        }
+        ui.layer.batchDraw();
+    }
+
+    function resetMessage(){
+        showMessage("Day " + currentDay, "white");
     }
 
     storybook.registerPage(page);
