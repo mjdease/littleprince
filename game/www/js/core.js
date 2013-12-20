@@ -20,6 +20,7 @@ window.storybook = {};
     };
     var sounds = [];
     var cache = {};
+    var loadingScreen;
 
     var menuAssets = [
         {name: "home", path: "assets/images/ui/page_global/button_home.png"},
@@ -209,7 +210,31 @@ window.storybook = {};
             listening: true
         });
 
+        loadingScreen = new K.Group({
+            visible:false
+        });
+        loadingScreen.add(new K.Rect({
+            width:gameWidth,
+            height:gameHeight,
+            fill:"black",
+            opacity:0.8
+        })).add(new K.Text({
+            text:"Loading...",
+            width:300,
+            offsetX:150,
+            x:gameWidth/2,
+            y:gameHeight/2,
+            fill:"#dddddd",
+            stroke:"#dddddd",
+            strokeWidth: 1,
+            fontFamily:"lp_BodyFont",
+            fontSize:48,
+            align: "center"
+        }));
+
         overlay.add(nextBtn).add(prevBtn).add(menuBtn).add(audioBtn);
+
+        overlay.add(loadingScreen);
 
         initSettings(images);
 
@@ -251,6 +276,10 @@ window.storybook = {};
             bookProgress.currentPage = currentPage.id;
             saveProgress();
         }
+
+        setTimeout(function(){
+            if(pageIsLoading) loadingScreen.show();
+        }, 200);
 
         // initalize new page
         if(currentPage.requiredImages){
@@ -422,6 +451,7 @@ window.storybook = {};
         //if(transitionState == 2){
             startPage();
         //}
+        loadingScreen.hide();
     };
 
     var startPage = function(){
