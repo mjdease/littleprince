@@ -28,7 +28,7 @@
         {name: "hint", path: "assets/images/ui/page_challenge/03/hint_ch03_01.png"}
     ]);
 
-    page.setNarration();
+    page.setNarration("assets/sound/asteroids/B612_1.wav");
 
     page.initPage = function(images, stage, layers){
         gameObjects.trees = [];
