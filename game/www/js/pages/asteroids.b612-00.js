@@ -29,6 +29,7 @@
     ]);
 
     page.setNarration("assets/sound/asteroids/B612_1.wav");
+    page.setMusic("assets/sound/earthIntro/challenge2Music.mp3");
 
     page.initPage = function(images, stage, layers){
         gameObjects.trees = [];
