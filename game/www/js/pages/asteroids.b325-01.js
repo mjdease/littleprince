@@ -56,7 +56,7 @@
         {name: "shadow", path: "assets/images/asteroids/b325/1_shadowOverlay.png"}
     ]);
 
-    page.setNarration();
+    page.setNarration("assets/narration/B325_2.mp3");
 
     page.initPage = function(images, stage, layers){
         stageWidth = stage.getWidth();
