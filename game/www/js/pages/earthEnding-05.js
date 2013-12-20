@@ -9,8 +9,8 @@
     // gameplay constants
     var depthPerRotation = 250;
     var raisedDepth = 150;
-    var maxDepth = depthPerRotation * 4;
-    var waterDepth = depthPerRotation * 3;
+    var maxDepth = depthPerRotation * 3;
+    var waterDepth = depthPerRotation * 2;
     var fillRate = 0.05;
     var maxFill = 1;
     var targetFill = 0.7;
@@ -99,7 +99,7 @@
         stage.on("mouseup touchend", function(){
             ui.touched = false;
             ui.angle = null;
-            sounds.pull.stop();
+            if(sounds.pull) sounds.pull.stop();
         });
         var handlePosition = ui.handle.getPosition();
         ui.handle.on("mousemove touchmove", function(e){
@@ -108,7 +108,8 @@
             }
             if(Date.now() - inputLastCheck > inputCheckThreshold){
                 inputLastCheck = Date.now();
-                var pointer = {x : e.pageX/storybook.getScale(), y : e.pageY/storybook.getScale()}
+                var pos = stage.getPointerPosition();
+                var pointer = {x : pos.x/storybook.getScale(), y : pos.y/storybook.getScale()};
                 var angle = Math.atan2(pointer.y - handlePosition.y, pointer.x - handlePosition.x);
                 var rotationDirection = getRotationDirection(angle, ui.angle);
                 var depth = gameObjects.bucket.getDepth();
@@ -136,7 +137,7 @@
         ui.handle.on("mousedown touchstart", function(){
             ui.touched = true;
             ui.angle = null;
-            sounds.pull.play();
+            if(sounds.pull) sounds.pull.play();
         });
 
         page.setState(page.States.PLAYING);
@@ -157,6 +158,7 @@
     };
 
     page.destroyPage = function(){
+        resetChallenge();
         for(n in assets){
             delete assets[n];
         }
@@ -173,7 +175,7 @@
     };
 
     function resetChallenge(){
-        fill = 0
+        fill = 0;
         inputLastCheck = 0;
         endLastCheck = 0;
         ui.touching = false;
@@ -194,7 +196,7 @@
                 endChallenge(false, "The bucket is too full.", layer);
                 return;
             }
-            if(depth < raisedDepth && fill > 0){
+            if(depth < raisedDepth && fill > 0.2){
                 if(fill < targetFill - targetTolerance){
                     endChallenge(false, "You didn't get enough water.", layer);
                     return;

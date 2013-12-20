@@ -88,7 +88,8 @@
                 return;
             }
             ui.touched = true;
-            prince.target = {x : e.pageX/scale, y : e.pageY/scale};
+            var pos = stage.getPointerPosition();
+            prince.target = {x : pos.x/scale, y : pos.y/scale};
         });
         stage.on("touchend mouseup", function(e){
             if(page.getState() != page.States.PLAYING){
@@ -103,7 +104,8 @@
             }
             if(Date.now() - inputLastCheck > inputCheckThreshold){
                 inputLastCheck = Date.now();
-                prince.target = {x : e.pageX/scale, y : e.pageY/scale};
+                var pos = stage.getPointerPosition();
+                prince.target = {x : pos.x/scale, y : pos.y/scale};
             }
         });
     };

@@ -71,6 +71,8 @@ window.storybook = {};
             setDefaultAudioLevels();
         }
 
+        $("body").width($(window).width()).height($(window).height());
+
         stage = new K.Stage({
             container: "game-stage",
             width: gameWidth,
@@ -262,7 +264,7 @@ window.storybook = {};
             music.destroy();
             music = null;
         }
-        stage.off(clickEvt);
+        stage.off(clickEvt + " mousedown mouseup mousemove touchstart touchend touchmove");
         if(currentPage){
             currentPage.setState(currentPage.States.UNINITIALIZED);
             currentPage.destroyPage();

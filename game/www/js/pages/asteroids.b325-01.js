@@ -114,7 +114,10 @@
             return;
         }
         //gets accelerometer values
+        //GALAXY TAB
         //left: x+, right: x-, down: y+, up: y-
+        //NEXUS 7
+        //left: tilt towards, right: tilt away , down: tilt right, up: tilt left
         //magnitude ranges from -10 to 10. Ignore z.
         movePrince(storybook.getAccelerometer(), frame.timeDiff);
         moveRat(frame.timeDiff);
@@ -186,8 +189,11 @@
     }
 
     function movePrince(acc, timeDiff){
-        var xVel = acc.x * -1;
-        var yVel = acc.y;
+        // var xVel = acc.x * -1;
+        // var yVel = acc.y;
+        //nexus 7
+        var xVel = acc.y * -1;
+        var yVel = acc.x * -1;
         var currentPos = assets.prince.getPosition();
         var curX = currentPos.x;
         var curY = currentPos.y;
