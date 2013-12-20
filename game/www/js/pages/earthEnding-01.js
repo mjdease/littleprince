@@ -1,13 +1,18 @@
+// TODO - refine
 (function(){
     var sprite;
-    var questions = new Array ();
+    var questions = new Array();
     var answers = new Array();
     var questionNum = 0;
     var i, imgName;
     var a1, a2, a3, a4, a5, a6, q1, q2, q3;
     var win = false;
-    var page = new Page("earthEnding", 1);
+    var ui = {};
     var sounds = {};
+    var stageWidth, stageHeight;
+
+    var page = new Page("earthEnding", 1);
+
     page.setPreviousPage("earthEnding", 0);
 
     page.setNextPage("earthEnding", 2);
@@ -37,6 +42,11 @@
     page.setNarration();
 
     page.initPage = function(images, stage, layers){
+        stageWidth = stage.getWidth();
+        stageHeight = stage.getHeight();
+
+        ui.layer = layers.staticFront;
+
         for(i=1; i<10; i++){
          questions[i] = new Kinetic.Image({
            image: images["q"+i],
@@ -90,31 +100,28 @@
         answers[7].on(clickEvt, function(){RiddleCheck(questionNum, "A")});
         answers[8].on(clickEvt, function(){RiddleCheck(questionNum, "B")});
         answers[9].on(clickEvt, function(){RiddleCheck(questionNum, "C")});
-        console.log(answers[8]);
+
         page.setState(page.States.PLAYING);
-    }
+    };
 
     page.update = function(frame, stage, layers){
         if(page.getState() != page.States.PLAYING){
             return;
         }
         if(win == true){
-            page.setState(page.States.PASSED);
+            endChallenge(true, "You got all the riddles correct!");
         }
     };
 
-    function onSpriteClick(e){
-        sprite.stop();
-        page.challengeComplete();
-    }
+    page.destroyPage = function(){
+        resetChallenge();
+    };
 
     function RiddleCheck(question, answerCheck){
-
         if(question == 1){
             if(answerCheck == "C"){
                 questions[1].hide();
                 questions[2].show();
-                console.log("Correct");
                 sounds.correct.play();
                 questionNum = 2;
                 answers[1].hide();
@@ -125,7 +132,10 @@
                 answers[5].show();
                 answers[6].show();
 
-            } else sounds.wrong.play();
+            } else {
+                sounds.wrong.play();
+                endChallenge(false, "That answer is incorrect.");
+            }
         }
         if(question == 2){
             if(answerCheck == "A"){
@@ -141,16 +151,94 @@
                 answers[8].show();
                 answers[9].show();
 
-            } else sounds.wrong.play();
+            } else {
+                sounds.wrong.play();
+                endChallenge(false, "That answer is incorrect.");
+            }
         }
 
         if(question == 3){
             if(answerCheck == "A"){
                 sounds.correct.play();
                 win = true;
-            } else sounds.wrong.play();
+            } else {
+                sounds.wrong.play();
+                endChallenge(false, "That answer is incorrect.");
+            }
 
         }
     }
+
+    function endChallenge(isPass, message){
+        questions[1].hide();
+        questions[2].hide();
+        questions[3].hide();
+
+        for (var x=1; x<10; x++){
+            answers[x].hide();
+        }
+
+        var msgbox = new Kinetic.Rect({
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            fill: isPass ? "green" : "red",
+            opacity: 0.8,
+            stroke: "black",
+            strokeWeight: 10
+        });
+        var msg = new Kinetic.Text({
+            text:message + (isPass ? "" : "\nTap to retry."),
+            fontFamily:"lp_BodyFont",
+            fontWeight:"bold",
+            fontSize:32,
+            padding:20,
+            align:"center",
+            fill:"black",
+            x:stageWidth/2,
+            y:stageHeight/2,
+            width:900,
+            height: isPass ? 72 : 104,
+            offsetX:450,
+            offsetY: isPass ? 36 : 52,
+            listening:false
+        });
+        if(isPass){
+            page.setState(page.States.PASSED);
+        }
+        else{
+            msgbox.on(clickEvt, function(){
+                msg.destroy();
+                msgbox.destroy();
+                ui.layer.batchDraw();
+                restartChallenge();
+            });
+            page.setState(page.States.FAILED);
+        }
+        ui.layer.add(msgbox).add(msg).batchDraw();
+    }
+
+    function resetChallenge(){
+        win = false;
+        questionNum = 1;
+    }
+
+    function restartChallenge(){
+        resetChallenge();
+        questions[1].show();
+        for (var x=1; x<10; x++){
+            if(x < 4){
+                answers[x].show();
+            }
+            else{
+                answers[x].hide();
+            }
+        }
+        page.setState(page.States.PLAYING);
+    }
+
     storybook.registerPage(page);
 })();
