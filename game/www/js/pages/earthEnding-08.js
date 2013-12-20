@@ -251,45 +251,45 @@
 
         if(sCRClicked == 1)
         {
-            starRClick.setScale(1.5);  
-            starRClick.setOffset(36,36);       
+            starRClick.setScale(1.5);
+            starRClick.setOffset(36,36);
         }
         else
         {
-            starRClick.setScale(1); 
-            starRClick.setOffset(0,0);  
+            starRClick.setScale(1);
+            starRClick.setOffset(0,0);
         }
 
         if(sCYClicked == 1)
         {
-           starYClick.setScale(1.5);  
-           starYClick.setOffset(36,36); 
+           starYClick.setScale(1.5);
+           starYClick.setOffset(36,36);
         }
         else
         {
-            starYClick.setScale(1); 
+            starYClick.setScale(1);
             starYClick.setOffset(0,0);
         }
 
         if(sCBClicked == 1)
         {
-           starGClick.setScale(1.5);  
+           starGClick.setScale(1.5);
            starGClick.setOffset(36,36);
         }
         else
         {
-           starGClick.setScale(1); 
+           starGClick.setScale(1);
            starGClick.setOffset(0,0);
         }
 
         if(sCPClicked == 1)
         {
-           starPClick.setScale(1.5);  
+           starPClick.setScale(1.5);
            starPClick.setOffset(36,36);
         }
         else
         {
-           starPClick.setScale(1); 
+           starPClick.setScale(1);
            starPClick.setOffset(0,0);
         }
 
@@ -361,7 +361,7 @@
 
         for(var r = 0; r < redStars; r++)
         {
-            if(starRDisplay[r])
+            // if(starRDisplay[r])
         }
 
         //if((starRCrossed == 1) && (starYCrossed ==1) && (starBCrossed == 1) && (starPCrossed == 1))

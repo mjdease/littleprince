@@ -167,7 +167,6 @@
             endLastCheck = Date.now();
             if(fox.dir === -1 && prince.target && prince.target.x > assets.prince.getX()){
                 foxAwareness++;
-                console.log(foxAwareness);
                 if(foxAwareness > awarenessLimit){
                     endChallenge(false, "The fox saw you. Tap to try again.");
                     return;
