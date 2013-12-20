@@ -102,7 +102,6 @@ var challengeWords = {
 //TODO - move fix x/y coordinates to cover the word on the page
 challengeWords.earthIntro[1] = {word: "manoeuvre", x:641, y:57};
 challengeWords.asteroids.b612[0] = {word: "weeding", x:717, y:287};
-challengeWords.asteroids.b612[2] = {word: "spruce up", x:680, y:181};
 challengeWords.asteroids.b325[1] = {word: "entrap", x:775, y:287};
 challengeWords.asteroids.b329[1] = {word: "coordinated", x:617, y:403};
 challengeWords.earthEnding[1] = {word: "think outside the box", x:693, y:345};

@@ -26,13 +26,7 @@
     };
 
     page.startPage = function(){
-        sprite.on('mousedown', function(evt) {
-            sprite.start();
-        });
-
-        sprite.on('mouseup', function(evt) {
-            sprite.stop();
-        });
+        sprite.start();
     };
 
     page.update = function(frame, stage, layers){
