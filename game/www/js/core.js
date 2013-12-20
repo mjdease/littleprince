@@ -375,6 +375,7 @@ window.storybook = {};
                 if(!currentPage.challengeStarted){
                     currentPage.challengeStarted = true;
                     currentPage.startChallenge(layers);
+                    if(narration) narration.stop();
                     if(music) music.play();
                     toggleText(false);
                 }
