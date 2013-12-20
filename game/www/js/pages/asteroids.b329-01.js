@@ -26,7 +26,7 @@
         {name: "hint", path: "assets/images/ui/page_challenge/05/hint_ch05_01.png"}
     ]);
 
-    page.setNarration();
+    page.setNarration("assets/narration/B329_2.mp3");
 
     page.initPage = function(images, stage, layers){
         gameObjects.lamps = [];

@@ -5,7 +5,7 @@
 
     page.setNextPage("asteroids.b330", 1);
 
-    page.setNarration();
+    page.setNarration("assets/narration/B330_1.mp3");
 
     page.setRequiredAssets([
         {name: "background", path: "assets/images/asteroids/p23_bg.jpg"}

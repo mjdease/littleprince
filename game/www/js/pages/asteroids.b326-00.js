@@ -5,7 +5,7 @@
 
     page.setNextPage("menu", 1);
 
-    page.setNarration();
+    page.setNarration("assets/narration/B325_1.mp3");
 
     page.setRequiredAssets([
         {name: "background", path: "assets/images/asteroids/p16_bg.jpg"}
